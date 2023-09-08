@@ -22,6 +22,16 @@ function GetModuleFiles {
   "$ModuleName.psd1"
 }
 
+function LoadAssemblies {
+  param (
+    [string]
+    $ModuleFolder
+  )
+
+  Get-ChildItem -Path $ModuleFolder *.dll `
+  | ForEach-Object { [System.Reflection.Assembly]::LoadFrom($_.FullnName) }
+}
+
 function GetModuleFunctions {
   param (
     [string]
@@ -55,12 +65,12 @@ function GetVersionNumber {
 
 . $PSScriptRoot/variables.ps1
 
-ls $publishVariables.PublishFolder -Recurse
-
 $fileList =
   GetModuleFiles `
     -ModuleFolder $publishVariables.ModuleFolder `
     -ModuleName $publishVariables.ModuleName
+
+LoadAssemblies
 
 $functionsToExport =
   GetModuleFunctions `
