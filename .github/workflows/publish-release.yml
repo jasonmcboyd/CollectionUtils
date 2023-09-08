@@ -23,4 +23,6 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build ./src
       - name: Publish
-        run: dotnet publish --configuration Release --no-build --output ./publish --no-self-contained ./src/CollectionUtils
+        run: dotnet publish --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained ./src/CollectionUtils
+      - name: Create Module Manifest
+        run: ./scripts/create-module-manifest.ps1
