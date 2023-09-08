@@ -70,7 +70,7 @@ $fileList =
     -ModuleFolder $publishVariables.ModuleFolder `
     -ModuleName $publishVariables.ModuleName
 
-LoadAssemblies
+# LoadAssemblies
 
 $functionsToExport =
   GetModuleFunctions `
