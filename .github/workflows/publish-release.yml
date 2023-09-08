@@ -25,4 +25,4 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained ./src/CollectionUtils
       - name: Create Module Manifest
-        run: ./scripts/create-module-manifest.ps1
+        run: ./scripts/create-module-manifest.ps1 -PatchVersion ${{ github.run_number }}
