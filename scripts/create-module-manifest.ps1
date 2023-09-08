@@ -55,6 +55,8 @@ function GetVersionNumber {
 
 . $PSScriptRoot/variables.ps1
 
+ls $publishVariables.PublishFolder -Recurse
+
 $fileList =
   GetModuleFiles `
     -ModuleFolder $publishVariables.ModuleFolder `
