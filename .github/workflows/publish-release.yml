@@ -21,6 +21,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore ./src
       - name: Test
-        run: dotnet test --no-restore --verbosity normal ./src
+        run: dotnet test --configuration Release --no-build ./src
       - name: Publish
-        run: dotnet publish --configuration Release --no-build --no-restore --output ./publish --no-self-contained ./src/CollectionUtils
+        run: dotnet publish --configuration Release --no-build --output ./publish --no-self-contained ./src/CollectionUtils
