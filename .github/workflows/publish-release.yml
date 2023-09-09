@@ -19,9 +19,9 @@ jobs:
       - name: Clean
         run: dotnet clean ./src
       - name: Install dependencies
-        run: dotnet restore ./src
+        run: dotnet restore ./src --verbosity normal
       - name: Build
-        run: dotnet build ./src --configuration Release --no-restore --framework net7.0
+        run: dotnet build ./src --configuration Release --no-restore --framework net7.0 --verbosity normal
       - name: Test
         run: dotnet test ./src --configuration Release --no-build
       - name: Publish
