@@ -25,7 +25,7 @@ jobs:
       - name: Test
         run: dotnet test ./src --configuration Release --no-build
       - name: Publish
-        run: dotnet publish ./src/CollectionUtils --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained
+        run: dotnet publish ./src/CollectionUtils --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained --verbosity normal
       - name: Create Module Manifest
         shell: pwsh
         run: ./scripts/create-module-manifest.ps1 -PatchVersion ${{ github.run_number }}
