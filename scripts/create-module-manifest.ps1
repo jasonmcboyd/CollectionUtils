@@ -67,4 +67,5 @@ New-ModuleManifest `
   -FileList $fileList `
   -LicenseUri 'https://raw.githubusercontent.com/jasonmcboyd/CollectionUtils/main/LICENSE' `
   -ProjectUri 'https://github.com/jasonmcboyd/CollectionUtils' `
-  -FunctionsToExport $functionsToExport
+  -FunctionsToExport $functionsToExport `
+  -Description 'A collection of utilities for working with collections in PowerShell'

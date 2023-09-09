@@ -29,3 +29,6 @@ jobs:
       - name: Create Module Manifest
         shell: pwsh
         run: ./scripts/create-module-manifest.ps1 -PatchVersion ${{ github.run_number }}
+      - name: Publish To PowerShell Gallery
+        shell: pwsh
+        run: Publish-Module -Path ./publish/CollectionUtils -Repository PSGallery -NuGetApiKey ${{ secrets.POWERSHELL_GALLARY_API_KEYNUGET_API_KEY }}
