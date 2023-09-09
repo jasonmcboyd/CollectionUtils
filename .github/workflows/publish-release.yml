@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore ./src --verbosity normal
       - name: Build
-        run: dotnet build ./src --configuration Release --no-restore --framework net7.0 --verbosity normal
+        run: dotnet build ./src --configuration Release --no-restore --framework --no-self-contained --verbosity normal
       - name: Test
         run: dotnet test ./src --configuration Release --no-build
       - name: Publish
