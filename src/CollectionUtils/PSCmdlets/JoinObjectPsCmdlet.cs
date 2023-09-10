@@ -6,7 +6,7 @@ using System.Management.Automation;
 namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsCommon.Join, PSCmdletNouns.Object)]
-  public class JoinObjectPsCmdlet : PSCmdlet, IDisposable
+  public class JoinObjectPSCmdlet : PSCmdlet, IDisposable
   {
     #region Parameters
 

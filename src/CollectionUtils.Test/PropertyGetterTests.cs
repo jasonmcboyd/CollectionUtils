@@ -1,3 +1,4 @@
+using CollectionUtils.Test.Utils;
 using System.Management.Automation;
 
 namespace CollectionUtils.Test
@@ -30,10 +31,10 @@ namespace CollectionUtils.Test
       => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, '{propertyName}')";
 
     private string GetPropertyScriptBlock()
-      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, @{{Property = 'Id'; Script = {{ $_.Id }} }})";
+      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, @{{Property = 'Id'; Expression = {{ $_.Id }} }})";
 
     private string GetRowPropertyScriptBlock()
-      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], @{{Property = 'Id'; Script = {{ $_['Id'] }} }})";
+      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], @{{Property = 'Id'; Expression = {{ $_['Id'] }} }})";
 
     [TestMethod]
     public void GetProperty_TypeIsPSCustomObject()

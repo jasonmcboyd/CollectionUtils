@@ -15,8 +15,8 @@ namespace CollectionUtils
        PSObject psObject,
        KeyField keyField)
     {
-      if (keyField.Script != null)
-        return GetObjectPropertyWithScriptblock(psObject, keyField.Script);
+      if (keyField.Expression != null)
+        return GetObjectPropertyWithScriptblock(psObject, keyField.Expression);
 
       if (psObject.BaseObject is null || psObject.BaseObject is PSCustomObject)
         return GetPsObjectProperty(psObject, keyField.Property);

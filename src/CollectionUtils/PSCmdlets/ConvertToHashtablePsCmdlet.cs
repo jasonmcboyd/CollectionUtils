@@ -7,7 +7,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsData.ConvertTo, PSCmdletNouns.Hashtable)]
   [OutputType(typeof(Hashtable))]
-  public class ConvertToHashtablePsCmdlet : PSCmdlet, IDisposable
+  public class ConvertToHashtablePSCmdlet : PSCmdlet, IDisposable
   {
     #region Parameters
 

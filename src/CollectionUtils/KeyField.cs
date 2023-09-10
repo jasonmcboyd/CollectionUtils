@@ -15,13 +15,13 @@ namespace CollectionUtils
 
     public KeyField(
       string property,
-      ScriptBlock script)
+      ScriptBlock expression)
     {
       Property = property;
-      Script = script;
+      Expression = expression;
     }
 
     public string Property { get; set; } = default!;
-    public ScriptBlock? Script { get; set; }
+    public ScriptBlock? Expression { get; set; }
   }
 }

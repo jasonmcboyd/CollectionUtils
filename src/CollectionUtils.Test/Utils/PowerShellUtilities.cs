@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CollectionUtils.Test.CommandBuilders;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Management.Automation;
 using System.Reflection;
 
-namespace CollectionUtils.Test
+namespace CollectionUtils.Test.Utils
 {
   internal static class PowerShellUtilities
   {
@@ -27,6 +28,13 @@ namespace CollectionUtils.Test
     public static Collection<PSObject> InvokeScript(this PowerShell shell, string script)
     {
       shell.AddScript(script);
+      return shell.Invoke();
+    }
+
+    public static Collection<PSObject> InvokeCommandBuilder<T>(this PowerShell shell, T commandBuilder)
+      where T : CommandBuilder<T>
+    {
+      shell.AddScript(commandBuilder.ToString());
       return shell.Invoke();
     }
   }

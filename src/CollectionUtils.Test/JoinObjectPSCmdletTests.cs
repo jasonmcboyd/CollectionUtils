@@ -1,4 +1,6 @@
 using CollectionUtils.PSCmdlets;
+using CollectionUtils.Test.CommandBuilders;
+using CollectionUtils.Test.Utils;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -67,15 +69,19 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$right = @([pscustomobject]@{ Id = 2; Value = 'two' }, [pscustomobject]@{ Id = 3; Value = 'three' })");
 
-      var script = "Join-Object -LeftObject $left -RightObject $right -Key Id";
+      var command =
+        new JoinObjectCommandBuilder()
+        .LeftObject("$left")
+        .RightObject("$right")
+        .Key("Id");
 
       if (joinType.HasValue)
-        script += $" -JoinType {joinType.Value}";
+        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
         shell
-        .InvokeScript(script)
+        .InvokeCommandBuilder(command)
         .Cast<dynamic>()
         .ToArray();
 
@@ -103,15 +109,19 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$right = @(@{ Id = 2; Value = 'two' }, @{ Id = 3; Value = 'three' })");
 
-      var script = "Join-Object -LeftObject $left -RightObject $right -Key Id";
+      var command =
+        new JoinObjectCommandBuilder()
+        .LeftObject("$left")
+        .RightObject("$right")
+        .Key("Id");
 
       if (joinType.HasValue)
-        script += $" -JoinType {joinType.Value}";
+        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
         shell
-        .InvokeScript(script)
+        .InvokeCommandBuilder(command)
         .Cast<dynamic>()
         .ToArray();
 
@@ -139,15 +149,20 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$right = @(@{ Id = 2; Value = 'two' }, @{ Id = 3; Value = 'three' })");
 
-      var script = "Join-Object -LeftObject $left -RightObject $right -Key @{ Property = 'MyId'; Script = { $_.Id } }";
+      var command =
+        PSBuilder
+        .JoinObject()
+        .LeftObject("$left")
+        .RightObject("$right")
+        .Key(PSBuilder.KeyField("MyId", "{ $_.Id }"));
 
       if (joinType.HasValue)
-        script += $" -JoinType {joinType.Value}";
+        command = command.JoinType(joinType.Value);
 
       // Act
       var temp =
         shell
-        .InvokeScript(script)
+        .InvokeCommandBuilder(command)
         .ToArray();
       
       var results =
@@ -179,15 +194,21 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$right = @(@{ Id = 2; Value = 'two' }, @{ Id = 3; Value = 'three' })");
 
-      var script = "Join-Object -LeftObject $left -RightObject $right -LeftKey Id -RightKey Id";
+      var command =
+        PSBuilder
+        .JoinObject()
+        .LeftObject("$left")
+        .RightObject("$right")
+        .LeftKey("Id")
+        .RightKey("Id");
 
       if (joinType.HasValue)
-        script += $" -JoinType {joinType.Value}";
+        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
         shell
-        .InvokeScript(script)
+        .InvokeCommandBuilder(command)
         .Cast<dynamic>()
         .ToArray();
 

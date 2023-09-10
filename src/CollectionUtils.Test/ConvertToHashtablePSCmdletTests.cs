@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using CollectionUtils.Test.CommandBuilders;
+using CollectionUtils.Test.Utils;
+using NJsonSchema.Infrastructure;
+using System.Collections;
 using System.Management.Automation;
 
 namespace CollectionUtils.Test
@@ -14,7 +17,12 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
 
-      var script = "ConvertTo-Hashtable -InputObject $objs -Key Id";
+      var script =
+        ConvertToHashtableCommandBuilder
+        .Command()
+        .InputObject("$objs")
+        .Key("Id")
+        .ToString();
 
       // Act
       var output =
@@ -66,7 +74,12 @@ namespace CollectionUtils.Test
 
       shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
 
-      var script = "ConvertTo-Hashtable -InputObject $objs -Key Id, Value";
+      var script =
+        ConvertToHashtableCommandBuilder
+        .Command()
+        .InputObject("$objs")
+        .Key("Id, Value")
+        .ToString();
 
       // Act
       var output =
@@ -82,6 +95,42 @@ namespace CollectionUtils.Test
 
       Assert.AreEqual(2, results.Count);
       Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is Hashtable));
+    }
+
+    [TestMethod]
+    public void Invoke_AsLookup_ValuesAreArrays()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = 0..9");
+
+      var command =
+        ConvertToHashtableCommandBuilder
+        .Command()
+        .InputObject("$objs")
+        .Key(PSBuilder.KeyField("Mod", "{ $_ % 3 }"))
+        .AsLookup();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var temp =
+        output.ToArray();
+
+      var results =
+        temp
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(3, results.Count);
+      PSObjectCollectionAssert.AreEqual(results.Get<PSObject[]>(0), new[] { 0, 3, 6, 9 });
+      PSObjectCollectionAssert.AreEqual(results.Get<PSObject[]>(1), new[] { 1, 4, 7 });
+      PSObjectCollectionAssert.AreEqual(results.Get<PSObject[]>(2), new[] { 2, 5, 8 });
     }
   }
 }

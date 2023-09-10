@@ -5,7 +5,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsData.ConvertFrom, PSCmdletNouns.DataTable)]
   [OutputType(typeof(PSObject[]))]
-  public class ConvertFromDataTablePsCmdlet : PSCmdlet
+  public class ConvertFromDataTablePSCmdlet : PSCmdlet
   {
     #region Parameters
 
