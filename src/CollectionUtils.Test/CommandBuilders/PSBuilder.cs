@@ -8,7 +8,7 @@ namespace CollectionUtils.Test.CommandBuilders
 
     public static ConvertToHashtableCommandBuilder ConvertToHashTable() => new ConvertToHashtableCommandBuilder();
 
-    public static JoinObjectCommandBuilder JoinObject() => new JoinObjectCommandBuilder();
+    public static JoinCollectionCommandBuilder JoinObject() => new JoinCollectionCommandBuilder();
 
     public static string KeyField(string property, string expression) =>
       $"@{{ {nameof(CollectionUtils.KeyField.Property)} = '{property}'; {nameof(CollectionUtils.KeyField.Expression)} = {expression} }}";

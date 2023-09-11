@@ -5,8 +5,8 @@ using System.Management.Automation;
 
 namespace CollectionUtils.PSCmdlets
 {
-  [Cmdlet(VerbsCommon.Join, PSCmdletNouns.Object)]
-  public class JoinObjectPSCmdlet : PSCmdlet, IDisposable
+  [Cmdlet(VerbsCommon.Join, PSCmdletNouns.Collection)]
+  public class JoinCollectionPsCmdlet : PSCmdlet, IDisposable
   {
     #region Parameters
 
@@ -14,12 +14,12 @@ namespace CollectionUtils.PSCmdlets
       Mandatory = true,
       Position = 1,
       ValueFromPipeline = true)]
-    public PSObject[] LeftObject { get; set; } = default!;
+    public PSObject[] LeftCollection { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
       Position = 2)]
-    public PSObject[] RightObject { get; set; } = default!;
+    public PSObject[] RightCollection { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
@@ -127,7 +127,7 @@ namespace CollectionUtils.PSCmdlets
       ValidateComparers();
 
       _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(RightKey, Comparer, DefaultStringComparer);
-      _RightHashtableBuilder.AddObjects(RightObject);
+      _RightHashtableBuilder.AddObjects(RightCollection);
 
       _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(LeftKey, Comparer, DefaultStringComparer);
 
@@ -139,7 +139,7 @@ namespace CollectionUtils.PSCmdlets
       if (_ShouldStop)
         return;
 
-      _LeftHashtableBuilder!.AddObjects(LeftObject);
+      _LeftHashtableBuilder!.AddObjects(LeftCollection);
 
       base.ProcessRecord();
     }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CollectionUtils.Test
 {
   [TestClass]
-  public class JoinObjectPSCmdletTests
+  public class JoinCollectionPSCmdletTests
   {
     private IEnumerable<(int, string)> GetData()
     {
@@ -70,7 +70,7 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$right = @([pscustomobject]@{ Id = 2; Value = 'two' }, [pscustomobject]@{ Id = 3; Value = 'three' })");
 
       var command =
-        new JoinObjectCommandBuilder()
+        new JoinCollectionCommandBuilder()
         .LeftObject("$left")
         .RightObject("$right")
         .Key("Id");
@@ -110,7 +110,7 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$right = @(@{ Id = 2; Value = 'two' }, @{ Id = 3; Value = 'three' })");
 
       var command =
-        new JoinObjectCommandBuilder()
+        new JoinCollectionCommandBuilder()
         .LeftObject("$left")
         .RightObject("$right")
         .Key("Id");

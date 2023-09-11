@@ -3,9 +3,9 @@ using System.Management.Automation;
 
 namespace CollectionUtils.PSCmdlets
 {
-  [Cmdlet(VerbsDiagnostic.Test, PSCmdletNouns.Object)]
+  [Cmdlet(VerbsDiagnostic.Test, PSCmdletNouns.Collection)]
   [OutputType(typeof(bool))]
-  public class TestObjectPSCmdlet : PSCmdlet
+  public class TestCollectionPSCmdlet : PSCmdlet
   {
     #region Parameters
 
