@@ -52,9 +52,9 @@ $version =
 
 $functionsToExport = @(
   'ConvertFrom-DataTable'
-  'ConvertTo-DataTable'
-  'Join-Object'
-  'Test-Object'
+  'ConvertTo-Hashtable'
+  'Join-Collection'
+  'Test-Collection'
 )
 
 New-ModuleManifest `
