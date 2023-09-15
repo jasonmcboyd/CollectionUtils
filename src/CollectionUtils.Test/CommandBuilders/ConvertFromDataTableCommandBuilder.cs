@@ -8,8 +8,6 @@ namespace CollectionUtils.Test.CommandBuilders
     {
     }
 
-    public static ConvertFromDataTableCommandBuilder Command() => new ConvertFromDataTableCommandBuilder();
-
     public ConvertFromDataTableCommandBuilder Key(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(ConvertFromDataTablePSCmdlet.Table), value, includeParameterName);
 

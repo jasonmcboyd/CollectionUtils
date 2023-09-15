@@ -8,6 +8,15 @@ namespace CollectionUtils
   internal class ListOfPSObjectHashtableBuilder : HashtableBuilderBase<List<PSObject>>
   {
     public ListOfPSObjectHashtableBuilder(
+      PSObject[] objects,
+      KeyField[] keyFields,
+      KeyComparer[]? keyComparers,
+      IEqualityComparer<string> defaultStringComparer)
+      : base(objects, keyFields, keyComparers, defaultStringComparer)
+    {
+    }
+
+    public ListOfPSObjectHashtableBuilder(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)

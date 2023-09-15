@@ -1,65 +1,183 @@
-﻿using CollectionUtils.Utilities;
+﻿using CollectionUtils.JoinCommandHandlers;
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Threading;
 
 namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsCommon.Join, PSCmdletNouns.Collection)]
+  [OutputType(typeof(PSObject[]))]
   public class JoinCollectionPsCmdlet : PSCmdlet, IDisposable
   {
-    #region Parameters
+    #region Common Parameters
 
     [Parameter(
       Mandatory = true,
       Position = 1,
       ValueFromPipeline = true)]
-    public PSObject[] LeftCollection { get; set; } = default!;
+    public PSObject[] Left { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
       Position = 2)]
-    public PSObject[] RightCollection { get; set; } = default!;
+    public PSObject[] Right { get; set; } = default!;
+
+    #endregion Common Parameters
+
+    #region Basic Join Parameters
 
     [Parameter(
       Mandatory = true,
-      ParameterSetName = nameof(Key),
+      ParameterSetName = nameof(CrossJoin),
       Position = 3)]
+    public SwitchParameter CrossJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(ZipJoin),
+      Position = 3)]
+    public SwitchParameter ZipJoin { get; set; }
+
+    #endregion Basic Join Parameters
+
+    #region Keyed Join Parameters
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key),
+      Position = 3)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 3)]
+    public SwitchParameter InnerJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key),
+      Position = 3)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 3)]
+    public SwitchParameter LeftJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key),
+      Position = 3)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 3)]
+    public SwitchParameter OuterJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(RightJoin) + "|" + nameof(Key),
+      Position = 3)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 3)]
+    public SwitchParameter RightJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(RightJoin) + "|" + nameof(Key),
+      Position = 4)]
     public KeyField[]? Key { get; set; }
 
     [Parameter(
       Mandatory = true,
-      ParameterSetName = nameof(LeftKey) + "|" + nameof(RightKey),
-      Position = 3)]
+      ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
     public KeyField[] LeftKey { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
-      ParameterSetName = nameof(LeftKey) + "|" + nameof(RightKey),
-      Position = 4)]
+      ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 5)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 5)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 5)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 5)]
     public KeyField[] RightKey { get; set; } = default!;
 
-    [Parameter(Position = 5)]
-    public JoinType JoinType { get; set; } = JoinType.Outer;
-
-    [Parameter(Position = 6)]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
     public KeyComparer[]? Comparer { get; set; }
 
-    [Parameter(Position = 7)]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
     public IEqualityComparer<string> DefaultStringComparer { get; set; } = EqualityComparer<string>.Default;
 
-    [Parameter(Position = 8)]
-    public SwitchParameter Flatten { get; set; }
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
+    public GroupJoinStrategy GroupJoinStrategy { get; set; } = GroupJoinStrategy.Group;
 
-    #endregion Parameters
+    #endregion Keyed Join Parameters
 
-    private bool _ShouldStop = false;
+    private IJoinCommandHandler? _CommandHandler = null;
 
-    private ListOfPSObjectHashtableBuilder? _LeftHashtableBuilder;
-    private ListOfPSObjectHashtableBuilder? _RightHashtableBuilder;
+    private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
     private void ValidateKeyFields()
     {
+      if (ZipJoin || CrossJoin)
+        return;
+
       if (LeftKey.Length != RightKey.Length)
       {
         WriteError(
@@ -70,7 +188,7 @@ namespace CollectionUtils.PSCmdlets
               ErrorCategory.InvalidArgument,
               null));
 
-        _ShouldStop = true;
+        _CancellationTokenSource.Cancel();
       }
 
       foreach (var leftKeyField in LeftKey)
@@ -87,7 +205,7 @@ namespace CollectionUtils.PSCmdlets
                 ErrorCategory.InvalidArgument,
                 null));
 
-          _ShouldStop = true;
+          _CancellationTokenSource.Cancel();
         }
       }
     }
@@ -109,117 +227,104 @@ namespace CollectionUtils.PSCmdlets
                 ErrorCategory.InvalidArgument,
                 null));
 
-          _ShouldStop = true;
+          _CancellationTokenSource.Cancel();
         }
       }
     }
 
+    private KeyedJoinType GetKeyedJoinType() =>
+      InnerJoin
+      ? KeyedJoinType.Inner
+      : LeftJoin
+      ? KeyedJoinType.Left
+      : OuterJoin
+      ? KeyedJoinType.Outer
+      : RightJoin
+      ? KeyedJoinType.Right
+      : throw new InvalidOperationException("No join type specified.");
+
+    private IJoinCommandHandler GetCommandHandler()
+    {
+      if (ZipJoin)
+        return new ZipJoinCommandHandler(Right, WriteObject, WriteError, _CancellationTokenSource.Token);
+
+      if (CrossJoin)
+        return new CrossJoinCommandHandler(Right, WriteObject, WriteError, _CancellationTokenSource.Token);
+
+      if (InnerJoin || LeftJoin || OuterJoin || RightJoin)
+        return
+          new KeyedJoinCommandHandler(
+            Right,
+            LeftKey,
+            RightKey,
+            Comparer,
+            DefaultStringComparer,
+            GetKeyedJoinType(),
+            GroupJoinStrategy,
+            WriteObject,
+            WriteError,
+            _CancellationTokenSource.Token);
+
+      throw new InvalidOperationException("No join type specified.");
+    }
+
     protected override void BeginProcessing()
     {
-      // This works because Key and LeftKey/RightKey are mutually exclusive.
-      if (Key != null)
+      try
       {
-        LeftKey = Key;
-        RightKey = Key;
+        // This works because Key and LeftKey/RightKey are mutually exclusive.
+        if (Key != null)
+        {
+          LeftKey = Key;
+          RightKey = Key;
+        }
+
+        _CommandHandler = GetCommandHandler();
+
+        ValidateKeyFields();
+        ValidateComparers();
       }
-
-      ValidateKeyFields();
-      ValidateComparers();
-
-      _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(RightKey, Comparer, DefaultStringComparer);
-      _RightHashtableBuilder.AddObjects(RightCollection);
-
-      _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(LeftKey, Comparer, DefaultStringComparer);
+      catch (Exception ex)
+      {
+        throw ex;
+      }
 
       base.BeginProcessing();
     }
 
     protected override void ProcessRecord()
     {
-      if (_ShouldStop)
-        return;
-
-      _LeftHashtableBuilder!.AddObjects(LeftCollection);
+      for (int i = 0; i < Left.Length; i++)
+        _CommandHandler!.Next(Left[i]);
 
       base.ProcessRecord();
     }
 
     protected override void EndProcessing()
     {
-      var joinedObjects = JoinLeftAndRight();
-
-      foreach (var (left, right, key) in joinedObjects)
-        if (Flatten)
-          WriteFlattenedPSObjectList(left, right, key);
-        else
-          WritePSObjectList(left, right, key);
+      try
+      {
+        _CommandHandler!.WriteRemainingObjects();
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
 
       base.EndProcessing();
     }
 
     protected override void StopProcessing()
     {
-      _ShouldStop = true;
+      _CancellationTokenSource.Cancel();
 
       base.StopProcessing();
     }
 
-    private IEnumerable<(PSObject[]? Left, PSObject[]? Right, object Key)> JoinLeftAndRight()
-    {
-      var leftHashtable = _LeftHashtableBuilder!.GetHashtable();
-      var rightHashtable = _RightHashtableBuilder!.GetHashtable();
-
-      foreach (var key in leftHashtable.Keys)
-      {
-        var leftObjects = leftHashtable.Get<PSObject[]>(key);
-
-        if (rightHashtable.TryRemove<PSObject[]>(key, out var rightObjects))
-          yield return (leftObjects, rightObjects, key);
-        else
-          if (JoinType == JoinType.Left || JoinType == JoinType.Outer)
-            yield return (leftObjects, null, key);
-      }
-
-      if (JoinType == JoinType.Right || JoinType == JoinType.Outer)
-        foreach (var key in rightHashtable.Keys)
-          yield return (null, rightHashtable.Get<PSObject[]>(key), key);
-
-      base.EndProcessing();
-    }
-
-    private void WriteFlattenedPSObjectList(PSObject[]? left, PSObject[]? right, object key)
-    {
-      if (left?.Length > 0 && right?.Length > 0)
-        for (var l = 0; l < left.Length; l++)
-          for (var r = 0; r < right.Length; r++)
-            WriteObject(CreatePSObject(left[l], right[r], key));
-
-      else if (left?.Length > 0)
-        for (var l = 0; l < left.Length; l++)
-          WriteObject(CreatePSObject(left[l], null, key));
-
-      else
-        for (var r = 0; r < right!.Length; r++)
-          WriteObject(CreatePSObject(null, right[r], key));
-    }
-
-    private void WritePSObjectList(PSObject[]? left, PSObject[]? right, object key) => WriteObject(CreatePSObject(left, right, key));
-
-    private PSObject CreatePSObject(object? left, object? right, object key)
-    {
-      var psObject = new PSObject();
-
-      psObject.Properties.Add(new PSNoteProperty("Key", key));
-      psObject.Properties.Add(new PSNoteProperty("Left", left));
-      psObject.Properties.Add(new PSNoteProperty("Right", right));
-
-      return psObject;
-    }
-
     public void Dispose()
     {
-      _LeftHashtableBuilder?.Dispose();
-      _RightHashtableBuilder?.Dispose();
+      _CommandHandler?.Dispose();
+      _CancellationTokenSource.Dispose();
     }
   }
 }

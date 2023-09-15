@@ -1,8 +1,8 @@
-using CollectionUtils.PSCmdlets;
 using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace CollectionUtils.Test
 {
@@ -55,12 +55,11 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    [DataRow(null, 1, 1, 1)]
-    [DataRow(JoinType.Outer, 1, 1, 1)]
-    [DataRow(JoinType.Left, 1, 0, 1)]
-    [DataRow(JoinType.Right, 0, 1, 1)]
-    [DataRow(JoinType.Inner, 0, 0, 1)]
-    public void Invoke_UseKeyParameter_InputIsPSCustomObjects_CorrectCountOfObjectsReturned(JoinType? joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
+    [DataRow(KeyedJoinType.Outer, 1, 1, 1)]
+    [DataRow(KeyedJoinType.Left, 1, 0, 1)]
+    [DataRow(KeyedJoinType.Right, 0, 1, 1)]
+    [DataRow(KeyedJoinType.Inner, 0, 0, 1)]
+    public void Invoke_UseKeyParameter_InputIsPSCustomObjects_CorrectCountOfObjectsReturned(KeyedJoinType joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -71,12 +70,10 @@ namespace CollectionUtils.Test
 
       var command =
         new JoinCollectionCommandBuilder()
-        .LeftObject("$left")
-        .RightObject("$right")
+        .Left("$left")
+        .Right("$right")
+        .KeyedJoin(joinType)
         .Key("Id");
-
-      if (joinType.HasValue)
-        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
@@ -95,12 +92,11 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    [DataRow(null, 1, 1, 1)]
-    [DataRow(JoinType.Outer, 1, 1, 1)]
-    [DataRow(JoinType.Left, 1, 0, 1)]
-    [DataRow(JoinType.Right, 0, 1, 1)]
-    [DataRow(JoinType.Inner, 0, 0, 1)]
-    public void Invoke_UseKeyParameter_CorrectCountOfObjectsReturned(JoinType? joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
+    [DataRow(KeyedJoinType.Outer, 1, 1, 1)]
+    [DataRow(KeyedJoinType.Left, 1, 0, 1)]
+    [DataRow(KeyedJoinType.Right, 0, 1, 1)]
+    [DataRow(KeyedJoinType.Inner, 0, 0, 1)]
+    public void Invoke_UseKeyParameter_CorrectCountOfObjectsReturned(KeyedJoinType joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -111,12 +107,10 @@ namespace CollectionUtils.Test
 
       var command =
         new JoinCollectionCommandBuilder()
-        .LeftObject("$left")
-        .RightObject("$right")
+        .Left("$left")
+        .Right("$right")
+        .KeyedJoin(joinType)
         .Key("Id");
-
-      if (joinType.HasValue)
-        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
@@ -135,12 +129,11 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    [DataRow(null, 1, 1, 1)]
-    [DataRow(JoinType.Outer, 1, 1, 1)]
-    [DataRow(JoinType.Left, 1, 0, 1)]
-    [DataRow(JoinType.Right, 0, 1, 1)]
-    [DataRow(JoinType.Inner, 0, 0, 1)]
-    public void Invoke_UseKeyParameterWithScriptBlock_CorrectCountOfObjectsReturned(JoinType? joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
+    [DataRow(KeyedJoinType.Outer, 1, 1, 1)]
+    [DataRow(KeyedJoinType.Left, 1, 0, 1)]
+    [DataRow(KeyedJoinType.Right, 0, 1, 1)]
+    [DataRow(KeyedJoinType.Inner, 0, 0, 1)]
+    public void Invoke_UseKeyParameterWithScriptBlock_CorrectCountOfObjectsReturned(KeyedJoinType joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -151,13 +144,11 @@ namespace CollectionUtils.Test
 
       var command =
         PSBuilder
-        .JoinObject()
-        .LeftObject("$left")
-        .RightObject("$right")
+        .JoinCollection()
+        .Left("$left")
+        .Right("$right")
+        .KeyedJoin(joinType)
         .Key(PSBuilder.KeyField("MyId", "{ $_.Id }"));
-
-      if (joinType.HasValue)
-        command = command.JoinType(joinType.Value);
 
       // Act
       var temp =
@@ -180,12 +171,11 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    [DataRow(null, 1, 1, 1)]
-    [DataRow(JoinType.Outer, 1, 1, 1)]
-    [DataRow(JoinType.Left, 1, 0, 1)]
-    [DataRow(JoinType.Right, 0, 1, 1)]
-    [DataRow(JoinType.Inner, 0, 0, 1)]
-    public void Invoke_UseLeftKeyAndRightKeyParameters_CorrectCountOfObjectsReturned(JoinType? joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
+    [DataRow(KeyedJoinType.Outer, 1, 1, 1)]
+    [DataRow(KeyedJoinType.Left, 1, 0, 1)]
+    [DataRow(KeyedJoinType.Right, 0, 1, 1)]
+    [DataRow(KeyedJoinType.Inner, 0, 0, 1)]
+    public void Invoke_UseLeftKeyAndRightKeyParameters_CorrectCountOfObjectsReturned(KeyedJoinType joinType, int expectedLeftCount, int expectedRightCount, int expectedInnerCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -196,14 +186,12 @@ namespace CollectionUtils.Test
 
       var command =
         PSBuilder
-        .JoinObject()
-        .LeftObject("$left")
-        .RightObject("$right")
+        .JoinCollection()
+        .Left("$left")
+        .Right("$right")
+        .KeyedJoin(joinType)
         .LeftKey("Id")
         .RightKey("Id");
-
-      if (joinType.HasValue)
-        command = command.JoinType(joinType.Value);
 
       // Act
       var results =
@@ -219,6 +207,33 @@ namespace CollectionUtils.Test
       Assert.AreEqual(expectedLeftCount, left.Length);
       Assert.AreEqual(expectedRightCount, right.Length);
       Assert.AreEqual(expectedInnerCount, inner.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_CrossJoin_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = 0..3");
+
+      shell.InvokeScript("$right = 4..7");
+
+      var command =
+        PSBuilder
+        .JoinCollection()
+        .Left("$left")
+        .Right("$right")
+        .CrossJoin();
+
+      // Act
+      var results =
+        shell
+        .InvokeCommandBuilder(command)
+        .Cast<PSObject>()
+        .ToArray();
+
+      Assert.AreEqual(16, results.Length);
     }
   }
 }

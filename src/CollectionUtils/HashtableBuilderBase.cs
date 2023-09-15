@@ -6,8 +6,17 @@ using System.Management.Automation;
 
 namespace CollectionUtils
 {
-  internal abstract class HashtableBuilderBase<T> : IDisposable
+  internal abstract class HashtableBuilderBase<T> : IHashtableBuilder
   {
+    public HashtableBuilderBase(
+      PSObject[] objects,
+      KeyField[] keyFields,
+      KeyComparer[]? keyComparers,
+      IEqualityComparer<string> defaultStringComparer) : this(keyFields, keyComparers, defaultStringComparer)
+    {
+      AddObjects(objects);
+    }
+
     public HashtableBuilderBase(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
@@ -49,13 +58,13 @@ namespace CollectionUtils
 
     protected Dictionary<object, T>? GetInternalDictionary() => _InternalDictionary;
 
-    public void AddObjects(PSObject[] inputObjects)
+    public void AddObjects(PSObject[] objects)
     {
-      for (int i = 0; i < inputObjects.Length; i++)
-        AddObject(inputObjects[i]);
+      for (int i = 0; i < objects.Length; i++)
+        AddObject(objects[i]);
     }
 
-    private void AddObject(PSObject obj)
+    public void AddObject(PSObject obj)
     {
       if (_IsDisposed)
         throw new ObjectDisposedException(nameof(HashtableBuilderBase<T>));
@@ -85,7 +94,7 @@ namespace CollectionUtils
 
       OnDispose();
     }
-    
+
     protected abstract void OnDispose();
   }
 }

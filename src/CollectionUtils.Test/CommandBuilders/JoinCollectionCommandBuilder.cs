@@ -1,4 +1,5 @@
 ﻿using CollectionUtils.PSCmdlets;
+using System;
 
 namespace CollectionUtils.Test.CommandBuilders
 {
@@ -8,13 +9,11 @@ namespace CollectionUtils.Test.CommandBuilders
     {
     }
 
-    public static JoinCollectionCommandBuilder Command() => new JoinCollectionCommandBuilder();
+    public JoinCollectionCommandBuilder Left(string value, bool includeParameterName = true) =>
+      AddCommandParameter(nameof(JoinCollectionPsCmdlet.Left), value, includeParameterName);
 
-    public JoinCollectionCommandBuilder LeftObject(string value, bool includeParameterName = true) =>
-      AddCommandParameter(nameof(JoinCollectionPsCmdlet.LeftCollection), value, includeParameterName);
-
-    public JoinCollectionCommandBuilder RightObject(string value, bool includeParameterName = true) =>
-      AddCommandParameter(nameof(JoinCollectionPsCmdlet.RightCollection), value, includeParameterName);
+    public JoinCollectionCommandBuilder Right(string value, bool includeParameterName = true) =>
+      AddCommandParameter(nameof(JoinCollectionPsCmdlet.Right), value, includeParameterName);
 
     public JoinCollectionCommandBuilder Key(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(JoinCollectionPsCmdlet.Key), value, includeParameterName);
@@ -25,19 +24,48 @@ namespace CollectionUtils.Test.CommandBuilders
     public JoinCollectionCommandBuilder RightKey(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(JoinCollectionPsCmdlet.RightKey), value, includeParameterName);
 
-    public JoinCollectionCommandBuilder InputObject(string value, bool includeParameterName = true) =>
-      AddCommandParameter(nameof(JoinCollectionPsCmdlet.RightCollection), value, includeParameterName);
-
-    public JoinCollectionCommandBuilder JoinType(JoinType value, bool includeParameterName = true) =>
-      AddCommandParameter(nameof(JoinCollectionPsCmdlet.JoinType), value.ToString(), includeParameterName);
-
     public JoinCollectionCommandBuilder Comparer(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(JoinCollectionPsCmdlet.Comparer), value, includeParameterName);
 
     public JoinCollectionCommandBuilder DefaultStringComparer(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(JoinCollectionPsCmdlet.DefaultStringComparer), value, includeParameterName);
 
-    public JoinCollectionCommandBuilder Flatten(string value, bool includeParameterName = true) =>
-      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.Flatten));
+    public JoinCollectionCommandBuilder GroupJoinStrategy(string value, bool includeParameterName = true) =>
+      AddCommandParameter(nameof(JoinCollectionPsCmdlet.GroupJoinStrategy), value, includeParameterName);
+
+    public JoinCollectionCommandBuilder CrossJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.CrossJoin));
+
+    public JoinCollectionCommandBuilder ZipJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.ZipJoin));
+
+    public JoinCollectionCommandBuilder InnerJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.InnerJoin));
+
+    public JoinCollectionCommandBuilder LeftJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.LeftJoin));
+
+    public JoinCollectionCommandBuilder OuterJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.OuterJoin));
+
+    public JoinCollectionCommandBuilder RightJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.RightJoin));
+
+    public JoinCollectionCommandBuilder KeyedJoin(KeyedJoinType keyedJoinType)
+    {
+      switch (keyedJoinType)
+      {
+        case KeyedJoinType.Inner:
+          return InnerJoin();
+        case KeyedJoinType.Left:
+          return LeftJoin();
+        case KeyedJoinType.Outer:
+          return OuterJoin();
+        case KeyedJoinType.Right:
+          return RightJoin();
+        default:
+          throw new InvalidOperationException();
+      }
+    }
   }
 }

@@ -18,8 +18,8 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
 
       var script =
-        ConvertToHashtableCommandBuilder
-        .Command()
+        PSBuilder
+        .ConvertToHashTable()
         .InputObject("$objs")
         .Key("Id")
         .ToString();
@@ -75,8 +75,8 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
 
       var script =
-        ConvertToHashtableCommandBuilder
-        .Command()
+        PSBuilder
+        .ConvertToHashTable()
         .InputObject("$objs")
         .Key("Id, Value")
         .ToString();
@@ -106,8 +106,8 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$objs = 0..9");
 
       var command =
-        ConvertToHashtableCommandBuilder
-        .Command()
+        PSBuilder
+        .ConvertToHashTable()
         .InputObject("$objs")
         .Key(PSBuilder.KeyField("Mod", "{ $_ % 3 }"))
         .AsLookup();

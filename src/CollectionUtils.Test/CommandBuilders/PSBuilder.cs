@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace CollectionUtils.Test.CommandBuilders
+﻿namespace CollectionUtils.Test.CommandBuilders
 {
   internal static class PSBuilder
   {
@@ -8,7 +6,7 @@ namespace CollectionUtils.Test.CommandBuilders
 
     public static ConvertToHashtableCommandBuilder ConvertToHashTable() => new ConvertToHashtableCommandBuilder();
 
-    public static JoinCollectionCommandBuilder JoinObject() => new JoinCollectionCommandBuilder();
+    public static JoinCollectionCommandBuilder JoinCollection() => new JoinCollectionCommandBuilder();
 
     public static string KeyField(string property, string expression) =>
       $"@{{ {nameof(CollectionUtils.KeyField.Property)} = '{property}'; {nameof(CollectionUtils.KeyField.Expression)} = {expression} }}";

@@ -8,8 +8,6 @@ namespace CollectionUtils.Test.CommandBuilders
     {
     }
 
-    public static ConvertToHashtableCommandBuilder Command() => new ConvertToHashtableCommandBuilder();
-
     public ConvertToHashtableCommandBuilder Key(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(ConvertToHashtablePSCmdlet.Key), value, includeParameterName);
 
