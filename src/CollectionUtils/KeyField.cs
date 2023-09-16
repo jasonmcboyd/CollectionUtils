@@ -4,10 +4,6 @@ namespace CollectionUtils
 {
   public class KeyField
   {
-    public KeyField()
-    {
-    }
-
     public KeyField(string property)
     {
       Property = property;

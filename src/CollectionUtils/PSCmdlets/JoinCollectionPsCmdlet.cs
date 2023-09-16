@@ -99,7 +99,7 @@ namespace CollectionUtils.PSCmdlets
       Mandatory = true,
       ParameterSetName = nameof(RightJoin) + "|" + nameof(Key),
       Position = 4)]
-    public KeyField[]? Key { get; set; }
+    public KeyParameter[]? Key { get; set; }
 
     [Parameter(
       Mandatory = true,
@@ -117,7 +117,7 @@ namespace CollectionUtils.PSCmdlets
       Mandatory = true,
       ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
       Position = 4)]
-    public KeyField[] LeftKey { get; set; } = default!;
+    public KeyParameter[] LeftKey { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
@@ -135,7 +135,7 @@ namespace CollectionUtils.PSCmdlets
       Mandatory = true,
       ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
       Position = 5)]
-    public KeyField[] RightKey { get; set; } = default!;
+    public KeyParameter[] RightKey { get; set; } = default!;
 
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
@@ -173,12 +173,15 @@ namespace CollectionUtils.PSCmdlets
 
     private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
 
+    private KeyField[] _LeftKeyFields = default!;
+    private KeyField[] _RightKeyFields = default!;
+
     private void ValidateKeyFields()
     {
       if (ZipJoin || CrossJoin)
         return;
 
-      if (LeftKey.Length != RightKey.Length)
+      if (_LeftKeyFields.Length != _RightKeyFields.Length)
       {
         WriteError(
           new ErrorRecord(
@@ -191,11 +194,11 @@ namespace CollectionUtils.PSCmdlets
         _CancellationTokenSource.Cancel();
       }
 
-      foreach (var leftKeyField in LeftKey)
+      foreach (var leftKeyField in _LeftKeyFields)
       {
         var leftPropertyName = leftKeyField.Property;
 
-        if (RightKey.FirstOrDefault(rightKeyField => rightKeyField.Property == leftPropertyName) is null)
+        if (_RightKeyFields.FirstOrDefault(rightKeyField => rightKeyField.Property == leftPropertyName) is null)
         {
           WriteError(
             new ErrorRecord(
@@ -217,7 +220,7 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var keyComparer in Comparer)
       {
-        if (LeftKey.FirstOrDefault(leftKeyField => leftKeyField.Property == keyComparer.Property) is null)
+        if (_LeftKeyFields.FirstOrDefault(leftKeyField => leftKeyField.Property == keyComparer.Property) is null)
         {
           WriteError(
             new ErrorRecord(
@@ -255,8 +258,8 @@ namespace CollectionUtils.PSCmdlets
         return
           new KeyedJoinCommandHandler(
             Right,
-            LeftKey,
-            RightKey,
+            _LeftKeyFields,
+            _RightKeyFields,
             Comparer,
             DefaultStringComparer,
             GetKeyedJoinType(),
@@ -270,24 +273,22 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void BeginProcessing()
     {
-      try
+      // This works because Key and LeftKey/RightKey are mutually exclusive.
+      if (Key != null)
       {
-        // This works because Key and LeftKey/RightKey are mutually exclusive.
-        if (Key != null)
-        {
-          LeftKey = Key;
-          RightKey = Key;
-        }
-
-        _CommandHandler = GetCommandHandler();
-
-        ValidateKeyFields();
-        ValidateComparers();
+        _LeftKeyFields = Key.SelectMany(key => key).ToArray();
+        _RightKeyFields = _LeftKeyFields;
       }
-      catch (Exception ex)
+      else
       {
-        throw ex;
+        _LeftKeyFields = LeftKey.SelectMany(key => key).ToArray();
+        _RightKeyFields = RightKey.SelectMany(key => key).ToArray();
       }
+
+      _CommandHandler = GetCommandHandler();
+
+      ValidateKeyFields();
+      ValidateComparers();
 
       base.BeginProcessing();
     }
@@ -302,14 +303,7 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void EndProcessing()
     {
-      try
-      {
-        _CommandHandler!.WriteRemainingObjects();
-      }
-      catch (Exception ex)
-      {
-        throw ex;
-      }
+      _CommandHandler!.WriteRemainingObjects();
 
       base.EndProcessing();
     }
