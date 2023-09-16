@@ -1,3 +1,4 @@
+using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using System.Management.Automation;
 
@@ -31,10 +32,10 @@ namespace CollectionUtils.Test
       => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, '{propertyName}')";
 
     private string GetPropertyScriptBlock()
-      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, @{{Property = 'Id'; Expression = {{ $_.Id }} }})";
+      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, {PSBuilder.KeyField("Id", "$_.Id")})";
 
     private string GetRowPropertyScriptBlock()
-      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], @{{Property = 'Id'; Expression = {{ $_['Id'] }} }})";
+      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], {PSBuilder.KeyField("Id", "$_['Id']")})";
 
     [TestMethod]
     public void GetProperty_TypeIsPSCustomObject()
@@ -59,7 +60,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void GetProperty_TypeIsDataTable()
+    public void GetProperty_TypeIsDataRow()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -126,9 +127,12 @@ namespace CollectionUtils.Test
       AddPSCustomObject(shell);
 
       // Act
-      var result =
+      var output =
         shell
-        .InvokeScript(GetPropertyScriptBlock())
+        .InvokeScript(GetPropertyScriptBlock());
+
+      var result =
+        output
         .Cast<PSObject>()
         .Single();
 
@@ -176,7 +180,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void GetPropertyWithScriptBlock_TypeIsDataTable()
+    public void GetPropertyWithScriptBlock_TypeIsDataRow()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();

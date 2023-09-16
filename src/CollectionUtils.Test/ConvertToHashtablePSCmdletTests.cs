@@ -1,6 +1,5 @@
 ﻿using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
-using NJsonSchema.Infrastructure;
 using System.Collections;
 using System.Management.Automation;
 
@@ -98,6 +97,37 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
+    public void Invoke_MixedCaseKeys_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .AsLookup();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(1, results.Count);
+      //Assert.AreEqual(2, results[0].Count());
+    }
+
+    [TestMethod]
     public void Invoke_AsLookup_ValuesAreArrays()
     {
       // Arrange
@@ -109,7 +139,7 @@ namespace CollectionUtils.Test
         PSBuilder
         .ConvertToHashTable()
         .InputObject("$objs")
-        .Key(PSBuilder.KeyField("Mod", "{ $_ % 3 }"))
+        .Key(PSBuilder.KeyParameter("Mod", "$_ % 3"))
         .AsLookup();
 
       // Act

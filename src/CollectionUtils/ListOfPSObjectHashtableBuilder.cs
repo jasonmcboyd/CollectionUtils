@@ -1,18 +1,17 @@
 ﻿using CollectionUtils.Utilities;
-using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace CollectionUtils
 {
-  internal class ListOfPSObjectHashtableBuilder : HashtableBuilderBase<List<PSObject>>
+  internal class ListOfPSObjectHashtableBuilder : HashtableBuilderBase<ValueDisposable<List<PSObject>>, PSObject[]>
   {
     public ListOfPSObjectHashtableBuilder(
       PSObject[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
-      : base(objects, keyFields, keyComparers, defaultStringComparer)
+      : base(objects, keyFields, keyComparers, defaultStringComparer, ResultSelector)
     {
     }
 
@@ -20,50 +19,25 @@ namespace CollectionUtils
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
-      : base(keyFields, keyComparers, defaultStringComparer)
+      : base(keyFields, keyComparers, defaultStringComparer, ResultSelector)
     {
     }
 
-    protected override void OnAddObject(PSObject obj)
-    {
-      var dict = GetInternalDictionary(obj);
-      var key = KeySelector.GetKey(obj);
+    private static PSObject[] ResultSelector(ValueDisposable<List<PSObject>> list) => list.Value.ToArray();
 
-      if (!dict.TryGetValue(key, out var list))
+    protected override void OnAddObjectRequested(PSObject psObject)
+    {
+      var key = KeySelector.GetKey(psObject);
+
+      if (!TryGet(key, out var value))
       {
-        list = SharedListPool<PSObject>.Get();
-        dict.Add(key, list);
+        value = SharedListPool<PSObject>.GetAsDisposable();
+        TryAdd(psObject, _ => value);
       }
 
-      list.Add(obj);
-    }
+      var list = value.Value;
 
-    protected override void OnDispose()
-    {
-      var dict = GetInternalDictionary();
-
-      if (dict is null)
-        return;
-
-      foreach (var list in dict.Values)
-        SharedListPool<PSObject>.Return(list);
-    }
-
-    protected override Hashtable OnGetHashtable()
-    {
-      var dict = GetInternalDictionary();
-
-      // TODO: This is not correct because the hashtable will not have the same
-      // comparer as the dictionary.
-      if (dict is null)
-        return new Hashtable();
-
-      var result = new Hashtable(dict.Count, (IEqualityComparer)dict.Comparer);
-
-      foreach ((var key, var value) in dict)
-        result.Add(key, value.ToArray());
-
-      return result;
+      list.Add(psObject);
     }
   }
 }

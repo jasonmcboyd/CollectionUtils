@@ -8,7 +8,10 @@
 
     public static JoinCollectionCommandBuilder JoinCollection() => new JoinCollectionCommandBuilder();
 
+    public static string KeyParameter(string property, string expression) =>
+      $"@{{ {property} = {{ {expression} }} }}";
+
     public static string KeyField(string property, string expression) =>
-      $"@{{ {nameof(CollectionUtils.KeyField.Property)} = '{property}'; {nameof(CollectionUtils.KeyField.Expression)} = {expression} }}";
+      $"[{typeof(KeyField).FullName}]::new('{property}', {{ {expression} }})";
   }
 }

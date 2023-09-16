@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Threading;
 
 namespace CollectionUtils.PSCmdlets
 {
@@ -20,7 +21,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(
       Mandatory = true,
       Position = 2)]
-    public KeyField[] Key { get; set; } = default!;
+    public KeyParameter[] Key { get; set; } = default!;
 
     [Parameter(Position = 3)]
     public KeyComparer[]? Comparer { get; set; }
@@ -33,7 +34,9 @@ namespace CollectionUtils.PSCmdlets
 
     #endregion
 
-    private bool _ShouldStop = false;
+    private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
+
+    private KeyField[] _KeyFields = default!;
 
     private PSObjectHashtableBuilder? _PSObjectHashtableBuilder;
     private ListOfPSObjectHashtableBuilder? _ListOfPSObjectHashtableBuilder;
@@ -45,7 +48,7 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var keyComparer in Comparer)
       {
-        if (Key.FirstOrDefault(keyField => keyField.Property == keyComparer.Property) is null)
+        if (_KeyFields.FirstOrDefault(keyField => keyField.Property == keyComparer.Property) is null)
         {
           WriteError(
             new ErrorRecord(
@@ -55,27 +58,29 @@ namespace CollectionUtils.PSCmdlets
                 ErrorCategory.InvalidArgument,
                 null));
 
-          _ShouldStop = true;
+          _CancellationTokenSource.Cancel();
         }
       }
     }
 
     protected override void BeginProcessing()
     {
+      _KeyFields = Key.SelectMany(key => key).ToArray();
+
       ValidateComparers();
 
       if (AsLookup)
-        _ListOfPSObjectHashtableBuilder = new ListOfPSObjectHashtableBuilder(Key, Comparer, DefaultStringComparer);
+        _ListOfPSObjectHashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer, DefaultStringComparer);
       else
-        _PSObjectHashtableBuilder = new PSObjectHashtableBuilder(Key, Comparer, DefaultStringComparer);
+        _PSObjectHashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer, DefaultStringComparer);
 
       base.BeginProcessing();
     }
 
     protected override void ProcessRecord()
     {
-      if (_ShouldStop)
-        return;
+      //if (_ShouldStop)
+      //  return;
 
       if (AsLookup)
         _ListOfPSObjectHashtableBuilder!.AddObjects(InputObject);
@@ -97,7 +102,7 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void StopProcessing()
     {
-      _ShouldStop = true;
+      _CancellationTokenSource.Cancel();
 
       base.StopProcessing();
     }

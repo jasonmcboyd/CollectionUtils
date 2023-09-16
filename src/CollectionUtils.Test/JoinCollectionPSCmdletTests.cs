@@ -148,7 +148,7 @@ namespace CollectionUtils.Test
         .Left("$left")
         .Right("$right")
         .KeyedJoin(joinType)
-        .Key(PSBuilder.KeyField("MyId", "{ $_.Id }"));
+        .Key(PSBuilder.KeyParameter("MyId", "$_.Id"));
 
       // Act
       var temp =

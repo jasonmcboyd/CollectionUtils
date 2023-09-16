@@ -273,13 +273,13 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void BeginProcessing()
     {
-      // This works because Key and LeftKey/RightKey are mutually exclusive.
       if (Key != null)
       {
         _LeftKeyFields = Key.SelectMany(key => key).ToArray();
         _RightKeyFields = _LeftKeyFields;
       }
-      else
+
+      else if (LeftKey != null &&  RightKey != null)
       {
         _LeftKeyFields = LeftKey.SelectMany(key => key).ToArray();
         _RightKeyFields = RightKey.SelectMany(key => key).ToArray();

@@ -1,18 +1,22 @@
-﻿using System;
+﻿using CollectionUtils.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 
 namespace CollectionUtils
 {
-  internal abstract class HashtableBuilderBase<T> : IHashtableBuilder
+  internal abstract class HashtableBuilderBase<TValue, TResult> : IHashtableBuilder
   {
     public HashtableBuilderBase(
       PSObject[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer) : this(keyFields, keyComparers, defaultStringComparer)
+      IEqualityComparer<string> defaultStringComparer,
+      Func<TValue, TResult> resultSelector)
+      : this(keyFields, keyComparers, defaultStringComparer, resultSelector)
     {
       AddObjects(objects);
     }
@@ -20,43 +24,43 @@ namespace CollectionUtils
     public HashtableBuilderBase(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
+      IEqualityComparer<string> defaultStringComparer,
+      Func<TValue, TResult> resultSelector)
     {
       _KeyFields = keyFields;
       _KeyComparers = keyComparers;
       _DefaultStringComparer = defaultStringComparer;
+      _ResultSelector = resultSelector;
+
       KeySelector = new KeySelector(keyFields);
     }
 
-    public readonly KeyField[] _KeyFields;
-    public readonly KeyComparer[]? _KeyComparers;
-    public readonly IEqualityComparer<string> _DefaultStringComparer;
-
-    public int Count => _InternalDictionary?.Count ?? 0;
+    private readonly KeyField[] _KeyFields;
+    private readonly KeyComparer[]? _KeyComparers;
+    private readonly IEqualityComparer<string> _DefaultStringComparer;
+    private readonly Func<TValue, TResult> _ResultSelector;
 
     protected KeySelector KeySelector { get; }
 
     private bool _IsDisposed;
 
     private IEqualityComparer? _EqualityComparer;
-    private IEqualityComparer GetEqualityComparer(PSObject obj)
+    private IEqualityComparer GetEqualityComparer(PSObject psObject)
     {
       if (_EqualityComparer is null)
-        _EqualityComparer = EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer);
+        _EqualityComparer = EqualityComparerFactory.Create(psObject, _KeyFields, _KeyComparers, _DefaultStringComparer);
 
       return _EqualityComparer;
     }
 
-    private Dictionary<object, T>? _InternalDictionary;
-    protected Dictionary<object, T> GetInternalDictionary(PSObject obj)
+    private Hashtable? _InternalDictionary;
+    private Hashtable GetInternalDictionary(PSObject psObject)
     {
       if (_InternalDictionary is null)
-        _InternalDictionary = new Dictionary<object, T>(GetEqualityComparer(obj) as IEqualityComparer<object>);
+        _InternalDictionary = new Hashtable(GetEqualityComparer(psObject));
 
       return _InternalDictionary;
     }
-
-    protected Dictionary<object, T>? GetInternalDictionary() => _InternalDictionary;
 
     public void AddObjects(PSObject[] objects)
     {
@@ -64,37 +68,72 @@ namespace CollectionUtils
         AddObject(objects[i]);
     }
 
-    public void AddObject(PSObject obj)
+    public void AddObject(PSObject psObject)
     {
       if (_IsDisposed)
-        throw new ObjectDisposedException(nameof(HashtableBuilderBase<T>));
+        throw new ObjectDisposedException("HashtableBuilder");
 
-      if (obj.BaseObject is DataTable table)
+      if (psObject.BaseObject is DataTable table)
         for (int i = 0; i < table.Rows.Count; i++)
-          OnAddObject(PSObject.AsPSObject(table.Rows[i]));
+          OnAddObjectRequested(PSObject.AsPSObject(table.Rows[i]));
       else
-        OnAddObject(obj);
+        OnAddObjectRequested(psObject);
     }
 
-    protected abstract void OnAddObject(PSObject obj);
+    protected bool TryGet(object key, [MaybeNullWhen(false)] out TValue value)
+    {
+      value = default;
+
+      if (_InternalDictionary is null)
+        return false;
+
+      return _InternalDictionary.TryGet(key, out value);
+    }
+
+    protected abstract void OnAddObjectRequested(PSObject obj);
+
+    protected bool TryAdd(PSObject psObject, Func<PSObject, TValue> valueSelector)
+    {
+      var dict = GetInternalDictionary(psObject);
+
+      var key = KeySelector.GetKey(psObject);
+
+      if (dict.ContainsKey(key))
+        return false;
+
+      dict.Add(key, valueSelector(psObject));
+      return true;
+    }
 
     public Hashtable GetHashtable()
     {
       if (_IsDisposed)
-        throw new ObjectDisposedException(nameof(HashtableBuilderBase<T>));
+        throw new ObjectDisposedException("HashtableBuilder");
 
-      return OnGetHashtable();
+      var dict = _InternalDictionary;
+
+      // TODO: This is not correct because the hashtable will not have the same
+      // comparer as the dictionary.
+      if (dict is null)
+        return new Hashtable();
+
+      var result = new Hashtable(dict.Count, _EqualityComparer);
+
+      foreach ((var key, var value) in dict.Cast<DictionaryEntry>())
+        result.Add(key, _ResultSelector((TValue)value));
+
+      return result;
     }
-
-    protected abstract Hashtable OnGetHashtable();
 
     public void Dispose()
     {
       _IsDisposed = true;
 
-      OnDispose();
-    }
+      if (_InternalDictionary is null)
+        return;
 
-    protected abstract void OnDispose();
+      foreach (var value in _InternalDictionary.Values)
+        (value as IDisposable)?.Dispose();
+    }
   }
 }
