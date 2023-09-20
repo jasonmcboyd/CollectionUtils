@@ -145,7 +145,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
-    public KeyComparer[]? Comparer { get; set; }
+    public KeyComparerParameter? Comparer { get; set; }
 
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
@@ -260,7 +260,7 @@ namespace CollectionUtils.PSCmdlets
             Right,
             _LeftKeyFields,
             _RightKeyFields,
-            Comparer,
+            Comparer?.ToArray(),
             DefaultStringComparer,
             GetKeyedJoinType(),
             GroupJoinStrategy,

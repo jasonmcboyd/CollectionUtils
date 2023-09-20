@@ -24,7 +24,7 @@ namespace CollectionUtils.PSCmdlets
     public KeyParameter[] Key { get; set; } = default!;
 
     [Parameter(Position = 3)]
-    public KeyComparer[]? Comparer { get; set; }
+    public KeyComparerParameter? Comparer { get; set; }
 
     [Parameter(Position = 4)]
     public IEqualityComparer<string> DefaultStringComparer { get; set; } = StringComparer.OrdinalIgnoreCase;
@@ -70,9 +70,9 @@ namespace CollectionUtils.PSCmdlets
       ValidateComparers();
 
       if (AsLookup)
-        _ListOfPSObjectHashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer, DefaultStringComparer);
+        _ListOfPSObjectHashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
       else
-        _PSObjectHashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer, DefaultStringComparer);
+        _PSObjectHashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
 
       base.BeginProcessing();
     }

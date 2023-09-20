@@ -124,7 +124,96 @@ namespace CollectionUtils.Test
         .Single();
 
       Assert.AreEqual(1, results.Count);
-      //Assert.AreEqual(2, results[0].Count());
+    }
+
+    [TestMethod]
+    public void Invoke_MixedCaseKeys_DefaultStringComparerIsCaseSensitive_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .DefaultStringComparer("([System.StringComparer]::Ordinal)");
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
+    }
+
+    [TestMethod]
+    public void Invoke_MixedCaseKeys_ComparerIsCaseSensitive_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .Comparer("@{ Value = [System.StringComparer]::Ordinal }");
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
+    }
+
+    [TestMethod]
+    public void Invoke_MixedCaseKeyNames_ComparerPassed_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ calue = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .Comparer("@{ Value = [System.StringComparer]::Ordinal }");
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
     }
 
     [TestMethod]
