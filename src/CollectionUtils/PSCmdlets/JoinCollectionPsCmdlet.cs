@@ -273,13 +273,12 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void BeginProcessing()
     {
-      if (Key != null)
+      if (Key is not null)
       {
         _LeftKeyFields = Key.SelectMany(key => key).ToArray();
         _RightKeyFields = _LeftKeyFields;
       }
-
-      else if (LeftKey != null &&  RightKey != null)
+      else if (LeftKey is not null && RightKey is not null)
       {
         _LeftKeyFields = LeftKey.SelectMany(key => key).ToArray();
         _RightKeyFields = RightKey.SelectMany(key => key).ToArray();

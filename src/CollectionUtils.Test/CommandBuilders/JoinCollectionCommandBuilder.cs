@@ -1,4 +1,5 @@
 ﻿using CollectionUtils.PSCmdlets;
+using CollectionUtils.Test.Utils;
 using System;
 
 namespace CollectionUtils.Test.CommandBuilders

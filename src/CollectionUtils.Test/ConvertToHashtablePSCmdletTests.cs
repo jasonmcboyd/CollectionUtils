@@ -192,7 +192,7 @@ namespace CollectionUtils.Test
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
 
-      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ calue = 'ONE' })");
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ value = 'ONE' })");
 
       var command =
         PSBuilder

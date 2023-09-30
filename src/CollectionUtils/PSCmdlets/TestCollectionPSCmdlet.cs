@@ -109,7 +109,7 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void EndProcessing()
     {
-      WriteObject(_Result != null ? _Result.Value : SelectedQuantifier == Quantifier.All);
+      WriteObject(_Result is not null ? _Result.Value : SelectedQuantifier == Quantifier.All);
 
       base.EndProcessing();
     }

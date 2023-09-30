@@ -1,4 +1,4 @@
-﻿namespace CollectionUtils.Test
+﻿namespace CollectionUtils.Test.Utils
 {
   public enum KeyedJoinType
   {
