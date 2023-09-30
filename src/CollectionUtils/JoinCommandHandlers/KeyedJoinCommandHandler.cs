@@ -75,13 +75,15 @@ namespace CollectionUtils.JoinCommandHandlers
         var leftObjects = leftHashtable.Get<T>(key);
 
         if (rightHashtable.TryRemove<T>(key, out var rightObjects))
-          yield return (leftObjects, rightObjects, key);
-        else
-          if (_KeyedJoinType == KeyedJoinType.Left || _KeyedJoinType == KeyedJoinType.Outer)
-            yield return (leftObjects, null, key);
+        {
+          if (_KeyedJoinType != KeyedJoinType.Disjunct)
+            yield return (leftObjects, rightObjects, key);
+        }
+        else if (_KeyedJoinType == KeyedJoinType.Disjunct || _KeyedJoinType == KeyedJoinType.Left || _KeyedJoinType == KeyedJoinType.Outer)
+          yield return (leftObjects, null, key);
       }
 
-      if (_KeyedJoinType == KeyedJoinType.Right || _KeyedJoinType == KeyedJoinType.Outer)
+      if (_KeyedJoinType == KeyedJoinType.Disjunct || _KeyedJoinType == KeyedJoinType.Right || _KeyedJoinType == KeyedJoinType.Outer)
         foreach (var key in rightHashtable.Keys)
           yield return (null, rightHashtable.Get<T>(key), key);
     }

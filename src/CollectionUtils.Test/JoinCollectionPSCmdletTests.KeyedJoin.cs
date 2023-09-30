@@ -1,3 +1,4 @@
+using CollectionUtils.JoinCommandHandlers;
 using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using System.Collections.Generic;
@@ -10,10 +11,11 @@ namespace CollectionUtils.Test
     {
       var joinTypeAndExpectedResults = new[]
       {
+        (KeyedJoinType.Disjunct, 1, 0, 1),
+        (KeyedJoinType.Inner, 0, 1, 0),
+        (KeyedJoinType.Left, 1, 1, 0),
         (KeyedJoinType.Outer, 1, 1, 1),
-        (KeyedJoinType.Left, 1, 0, 1),
         (KeyedJoinType.Right, 0, 1, 1),
-        (KeyedJoinType.Inner, 0, 0, 1)
       };
 
       var values = new[]
@@ -28,24 +30,26 @@ namespace CollectionUtils.Test
 
       var collections = new[]
       {
-        (left.ToPSArrayOfPSCustomObjectsString(), right.ToPSArrayOfPSCustomObjectsString()),
-        (left.ToPSArrayOfPSHashtableString(), right.ToPSArrayOfPSHashtableString())
+        (left.ToPSArrayOfPSCustomObjectsString(), right.ToPSArrayOfPSCustomObjectsString(), "Id"),
+        (left.ToPSArrayOfPSHashtableString(), right.ToPSArrayOfPSHashtableString(), "Id"),
+        ("@{ 1 = 'one'; 2 = 'two' }", "@{ 2 = 'two'; 3 = 'three' }", "Key")
       };
 
-      foreach (var (l, r) in collections)
+      foreach (var (l, r, key) in collections)
         foreach (var (joinType, expectedLeftCount, expectedRightCount, expectedInnerCount) in joinTypeAndExpectedResults)
-          yield return new object[] { l, r, joinType, expectedLeftCount, expectedRightCount, expectedInnerCount };
+          yield return new object[] { l, r, key, joinType, expectedLeftCount, expectedRightCount, expectedInnerCount };
     }
 
     [TestMethod]
     [DynamicData(nameof(GetKeyedJoinTestData), DynamicDataSourceType.Method)]
-    public void Invoke_UseKeyParameter_InputIsPSCustomObjects_CorrectCountOfObjectsReturned(
+    public void Invoke_UseKeyParameter_CorrectCountOfObjectsReturned(
       string leftCollection,
       string rightCollection,
+      string key,
       KeyedJoinType joinType,
       int expectedLeftCount,
-      int expectedRightCount,
-      int expectedInnerCount)
+      int expectedInnerCount,
+      int expectedRightCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -58,7 +62,7 @@ namespace CollectionUtils.Test
         .Left("$left")
         .Right("$right")
         .KeyedJoin(joinType)
-        .Key("Id");
+        .Key(key);
 
       // Act
       var results =
@@ -78,13 +82,14 @@ namespace CollectionUtils.Test
 
     [TestMethod]
     [DynamicData(nameof(GetKeyedJoinTestData), DynamicDataSourceType.Method)]
-    public void Invoke_UseKeyParameter_CorrectCountOfObjectsReturned(
+    public void Invoke_UseKeyParameter_KeyCaseDoesNotMatchPropertyNameCase_CorrectCountOfObjectsReturned(
       string leftCollection,
       string rightCollection,
+      string key,
       KeyedJoinType joinType,
       int expectedLeftCount,
-      int expectedRightCount,
-      int expectedInnerCount)
+      int expectedInnerCount,
+      int expectedRightCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -97,7 +102,7 @@ namespace CollectionUtils.Test
         .Left("$left")
         .Right("$right")
         .KeyedJoin(joinType)
-        .Key("Id");
+        .Key(key.ToLower());
 
       // Act
       var results =
@@ -120,10 +125,11 @@ namespace CollectionUtils.Test
     public void Invoke_UseKeyParameterWithScriptBlock_CorrectCountOfObjectsReturned(
       string leftCollection,
       string rightCollection,
+      string key,
       KeyedJoinType joinType,
       int expectedLeftCount,
-      int expectedRightCount,
-      int expectedInnerCount)
+      int expectedInnerCount,
+      int expectedRightCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -137,7 +143,7 @@ namespace CollectionUtils.Test
         .Left("$left")
         .Right("$right")
         .KeyedJoin(joinType)
-        .Key(PSBuilder.KeyParameter("MyId", "$_.Id"));
+        .Key(PSBuilder.KeyParameter("MyId", $"$_.{key}"));
 
       // Act
       var temp =
@@ -164,10 +170,11 @@ namespace CollectionUtils.Test
     public void Invoke_UseLeftKeyAndRightKeyParameters_CorrectCountOfObjectsReturned(
       string leftCollection,
       string rightCollection,
+      string key,
       KeyedJoinType joinType,
       int expectedLeftCount,
-      int expectedRightCount,
-      int expectedInnerCount)
+      int expectedInnerCount,
+      int expectedRightCount)
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -181,8 +188,8 @@ namespace CollectionUtils.Test
         .Left("$left")
         .Right("$right")
         .KeyedJoin(joinType)
-        .LeftKey("Id")
-        .RightKey("Id");
+        .LeftKey(key)
+        .RightKey(key);
 
       // Act
       var results =

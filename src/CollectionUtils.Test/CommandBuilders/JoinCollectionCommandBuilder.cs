@@ -1,4 +1,5 @@
-﻿using CollectionUtils.PSCmdlets;
+﻿using CollectionUtils.JoinCommandHandlers;
+using CollectionUtils.PSCmdlets;
 using CollectionUtils.Test.Utils;
 using System;
 
@@ -40,6 +41,9 @@ namespace CollectionUtils.Test.CommandBuilders
     public JoinCollectionCommandBuilder ZipJoin() =>
       AddCommandSwitch(nameof(JoinCollectionPsCmdlet.ZipJoin));
 
+    public JoinCollectionCommandBuilder DisjunctJoin() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.DisjunctJoin));
+
     public JoinCollectionCommandBuilder InnerJoin() =>
       AddCommandSwitch(nameof(JoinCollectionPsCmdlet.InnerJoin));
 
@@ -56,6 +60,8 @@ namespace CollectionUtils.Test.CommandBuilders
     {
       switch (keyedJoinType)
       {
+        case KeyedJoinType.Disjunct:
+          return DisjunctJoin();
         case KeyedJoinType.Inner:
           return InnerJoin();
         case KeyedJoinType.Left:

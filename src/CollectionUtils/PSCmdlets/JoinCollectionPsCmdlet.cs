@@ -45,6 +45,16 @@ namespace CollectionUtils.PSCmdlets
 
     [Parameter(
       Mandatory = true,
+      ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key),
+      Position = 3)]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 3)]
+    public SwitchParameter DisjunctJoin { get; set; }
+
+    [Parameter(
+      Mandatory = true,
       ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key),
       Position = 3)]
     [Parameter(
@@ -85,6 +95,10 @@ namespace CollectionUtils.PSCmdlets
 
     [Parameter(
       Mandatory = true,
+      ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
       ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key),
       Position = 4)]
     [Parameter(
@@ -101,6 +115,10 @@ namespace CollectionUtils.PSCmdlets
       Position = 4)]
     public KeyParameter[]? Key { get; set; }
 
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
     [Parameter(
       Mandatory = true,
       ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
@@ -121,6 +139,10 @@ namespace CollectionUtils.PSCmdlets
 
     [Parameter(
       Mandatory = true,
+      ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
+      Position = 4)]
+    [Parameter(
+      Mandatory = true,
       ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
       Position = 5)]
     [Parameter(
@@ -137,30 +159,36 @@ namespace CollectionUtils.PSCmdlets
       Position = 5)]
     public KeyParameter[] RightKey { get; set; } = default!;
 
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
     public KeyComparerParameter? Comparer { get; set; }
 
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
     public IEqualityComparer<string> DefaultStringComparer { get; set; } = EqualityComparer<string>.Default;
 
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
@@ -236,7 +264,9 @@ namespace CollectionUtils.PSCmdlets
     }
 
     private KeyedJoinType GetKeyedJoinType() =>
-      InnerJoin
+      DisjunctJoin
+      ? KeyedJoinType.Disjunct
+      : InnerJoin
       ? KeyedJoinType.Inner
       : LeftJoin
       ? KeyedJoinType.Left
@@ -254,7 +284,7 @@ namespace CollectionUtils.PSCmdlets
       if (CrossJoin)
         return new CrossJoinCommandHandler(Right, WriteObject, WriteError, _CancellationTokenSource.Token);
 
-      if (InnerJoin || LeftJoin || OuterJoin || RightJoin)
+      if (DisjunctJoin || InnerJoin || LeftJoin || OuterJoin || RightJoin)
         return
           new KeyedJoinCommandHandler(
             Right,

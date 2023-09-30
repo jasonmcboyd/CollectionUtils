@@ -2,6 +2,7 @@
 {
   public enum KeyedJoinType
   {
+    Disjunct,
     Inner,
     Left,
     Outer,
