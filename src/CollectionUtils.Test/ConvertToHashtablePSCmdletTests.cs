@@ -97,6 +97,67 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
+    public void Invoke_KeyParameterIsHashtable_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("@{ TestId = { $_.Id } }")
+        .AsLookup();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
+    }
+
+    [TestMethod]
+    public void Invoke_KeyParameterIsHashtableWithMultipleValues_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("@{ TestId = { $_.Id }; TestValue = { $_.Value } }")
+        .AsLookup();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
+      Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is Hashtable));
+    }
+
+    [TestMethod]
     public void Invoke_MixedCaseKeys_CorrectResultsReturned()
     {
       // Arrange
