@@ -2,14 +2,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Management.Automation;
 
 namespace CollectionUtils
 {
   internal static class EqualityComparerFactory
   {
     public static IEqualityComparer Create(
-      PSObject obj,
+      object obj,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
@@ -25,14 +24,14 @@ namespace CollectionUtils
     private static bool IsCompositeKey(KeyField[] keyFields) => keyFields.Length > 1;
 
     private static IEqualityComparer GetObjectComparer(
-      PSObject obj,
+      object obj,
       KeyField keyField,
       IEqualityComparer<string> defaultSringComparer) =>
       GetPropertyType(obj, keyField) == typeof(string)
       ? (IEqualityComparer)defaultSringComparer
       : EqualityComparer<object>.Default;
 
-    private static Type GetPropertyType(PSObject obj, KeyField keyField) =>
+    private static Type GetPropertyType(object obj, KeyField keyField) =>
       PropertyGetter.GetProperty(obj, keyField)?.GetType() ?? throw new NullKeyException(obj);
 
     private static IEqualityComparer GetHashTableComparer(

@@ -9,7 +9,7 @@ namespace CollectionUtils.JoinCommandHandlers
   internal class KeyedJoinCommandHandler : JoinCommandHandlerBase
   {
     public KeyedJoinCommandHandler(
-      PSObject[] rightCollection,
+      object[] rightCollection,
       KeyField[] leftKeyFields,
       KeyField[] rightKeyFields,
       KeyComparer[]? keyComparers,

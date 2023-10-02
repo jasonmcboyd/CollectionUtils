@@ -7,7 +7,7 @@ namespace CollectionUtils.JoinCommandHandlers
   internal class ZipJoinCommandHandler : JoinCommandHandlerBase
   {
     public ZipJoinCommandHandler(
-      PSObject[] rightCollection,
+      object[] rightCollection,
       Action<object> objectWriter,
       Action<ErrorRecord> errorWriter,
       CancellationToken cancellationToken)

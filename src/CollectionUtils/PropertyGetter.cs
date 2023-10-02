@@ -12,33 +12,38 @@ namespace CollectionUtils
   public static class PropertyGetter
   {
     public static object? GetProperty(
-       PSObject psObject,
+       object obj,
        KeyField keyField)
     {
       if (keyField.Expression is not null)
-        return GetObjectPropertyWithScriptblock(psObject, keyField.Expression);
+        return GetObjectPropertyWithScriptblock(obj, keyField.Expression);
 
-      if (psObject.BaseObject is null || psObject.BaseObject is PSCustomObject)
-        return GetPsObjectProperty(psObject, keyField.Property);
+      if (obj is PSObject psObject)
+      {
+        if (psObject.BaseObject is null || psObject.BaseObject is PSCustomObject)
+          return GetPsObjectProperty(psObject, keyField.Property);
+        else
+          return GetProperty(psObject.BaseObject, keyField);
+      }
 
-      if (psObject.BaseObject is IDictionary dictionary)
+      if (obj is IDictionary dictionary)
         return GetDictionaryProperty(dictionary, keyField.Property);
 
-      if (psObject.BaseObject is DataRow dataRow)
+      if (obj is DataRow dataRow)
         return GetDataRowProperty(dataRow, keyField.Property);
 
-      return GetObjectProperty(psObject.BaseObject, keyField.Property);
+      return GetObjectProperty(obj, keyField.Property);
     }
 
     private static object? GetObjectPropertyWithScriptblock(
-      PSObject psObject,
+      object obj,
       ScriptBlock scriptBlock)
     {
       using var disposable = SharedListPool<PSVariable>.GetAsDisposable();
 
       var scriptBlockVariables = disposable.Value;
 
-      var variable = new PSVariable("_", psObject);
+      var variable = new PSVariable("_", obj);
 
       scriptBlockVariables.Add(variable);
 
@@ -53,13 +58,13 @@ namespace CollectionUtils
     }
 
     private static object? GetPsObjectProperty(
-      PSObject psObject,
+      PSObject obj,
       string propertyName)
     {
       // TODO: How do I check if a property exists without instantiating an Enumerable?
       // I need a way to distinguish between a property that doesn't exist and a property
       // with a value that is null.
-      var propertyInfo = psObject.Properties[propertyName];
+      var propertyInfo = obj.Properties[propertyName];
 
       return propertyInfo.Value;
     }

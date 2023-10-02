@@ -1,6 +1,5 @@
 ﻿using CollectionUtils.Exceptions;
 using System.Collections;
-using System.Management.Automation;
 
 namespace CollectionUtils
 {
@@ -13,16 +12,16 @@ namespace CollectionUtils
 
     private readonly KeyField[] _KeyFields;
     
-    public object GetKey(PSObject obj) =>
+    public object GetKey(object obj) =>
       _KeyFields.Length == 1
       ? GetKeyAsObject(obj)
       : GetKeyAsHashtable(obj);
 
-    private object GetKeyAsObject(PSObject obj) =>
+    private object GetKeyAsObject(object obj) =>
       PropertyGetter.GetProperty(obj, _KeyFields[0])
       ?? throw new NullKeyException(obj);
 
-    private object GetKeyAsHashtable(PSObject obj)
+    private object GetKeyAsHashtable(object obj)
     {
       var result = new Hashtable();
 

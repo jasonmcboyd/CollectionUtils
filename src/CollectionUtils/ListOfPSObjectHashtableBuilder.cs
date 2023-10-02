@@ -4,10 +4,10 @@ using System.Management.Automation;
 
 namespace CollectionUtils
 {
-  internal class ListOfPSObjectHashtableBuilder : HashtableBuilderBase<ValueDisposable<List<PSObject>>, PSObject[]>
+  internal class ListOfPSObjectHashtableBuilder : HashtableBuilderBase<ValueDisposable<List<object>>, PSObject[]>
   {
     public ListOfPSObjectHashtableBuilder(
-      PSObject[] objects,
+      object[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
@@ -23,21 +23,21 @@ namespace CollectionUtils
     {
     }
 
-    private static PSObject[] ResultSelector(ValueDisposable<List<PSObject>> list) => list.Value.ToArray();
+    private static PSObject[] ResultSelector(ValueDisposable<List<object>> list) => list.Value.Select(obj => new PSObject(obj)).ToArray();
 
-    protected override void OnAddObjectRequested(PSObject psObject)
+    protected override void OnAddObjectRequested(object obj)
     {
-      var key = KeySelector.GetKey(psObject);
+      var key = KeySelector.GetKey(obj);
 
       if (!TryGet(key, out var value))
       {
-        value = SharedListPool<PSObject>.GetAsDisposable();
-        TryAdd(psObject, _ => value);
+        value = SharedListPool<object>.GetAsDisposable();
+        TryAdd(obj, _ => value);
       }
 
       var list = value.Value;
 
-      list.Add(psObject);
+      list.Add(obj);
     }
   }
 }

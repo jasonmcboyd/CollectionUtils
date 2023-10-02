@@ -1,5 +1,6 @@
 ﻿using CollectionUtils.JoinCommandHandlers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 using System.Threading;
@@ -14,14 +15,13 @@ namespace CollectionUtils.PSCmdlets
 
     [Parameter(
       Mandatory = true,
-      Position = 1,
-      ValueFromPipeline = true)]
-    public PSObject[] Left { get; set; } = default!;
+      Position = 1)]
+    public PSObject Left { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
       Position = 2)]
-    public PSObject[] Right { get; set; } = default!;
+    public PSObject Right { get; set; } = default!;
 
     #endregion Common Parameters
 
@@ -204,6 +204,8 @@ namespace CollectionUtils.PSCmdlets
     private KeyField[] _LeftKeyFields = default!;
     private KeyField[] _RightKeyFields = default!;
 
+    private bool _IsRunningInPipeline;
+
     private void ValidateKeyFields()
     {
       if (ZipJoin || CrossJoin)
@@ -278,30 +280,29 @@ namespace CollectionUtils.PSCmdlets
 
     private IJoinCommandHandler GetCommandHandler()
     {
+      var right = (Right.BaseObject as IEnumerable).Cast<object>().ToArray();
+
       if (ZipJoin)
-        return new ZipJoinCommandHandler(Right, WriteObject, WriteError, _CancellationTokenSource.Token);
+        return new ZipJoinCommandHandler(right, WriteObject, WriteError, _CancellationTokenSource.Token);
 
       if (CrossJoin)
-        return new CrossJoinCommandHandler(Right, WriteObject, WriteError, _CancellationTokenSource.Token);
+        return new CrossJoinCommandHandler(right, WriteObject, WriteError, _CancellationTokenSource.Token);
 
-      if (DisjunctJoin || InnerJoin || LeftJoin || OuterJoin || RightJoin)
-        return
-          new KeyedJoinCommandHandler(
-            Right,
-            _LeftKeyFields,
-            _RightKeyFields,
-            Comparer?.ToArray(),
-            DefaultStringComparer,
-            GetKeyedJoinType(),
-            GroupJoinStrategy,
-            WriteObject,
-            WriteError,
-            _CancellationTokenSource.Token);
-
-      throw new InvalidOperationException("No join type specified.");
+      return
+        new KeyedJoinCommandHandler(
+          right,
+          _LeftKeyFields,
+          _RightKeyFields,
+          Comparer?.ToArray(),
+          DefaultStringComparer,
+          GetKeyedJoinType(),
+          GroupJoinStrategy,
+          WriteObject,
+          WriteError,
+          _CancellationTokenSource.Token);
     }
 
-    protected override void BeginProcessing()
+    private void SetKeyFields()
     {
       if (Key is not null)
       {
@@ -313,19 +314,37 @@ namespace CollectionUtils.PSCmdlets
         _LeftKeyFields = LeftKey.SelectMany(key => key).ToArray();
         _RightKeyFields = RightKey.SelectMany(key => key).ToArray();
       }
+    }
 
-      _CommandHandler = GetCommandHandler();
+    protected override void BeginProcessing()
+    {
+      _IsRunningInPipeline = !MyInvocation.BoundParameters.ContainsKey(nameof(Left));
+
+      SetKeyFields();
 
       ValidateKeyFields();
       ValidateComparers();
+
+      _CommandHandler = GetCommandHandler();
 
       base.BeginProcessing();
     }
 
     protected override void ProcessRecord()
     {
-      for (int i = 0; i < Left.Length; i++)
-        _CommandHandler!.Next(Left[i]);
+      if (_IsRunningInPipeline)
+        _CommandHandler!.Next(Left);
+      else
+      {
+        var left =
+          (Left.BaseObject as IEnumerable)
+          .Cast<object>()
+          .Select(x => new PSObject(x))
+          .ToArray();
+
+        for (int i = 0; i < left.Length; i++)
+          _CommandHandler!.Next(left[i]);
+      }
 
       base.ProcessRecord();
     }

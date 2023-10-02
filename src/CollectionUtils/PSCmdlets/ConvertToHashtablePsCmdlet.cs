@@ -38,8 +38,7 @@ namespace CollectionUtils.PSCmdlets
 
     private KeyField[] _KeyFields = default!;
 
-    private PSObjectHashtableBuilder? _PSObjectHashtableBuilder;
-    private ListOfPSObjectHashtableBuilder? _ListOfPSObjectHashtableBuilder;
+    private IHashtableBuilder? _HashtableBuilder;
 
     private void ValidateComparers()
     {
@@ -70,32 +69,27 @@ namespace CollectionUtils.PSCmdlets
       ValidateComparers();
 
       if (AsLookup)
-        _ListOfPSObjectHashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
+        _HashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
       else
-        _PSObjectHashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
+        _HashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
 
       base.BeginProcessing();
     }
 
     protected override void ProcessRecord()
     {
+      // TODO:
       //if (_ShouldStop)
       //  return;
 
-      if (AsLookup)
-        _ListOfPSObjectHashtableBuilder!.AddObjects(InputObject);
-      else
-        _PSObjectHashtableBuilder!.AddObjects(InputObject);
-
+      _HashtableBuilder!.AddObjects(InputObject);
+      
       base.ProcessRecord();
     }
 
     protected override void EndProcessing()
     {
-      if (AsLookup)
-        WriteObject(_ListOfPSObjectHashtableBuilder!.GetHashtable());
-      else
-        WriteObject(_PSObjectHashtableBuilder!.GetHashtable());
+      WriteObject(_HashtableBuilder!.GetHashtable());
 
       base.EndProcessing();
     }
@@ -109,8 +103,7 @@ namespace CollectionUtils.PSCmdlets
 
     public void Dispose()
     {
-      _ListOfPSObjectHashtableBuilder?.Dispose();
-      _PSObjectHashtableBuilder?.Dispose();
+      _HashtableBuilder?.Dispose();
     }
   }
 }

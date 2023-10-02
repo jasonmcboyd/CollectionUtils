@@ -4,10 +4,10 @@ using System.Management.Automation;
 
 namespace CollectionUtils
 {
-  internal class PSObjectHashtableBuilder : HashtableBuilderBase<PSObject, PSObject>
+  internal class PSObjectHashtableBuilder : HashtableBuilderBase<object, PSObject>
   {
     public PSObjectHashtableBuilder(
-      PSObject[] objects,
+      object[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
@@ -23,14 +23,14 @@ namespace CollectionUtils
     {
     }
 
-    private static PSObject ResultSelector(PSObject psObject) => psObject;
+    private static PSObject ResultSelector(object obj) => new PSObject(obj);
 
-    protected override void OnAddObjectRequested(PSObject psObject)
+    protected override void OnAddObjectRequested(object obj)
     {
-      var key = KeySelector.GetKey(psObject);
+      var key = KeySelector.GetKey(obj);
 
-      if (!TryAdd(psObject, obj => obj))
-        throw new DuplicateKeyException(key, psObject);
+      if (!TryAdd(obj, x => x))
+        throw new DuplicateKeyException(key, obj);
     }
   }
 }

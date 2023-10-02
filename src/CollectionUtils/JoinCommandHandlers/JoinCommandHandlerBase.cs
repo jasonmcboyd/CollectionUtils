@@ -7,7 +7,7 @@ namespace CollectionUtils.JoinCommandHandlers
   internal abstract class JoinCommandHandlerBase : IJoinCommandHandler
   {
     public JoinCommandHandlerBase(
-      PSObject[] rightCollection,
+      object[] rightCollection,
       Action<object> objectWriter,
       Action<ErrorRecord> errorWriter,
       CancellationToken cancellationToken)
@@ -18,7 +18,7 @@ namespace CollectionUtils.JoinCommandHandlers
       CancellationToken = cancellationToken;
     }
 
-    protected PSObject[] RightCollection { get; }
+    protected object[] RightCollection { get; }
     private Action<object> ObjectWriter { get; }
     private Action<ErrorRecord> ErrorWriter { get; }
     protected CancellationToken CancellationToken { get; }

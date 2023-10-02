@@ -11,7 +11,7 @@ namespace CollectionUtils
   internal abstract class HashtableBuilderBase<TValue, TResult> : IHashtableBuilder
   {
     public HashtableBuilderBase(
-      PSObject[] objects,
+      object[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
@@ -45,39 +45,39 @@ namespace CollectionUtils
     private bool _IsDisposed;
 
     private IEqualityComparer? _EqualityComparer;
-    private IEqualityComparer GetEqualityComparer(PSObject psObject)
+    private IEqualityComparer GetEqualityComparer(object obj)
     {
       if (_EqualityComparer is null)
-        _EqualityComparer = EqualityComparerFactory.Create(psObject, _KeyFields, _KeyComparers, _DefaultStringComparer);
+        _EqualityComparer = EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer);
 
       return _EqualityComparer;
     }
 
     private Hashtable? _InternalDictionary;
-    private Hashtable GetInternalDictionary(PSObject psObject)
+    private Hashtable GetInternalDictionary(object obj)
     {
       if (_InternalDictionary is null)
-        _InternalDictionary = new Hashtable(GetEqualityComparer(psObject));
+        _InternalDictionary = new Hashtable(GetEqualityComparer(obj));
 
       return _InternalDictionary;
     }
 
-    public void AddObjects(PSObject[] objects)
+    public void AddObjects(object[] objects)
     {
       for (int i = 0; i < objects.Length; i++)
         AddObject(objects[i]);
     }
 
-    public void AddObject(PSObject psObject)
+    public void AddObject(object obj)
     {
       if (_IsDisposed)
         throw new ObjectDisposedException("HashtableBuilder");
 
-      if (psObject.BaseObject is DataTable table)
+      if (obj is DataTable table)
         for (int i = 0; i < table.Rows.Count; i++)
           OnAddObjectRequested(PSObject.AsPSObject(table.Rows[i]));
       else
-        OnAddObjectRequested(psObject);
+        OnAddObjectRequested(obj);
     }
 
     protected bool TryGet(object key, [MaybeNullWhen(false)] out TValue value)
@@ -90,18 +90,18 @@ namespace CollectionUtils
       return _InternalDictionary.TryGet(key, out value);
     }
 
-    protected abstract void OnAddObjectRequested(PSObject obj);
+    protected abstract void OnAddObjectRequested(object obj);
 
-    protected bool TryAdd(PSObject psObject, Func<PSObject, TValue> valueSelector)
+    protected bool TryAdd(object obj, Func<object, TValue> valueSelector)
     {
-      var dict = GetInternalDictionary(psObject);
+      var dict = GetInternalDictionary(obj);
 
-      var key = KeySelector.GetKey(psObject);
+      var key = KeySelector.GetKey(obj);
 
       if (dict.ContainsKey(key))
         return false;
 
-      dict.Add(key, valueSelector(psObject));
+      dict.Add(key, valueSelector(obj));
       return true;
     }
 

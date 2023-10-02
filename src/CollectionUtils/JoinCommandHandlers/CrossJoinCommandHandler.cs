@@ -7,7 +7,7 @@ namespace CollectionUtils.JoinCommandHandlers
   internal class CrossJoinCommandHandler : JoinCommandHandlerBase
   {
     public CrossJoinCommandHandler(
-      PSObject[] rightCollection,
+      object[] rightCollection,
       Action<object> objectWriter,
       Action<ErrorRecord> errorWriter,
       CancellationToken cancellationToken)
