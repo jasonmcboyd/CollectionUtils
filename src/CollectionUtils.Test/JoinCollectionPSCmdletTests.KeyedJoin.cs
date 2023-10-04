@@ -265,5 +265,35 @@ namespace CollectionUtils.Test
 
       Assert.AreEqual(1, result.Length);
     }
+
+    [TestMethod]
+    public void Invoke_ComparerCaseDoesNotMatchLeftKeyCase_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'One' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .Comparer("@{ value = [StringComparer]::OrdinalIgnoreCase }")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
   }
 }

@@ -253,7 +253,7 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var keyComparer in Comparer)
       {
-        if (_LeftKeyFields.FirstOrDefault(leftKeyField => leftKeyField.Property == keyComparer.Property) is null)
+        if (_LeftKeyFields.All(leftKeyField => !leftKeyField.Property.Equals(keyComparer.Property, StringComparison.OrdinalIgnoreCase)))
         {
           WriteError(
             new ErrorRecord(
