@@ -206,5 +206,64 @@ namespace CollectionUtils.Test
       Assert.AreEqual(expectedRightCount, right.Length);
       Assert.AreEqual(expectedInnerCount, inner.Length);
     }
+
+    [TestMethod]
+    public void Invoke_LeftKeyCaseDoesNotMatchRightKeyCase_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Id' = 1 } )");
+      shell.InvokeScript("$right = @( @{ 'id' = 1 } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .LeftKey("Id")
+        .RightKey("id")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_KeyValueCasesDoNotMatch_DefaultStringComparer_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'One' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
   }
 }

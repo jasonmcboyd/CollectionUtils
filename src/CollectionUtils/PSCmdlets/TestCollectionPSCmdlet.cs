@@ -70,13 +70,13 @@ namespace CollectionUtils.PSCmdlets
       {
         var scriptBlockVariables = new List<PSVariable>
         {
-            new PSVariable("_", obj)
+          new PSVariable("_", obj)
         };
 
         var resultsFromScriptBlock = PredicateScript?.InvokeWithContext(
-            functionsToDefine: null,
-            variablesToDefine: scriptBlockVariables,
-            args: null
+          functionsToDefine: null,
+          variablesToDefine: scriptBlockVariables,
+          args: null
         );
 
         if (resultsFromScriptBlock!.Count != 1 || (resultsFromScriptBlock.Count >= 1 && resultsFromScriptBlock[0]?.BaseObject is not bool))

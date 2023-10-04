@@ -182,7 +182,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
-    public IEqualityComparer<string> DefaultStringComparer { get; set; } = EqualityComparer<string>.Default;
+    public IEqualityComparer<string> DefaultStringComparer { get; set; } = StringComparer.OrdinalIgnoreCase;
 
     [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
     [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
@@ -227,7 +227,11 @@ namespace CollectionUtils.PSCmdlets
       {
         var leftPropertyName = leftKeyField.Property;
 
-        if (_RightKeyFields.FirstOrDefault(rightKeyField => rightKeyField.Property == leftPropertyName) is null)
+        var rightKeyField =
+          _RightKeyFields
+          .FirstOrDefault(rightKeyField => rightKeyField.Property.Equals(leftPropertyName, StringComparison.OrdinalIgnoreCase));
+
+        if (rightKeyField is null)
         {
           WriteError(
             new ErrorRecord(
