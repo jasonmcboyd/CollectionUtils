@@ -16,10 +16,9 @@ namespace CollectionUtils.JoinCommandHandlers
       IEqualityComparer<string> defaultStringComparer,
       KeyedJoinType keyedJoinType,
       GroupJoinStrategy groupJoinStrategy,
-      Action<object> objectWriter,
-      Action<ErrorRecord> errorWriter,
+      PowerShellWriter powerShellWriter,
       CancellationToken cancellationToken)
-      : base(rightCollection, objectWriter, errorWriter, cancellationToken)
+      : base(rightCollection, powerShellWriter, cancellationToken)
     {
       _KeyedJoinType = keyedJoinType;
       _GroupJoinStrategy = groupJoinStrategy;

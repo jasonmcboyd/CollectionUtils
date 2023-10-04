@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CollectionUtils.Utilities;
+using System;
 using System.Management.Automation;
 using System.Threading;
 
@@ -8,23 +9,20 @@ namespace CollectionUtils.JoinCommandHandlers
   {
     public JoinCommandHandlerBase(
       object[] rightCollection,
-      Action<object> objectWriter,
-      Action<ErrorRecord> errorWriter,
+      PowerShellWriter powerShellWriter,
       CancellationToken cancellationToken)
     {
       RightCollection = rightCollection;
-      ObjectWriter = objectWriter;
-      ErrorWriter = errorWriter;
+      PowerShellWriter = powerShellWriter;
       CancellationToken = cancellationToken;
     }
 
     protected object[] RightCollection { get; }
-    private Action<object> ObjectWriter { get; }
-    private Action<ErrorRecord> ErrorWriter { get; }
+    private PowerShellWriter PowerShellWriter { get; }
     protected CancellationToken CancellationToken { get; }
 
-    protected void WriteObject(PSObject pSObject) => ObjectWriter(pSObject);
-    protected void WriteError(ErrorRecord errorRecord) => ErrorWriter(errorRecord);
+    protected void WriteObject(PSObject psObject) => PowerShellWriter.WriteObject(psObject);
+    protected void WriteError(ErrorRecord errorRecord) => PowerShellWriter.WriterError(errorRecord);
 
     public abstract void Next(PSObject left);
 

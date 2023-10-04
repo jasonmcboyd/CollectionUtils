@@ -11,39 +11,34 @@ namespace CollectionUtils.PSCmdlets
 
     [Parameter(
       Mandatory = true,
-      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}",
-      Position = 0,
-      ValueFromPipeline = true)]
+      Position = 1,
+      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(All)}")]
+    [Parameter(
+      Mandatory = true,
+      Position = 1,
+      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(Any)}")]
+    public ScriptBlock PredicateScript { get; set; } = default!;
+
     [Parameter(
       Mandatory = true,
       ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(All)}",
-      Position = 0,
+      Position = 2,
       ValueFromPipeline = true)]
     [Parameter(
       Mandatory = true,
       ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(Any)}",
-      Position = 0,
+      Position = 2,
       ValueFromPipeline = true)]
-    public PSObject[]? InputObject { get; set; }
+    public PSObject[] InputObject { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
-      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}",
-      Position = 1)]
-    [Parameter(
-      Mandatory = true,
-      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(All)}",
-      Position = 1)]
-    [Parameter(
-      Mandatory = true,
-      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(Any)}",
-      Position = 1)]
-    public ScriptBlock? PredicateScript { get; set; }
-
-    [Parameter(Position = 2, ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(All)}")]
+      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(All)}")]
     public SwitchParameter All { get; set; }
 
-    [Parameter(Position = 2, ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(Any)}")]
+    [Parameter(
+      Mandatory = true,
+      ParameterSetName = $"{nameof(InputObject)}|{nameof(PredicateScript)}|{nameof(Any)}")]
     public SwitchParameter Any { get; set; }
 
     #endregion Parameters
@@ -54,7 +49,7 @@ namespace CollectionUtils.PSCmdlets
       Any
     }
 
-    private Quantifier SelectedQuantifier => All || !Any ? Quantifier.All : Quantifier.Any;
+    private Quantifier SelectedQuantifier => All ? Quantifier.All : Quantifier.Any;
 
     private bool _ShouldStop = false;
     private bool? _Result = null;
@@ -62,6 +57,7 @@ namespace CollectionUtils.PSCmdlets
     protected override void BeginProcessing()
     {
       WriteDebug("Quantifier: " + SelectedQuantifier.ToString());
+
       base.BeginProcessing();
     }
 
@@ -72,7 +68,6 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var obj in InputObject!)
       {
-        // This reversal of true / false is confusing.
         var scriptBlockVariables = new List<PSVariable>
         {
             new PSVariable("_", obj)

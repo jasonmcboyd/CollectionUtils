@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CollectionUtils.Utilities;
+using System;
 using System.Management.Automation;
 using System.Threading;
 
@@ -8,10 +9,9 @@ namespace CollectionUtils.JoinCommandHandlers
   {
     public ZipJoinCommandHandler(
       object[] rightCollection,
-      Action<object> objectWriter,
-      Action<ErrorRecord> errorWriter,
+      PowerShellWriter powerShellWriter,
       CancellationToken cancellationToken)
-      : base(rightCollection, objectWriter, errorWriter, cancellationToken)
+      : base(rightCollection, powerShellWriter, cancellationToken)
     {
     }
 

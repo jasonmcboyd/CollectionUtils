@@ -1,4 +1,5 @@
 ﻿using CollectionUtils.JoinCommandHandlers;
+using CollectionUtils.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,12 +17,12 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(
       Mandatory = true,
       Position = 1)]
-    public PSObject Left { get; set; } = default!;
+    public IEnumerable Left { get; set; } = default!;
 
     [Parameter(
       Mandatory = true,
       Position = 2)]
-    public PSObject Right { get; set; } = default!;
+    public IEnumerable Right { get; set; } = default!;
 
     #endregion Common Parameters
 
@@ -204,8 +205,6 @@ namespace CollectionUtils.PSCmdlets
     private KeyField[] _LeftKeyFields = default!;
     private KeyField[] _RightKeyFields = default!;
 
-    private bool _IsRunningInPipeline;
-
     private void ValidateKeyFields()
     {
       if (ZipJoin || CrossJoin)
@@ -280,13 +279,13 @@ namespace CollectionUtils.PSCmdlets
 
     private IJoinCommandHandler GetCommandHandler()
     {
-      var right = (Right.BaseObject as IEnumerable).Cast<object>().ToArray();
+      var right = Right.Cast<object>().ToArray();
 
       if (ZipJoin)
-        return new ZipJoinCommandHandler(right, WriteObject, WriteError, _CancellationTokenSource.Token);
+        return new ZipJoinCommandHandler(right, new PowerShellWriter(this), _CancellationTokenSource.Token);
 
       if (CrossJoin)
-        return new CrossJoinCommandHandler(right, WriteObject, WriteError, _CancellationTokenSource.Token);
+        return new CrossJoinCommandHandler(right, new PowerShellWriter(this), _CancellationTokenSource.Token);
 
       return
         new KeyedJoinCommandHandler(
@@ -297,8 +296,7 @@ namespace CollectionUtils.PSCmdlets
           DefaultStringComparer,
           GetKeyedJoinType(),
           GroupJoinStrategy,
-          WriteObject,
-          WriteError,
+          new PowerShellWriter(this),
           _CancellationTokenSource.Token);
     }
 
@@ -318,8 +316,6 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void BeginProcessing()
     {
-      _IsRunningInPipeline = !MyInvocation.BoundParameters.ContainsKey(nameof(Left));
-
       SetKeyFields();
 
       ValidateKeyFields();
@@ -332,19 +328,14 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
-      if (_IsRunningInPipeline)
-        _CommandHandler!.Next(Left);
-      else
-      {
-        var left =
-          (Left.BaseObject as IEnumerable)
-          .Cast<object>()
-          .Select(x => new PSObject(x))
-          .ToArray();
+      var left =
+        Left
+        .Cast<object>()
+        .Select(x => new PSObject(x))
+        .ToArray();
 
-        for (int i = 0; i < left.Length; i++)
-          _CommandHandler!.Next(left[i]);
-      }
+      for (int i = 0; i < left.Length; i++)
+        _CommandHandler!.Next(left[i]);
 
       base.ProcessRecord();
     }
