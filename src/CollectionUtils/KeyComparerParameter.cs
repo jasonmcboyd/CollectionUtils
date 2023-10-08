@@ -11,7 +11,7 @@ namespace CollectionUtils
         hashtable
         .Cast<DictionaryEntry>()
         .Select(entry => new KeyComparer((string)entry.Key, (IEqualityComparer)entry.Value))
-        .ToDictionary(keyComparer => keyComparer.Property);
+        .ToDictionary(keyComparer => keyComparer.Key);
     }
 
     public KeyComparer this[string property]

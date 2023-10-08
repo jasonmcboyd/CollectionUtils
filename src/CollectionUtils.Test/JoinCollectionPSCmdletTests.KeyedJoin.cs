@@ -238,6 +238,35 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
+    public void Invoke_Test()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( [pscustomobject]@{ 'firstname' = 'jason'; 'lastname' = 'boyd' } )");
+      shell.InvokeScript("$right = @( [pscustomobject]@{ 'FirstName' = 'Jason'; 'LastName' = 'Boyd' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("firstName, lastName")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
     public void Invoke_KeyValueCasesDoNotMatch_DefaultStringComparer_CorrectResultsReturned()
     {
       // Arrange

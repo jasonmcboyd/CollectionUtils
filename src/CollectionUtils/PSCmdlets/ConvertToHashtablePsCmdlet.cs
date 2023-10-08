@@ -47,12 +47,12 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var keyComparer in Comparer)
       {
-        if (_KeyFields.FirstOrDefault(keyField => keyField.Property == keyComparer.Property) is null)
+        if (_KeyFields.FirstOrDefault(keyField => keyField.Property == keyComparer.Key) is null)
         {
           WriteError(
             new ErrorRecord(
               new PSArgumentException(
-                $"Comparer contains a property name ({keyComparer.Property}) that is not in the key."),
+                $"Comparer contains a property name ({keyComparer.Key}) that is not in the key."),
                 "ComparerPropertyNameNotInKey",
                 ErrorCategory.InvalidArgument,
                 null));

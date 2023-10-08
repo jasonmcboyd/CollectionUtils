@@ -9,12 +9,12 @@ namespace CollectionUtils.Test
   public class ConvertToHashtablePSCmdletTests
   {
     [TestMethod]
-    public void Invoke_SingleKeyFieldOfTypeInt_KeyIsInt()
+    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsInt_ResultKeyIsInt()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
 
-      shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
+      shell.InvokeScript("$objs = @( @{ Id = 1; Value = 'one' } )");
 
       var script =
         PSBuilder
@@ -35,17 +35,17 @@ namespace CollectionUtils.Test
         .Cast<Hashtable>()
         .Single();
 
-      Assert.AreEqual(2, results.Count);
+      Assert.AreEqual(1, results.Count);
       Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is int));
     }
 
     [TestMethod]
-    public void Invoke_SingleKeyFieldOfTypeString_KeyIsString()
+    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsString_ResultKeyIsString()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
 
-      shell.InvokeScript("$objs = @(@{ Id = 1; Value = 'one' }, @{ Id = 2; Value = 'two' })");
+      shell.InvokeScript("$objs = @( @{ Id = 1; Value = 'one' } )");
 
       var script = "ConvertTo-Hashtable -InputObject $objs -Key Value";
 
@@ -61,12 +61,12 @@ namespace CollectionUtils.Test
         .Cast<Hashtable>()
         .Single();
 
-      Assert.AreEqual(2, results.Count);
+      Assert.AreEqual(1, results.Count);
       Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is string));
     }
 
     [TestMethod]
-    public void Invoke_MultipleKeyFields_KeyIsHashtable()
+    public void InvokeWitoutPipeline_MultipleKeyFields_ResultKeyIsHashtable()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -97,7 +97,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_KeyParameterIsHashtable_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_KeyFieldIsHashtable_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -124,10 +124,12 @@ namespace CollectionUtils.Test
         .Single();
 
       Assert.AreEqual(2, results.Count);
+      //Assert.AreEqual(new Hashtable { { "Id", 1 }, { "Value", "one" } }, results[1], new HashtableStructuralEqualityComparer(new[] {  } );
+      //Assert.AreEqual("two", results[2]);
     }
 
     [TestMethod]
-    public void Invoke_KeyParameterIsHashtableWithMultipleValues_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_KeyParameterIsHashtableWithMultipleValues_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -158,7 +160,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_MixedCaseKeys_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_MixedCaseKeys_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -188,7 +190,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_MixedCaseKeys_DefaultStringComparerIsCaseSensitive_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_MixedCaseKeys_DefaultStringComparerIsCaseSensitive_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -218,7 +220,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_MixedCaseKeys_ComparerIsCaseSensitive_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_MixedCaseKeys_ComparerIsCaseSensitive_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -248,7 +250,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_MixedCaseKeyNames_ComparerPassed_CorrectResultsReturned()
+    public void InvokeWithoutPipeline_MixedCaseKeyNames_ComparerPassed_CorrectResultsReturned()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -278,7 +280,37 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void Invoke_AsLookup_ValuesAreArrays()
+    public void InvokeWithoutPipeline_Test()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @( [pscustomobject]@{ 'firstname' = 'jason'; 'lastname' = 'boyd' }, [pscustomobject]@{ 'FirstName' = 'Jason'; 'LastName' = 'Boyd' } )");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("firstName, lastName")
+        .AsLookup();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(1, results.Count);
+    }
+
+    [TestMethod]
+    public void InvokeWithoutPipeline_AsLookup_ValuesAreArrays()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();

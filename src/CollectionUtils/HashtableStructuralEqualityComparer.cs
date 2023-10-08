@@ -5,27 +5,28 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CollectionUtils
 {
-  internal class HashtableStructuralEqualityComparer : EqualityComparer<Hashtable>
+  public class HashtableStructuralEqualityComparer : EqualityComparer<Hashtable>
   {
-    public HashtableStructuralEqualityComparer(
-      string[] propertyNames,
-      KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
+    public HashtableStructuralEqualityComparer(params string[] keysToCompare)
+      : this(keysToCompare.Select(key => new KeyComparer(key)).ToArray(), null)
     {
-      _DefaultStringComparer = defaultStringComparer;
-
-      keyComparers ??= Array.Empty<KeyComparer>();
-
-      foreach (var propertyName in propertyNames)
-      {
-        var comparer = keyComparers.FirstOrDefault(keyComparer => keyComparer.Property == propertyName)?.Comparer ?? EqualityComparer<object>.Default;
-
-        _Comparers.Add((propertyName, comparer));
-      }
     }
 
-    private readonly List<(string PropertyName, IEqualityComparer Comparer)> _Comparers =
-      new List<(string, IEqualityComparer)>();
+    public HashtableStructuralEqualityComparer(params KeyComparer[] keyComparers)
+      : this(keyComparers, null)
+    {
+    }
+
+    public HashtableStructuralEqualityComparer(
+      KeyComparer[] keyComparers,
+      IEqualityComparer<string>? defaultStringComparer)
+    {
+      _DefaultStringComparer = defaultStringComparer ?? StringComparer.OrdinalIgnoreCase;
+
+      _KeyComparers = keyComparers;
+    }
+
+    private readonly KeyComparer[] _KeyComparers;
 
     private readonly IEqualityComparer<string> _DefaultStringComparer;
 
@@ -37,24 +38,26 @@ namespace CollectionUtils
       if (left is null ^ right is null)
         return false;
 
-      if (left!.Keys.Count != right!.Keys.Count)
-        return false;
-
-      for (int i = 0; i < _Comparers.Count; i++)
+      for (int i = 0; i < _KeyComparers.Length; i++)
       {
-        (var propertyName, var comparer) = _Comparers[i];
+        (var key, var comparer) = _KeyComparers[i];
 
-        var leftValue = left[propertyName];
-        var rightValue  = right[propertyName];
+        var leftValue = left![key];
+        var rightValue  = right![key];
 
         // TODO: Not sure how efficient this is.
         if (leftValue is string leftString && rightValue is string rightString && comparer == EqualityComparer<object>.Default)
+        {
           if (!_DefaultStringComparer.Equals(leftString, rightString))
             return false;
-
-        if (!comparer.Equals(left[propertyName], right[propertyName]))
+          else
+            continue;
+        }
+        
+        if (!comparer.Equals(leftValue, rightValue))
           return false;
       }
+
       return true;
     }
 
@@ -62,11 +65,18 @@ namespace CollectionUtils
     {
       var hashCode = 0;
 
-      for (int i = 0; i < _Comparers.Count; i++)
+      for (int i = 0; i < _KeyComparers.Length; i++)
       {
-        (var propertyName, var comparer) = _Comparers[i];
+        (var key, var comparer) = _KeyComparers[i];
 
-        hashCode ^= comparer.GetHashCode(obj[propertyName] ?? 0);
+        var value = obj[key];
+
+        if (value is string && comparer == EqualityComparer<object>.Default)
+          hashCode ^= _DefaultStringComparer.GetHashCode((string)value!);
+        else if (value is null)
+          hashCode ^= 0;
+        else
+          hashCode ^= comparer.GetHashCode(value);
       }
 
       return hashCode;

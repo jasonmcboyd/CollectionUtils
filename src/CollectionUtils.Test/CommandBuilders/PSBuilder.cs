@@ -1,7 +1,5 @@
 ﻿using CollectionUtils.Test.Utils;
-using System.Collections;
 using System.Collections.Generic;
-using System.Management.Automation;
 
 namespace CollectionUtils.Test.CommandBuilders
 {
@@ -38,6 +36,8 @@ namespace CollectionUtils.Test.CommandBuilders
 
     public static string ToPSArrayString(this IEnumerable<string> values) =>
       $"@({values.JoinStrings(", ")})";
+
+    public static string ToPSArrayOfPSCustomObjectsString(params (string Key, object Value)[] values) => ToPSArrayOfPSCustomObjectsString(values);
 
     public static string ToPSArrayOfPSCustomObjectsString(this IEnumerable<IEnumerable<(string Key, object Value)>> values) =>
       values.Select(ToPSCustomObjectString).ToPSArrayString();

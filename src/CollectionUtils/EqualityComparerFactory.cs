@@ -37,10 +37,21 @@ namespace CollectionUtils
     private static IEqualityComparer GetHashTableComparer(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer) =>
-      new HashtableStructuralEqualityComparer(
-        keyFields.Select(key => key.Property).ToArray(),
-        keyComparers,
+      IEqualityComparer<string> defaultStringComparer)
+    {
+      var comparers =
+        keyFields
+        .GroupJoin(
+          keyComparers ?? Enumerable.Empty<KeyComparer>(),
+          keyField => keyField.Property,
+          keyComparer => keyComparer.Key,
+          (keyField, keyComparers) => keyComparers.FirstOrDefault() ?? new KeyComparer(keyField.Property),
+          StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+      return new HashtableStructuralEqualityComparer(
+        comparers,
         defaultStringComparer);
+    }
   }
 }
