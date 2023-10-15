@@ -27,7 +27,7 @@ namespace CollectionUtils.JoinCommandHandlers
 
         var psObject = CreatePSObject(left, RightCollection[i]);
 
-        WriteObject(psObject);
+        PowerShellWriter.WriteObject(psObject);
       }
     }
 

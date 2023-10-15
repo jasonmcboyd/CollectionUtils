@@ -32,8 +32,8 @@ namespace CollectionUtils.Test.CommandBuilders
     public JoinCollectionCommandBuilder DefaultStringComparer(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(JoinCollectionPsCmdlet.DefaultStringComparer), value, includeParameterName);
 
-    public JoinCollectionCommandBuilder GroupJoinStrategy(string value, bool includeParameterName = true) =>
-      AddCommandParameter(nameof(JoinCollectionPsCmdlet.GroupJoinStrategy), value, includeParameterName);
+    public JoinCollectionCommandBuilder KeyCollisionPreference(string value, bool includeParameterName = true) =>
+      AddCommandParameter(nameof(JoinCollectionPsCmdlet.KeyCollisionPreference), value, includeParameterName);
 
     public JoinCollectionCommandBuilder CrossJoin() =>
       AddCommandSwitch(nameof(JoinCollectionPsCmdlet.CrossJoin));

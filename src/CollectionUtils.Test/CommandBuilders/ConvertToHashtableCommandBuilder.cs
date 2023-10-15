@@ -20,7 +20,7 @@ namespace CollectionUtils.Test.CommandBuilders
     public ConvertToHashtableCommandBuilder DefaultStringComparer(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(ConvertToHashtablePSCmdlet.DefaultStringComparer), value, includeParameterName);
 
-    public ConvertToHashtableCommandBuilder AsLookup() =>
-      AddCommandSwitch(nameof(ConvertToHashtablePSCmdlet.AsLookup));
+    public ConvertToHashtableCommandBuilder KeyCollisionPreference(string value, bool includeParameterName = true) =>
+      AddCommandParameter(nameof(ConvertToHashtablePSCmdlet.KeyCollisionPreference), value, includeParameterName);
   }
 }

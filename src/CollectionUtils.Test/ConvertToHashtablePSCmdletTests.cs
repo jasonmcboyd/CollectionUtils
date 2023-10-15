@@ -1,4 +1,5 @@
-﻿using CollectionUtils.Test.CommandBuilders;
+﻿using CollectionUtils.PSCmdlets;
+using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using System.Collections;
 using System.Management.Automation;
@@ -109,7 +110,7 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key("@{ TestId = { $_.Id } }")
-        .AsLookup();
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
 
       // Act
       var output =
@@ -141,7 +142,7 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key("@{ TestId = { $_.Id }; TestValue = { $_.Value } }")
-        .AsLookup();
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
 
       // Act
       var output =
@@ -172,7 +173,7 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key("Value")
-        .AsLookup();
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
 
       // Act
       var output =
@@ -292,7 +293,7 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key("firstName, lastName")
-        .AsLookup();
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
 
       // Act
       var output =
@@ -322,7 +323,7 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key(PSBuilder.KeyParameter("Mod", "$_ % 3"))
-        .AsLookup();
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
 
       // Act
       var output =

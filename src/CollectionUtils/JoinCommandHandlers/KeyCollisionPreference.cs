@@ -1,9 +1,9 @@
 ﻿namespace CollectionUtils.JoinCommandHandlers
 {
-  public enum GroupJoinStrategy
+  internal enum KeyCollisionPreference
   {
     Error,
-    Flatten,
-    Group
+    Ignore,
+    Warn,
   }
 }

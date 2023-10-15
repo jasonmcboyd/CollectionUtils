@@ -1,5 +1,4 @@
-﻿using CollectionUtils.Exceptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace CollectionUtils
@@ -7,30 +6,30 @@ namespace CollectionUtils
   internal class PSObjectHashtableBuilder : HashtableBuilderBase<object, PSObject>
   {
     public PSObjectHashtableBuilder(
-      object[] objects,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
-      : base(objects, keyFields, keyComparers, defaultStringComparer, ResultSelector)
-    {
-    }
-
-    public PSObjectHashtableBuilder(
-      KeyField[] keyFields,
-      KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
+      IEqualityComparer<string> defaultStringComparer,
+      KeyCollisionStrategy keyCollisionStrategy)
       : base(keyFields, keyComparers, defaultStringComparer, ResultSelector)
     {
+      _KeyCollisionStrategy = keyCollisionStrategy;
     }
 
     private static PSObject ResultSelector(object obj) => new PSObject(obj);
+
+    private readonly KeyCollisionStrategy _KeyCollisionStrategy;
 
     protected override void OnAddObjectRequested(object obj)
     {
       var key = KeySelector.GetKey(obj);
 
       if (!TryAdd(obj, x => x))
-        throw new DuplicateKeyException(key, obj);
+        _KeyCollisionStrategy(key, obj);
+    }
+
+    protected override void OnKeyCollission()
+    {
+      
     }
   }
 }

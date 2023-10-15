@@ -194,7 +194,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
-    public GroupJoinStrategy GroupJoinStrategy { get; set; } = GroupJoinStrategy.Group;
+    public JoinCollectionKeyCollisionPreference KeyCollisionPreference { get; set; } = JoinCollectionKeyCollisionPreference.Error;
 
     #endregion Keyed Join Parameters
 
@@ -299,7 +299,7 @@ namespace CollectionUtils.PSCmdlets
           Comparer?.ToArray(),
           DefaultStringComparer,
           GetKeyedJoinType(),
-          GroupJoinStrategy,
+          KeyCollisionPreference,
           new PowerShellWriter(this),
           _CancellationTokenSource.Token);
     }

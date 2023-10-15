@@ -1,5 +1,4 @@
 ﻿using CollectionUtils.Utilities;
-using System;
 using System.Management.Automation;
 using System.Threading;
 
@@ -18,11 +17,8 @@ namespace CollectionUtils.JoinCommandHandlers
     }
 
     protected object[] RightCollection { get; }
-    private PowerShellWriter PowerShellWriter { get; }
+    protected PowerShellWriter PowerShellWriter { get; }
     protected CancellationToken CancellationToken { get; }
-
-    protected void WriteObject(PSObject psObject) => PowerShellWriter.WriteObject(psObject);
-    protected void WriteError(ErrorRecord errorRecord) => PowerShellWriter.WriterError(errorRecord);
 
     public abstract void Next(PSObject left);
 

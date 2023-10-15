@@ -29,7 +29,7 @@ namespace CollectionUtils.JoinCommandHandlers
 
       var psObject = CreatePSObject(left, right);
 
-      WriteObject(psObject);
+      PowerShellWriter.WriteObject(psObject);
     }
 
     public override void WriteRemainingObjects()
@@ -46,7 +46,7 @@ namespace CollectionUtils.JoinCommandHandlers
 
         var psObject = CreatePSObject(null, span[i]);
 
-        WriteObject(psObject);
+        PowerShellWriter.WriteObject(psObject);
       }
     }
 

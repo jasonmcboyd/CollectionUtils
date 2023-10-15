@@ -1,4 +1,5 @@
-﻿using CollectionUtils.Utilities;
+﻿using CollectionUtils.PSCmdlets;
+using CollectionUtils.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -15,31 +16,38 @@ namespace CollectionUtils.JoinCommandHandlers
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
       KeyedJoinType keyedJoinType,
-      GroupJoinStrategy groupJoinStrategy,
+      JoinCollectionKeyCollisionPreference keyCollisionPreference,
       PowerShellWriter powerShellWriter,
       CancellationToken cancellationToken)
       : base(rightCollection, powerShellWriter, cancellationToken)
     {
       _KeyedJoinType = keyedJoinType;
-      _GroupJoinStrategy = groupJoinStrategy;
+      _KeyCollisionPreference = keyCollisionPreference;
 
-      if (groupJoinStrategy == GroupJoinStrategy.Error)
+
+      if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.Group
+        || _KeyCollisionPreference == JoinCollectionKeyCollisionPreference.GroupThenFlatten)
       {
-        _RightHashtableBuilder = new PSObjectHashtableBuilder(rightCollection, rightKeyFields, keyComparers, defaultStringComparer);
-        _LeftHashtableBuilder = new PSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer);
+        _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer);
+        _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer);
       }
       else
       {
-        _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(rightCollection, rightKeyFields, keyComparers, defaultStringComparer);
-        _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer);
+        var keyCollisionStrategy = keyCollisionPreference.ToKeyCollisionPreference().SelectStrategy(powerShellWriter);
+
+        _RightHashtableBuilder = new PSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer, keyCollisionStrategy);
+        _LeftHashtableBuilder = new PSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer, keyCollisionStrategy);
       }
+
+      _RightHashtableBuilder.AddObjects(rightCollection);
     }
 
     private readonly KeyedJoinType _KeyedJoinType;
-    private readonly GroupJoinStrategy _GroupJoinStrategy;
+    private readonly JoinCollectionKeyCollisionPreference _KeyCollisionPreference;
 
     private IHashtableBuilder _LeftHashtableBuilder;
     private IHashtableBuilder _RightHashtableBuilder;
+
     public override void Next(PSObject left)
     {
       if (CancellationToken.IsCancellationRequested)
@@ -50,11 +58,11 @@ namespace CollectionUtils.JoinCommandHandlers
 
     override public void WriteRemainingObjects()
     {
-      if (_GroupJoinStrategy == GroupJoinStrategy.Group)
+      if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.Group)
         foreach (var (left, right, key) in JoinLeftAndRight<PSObject[]>())
           WritePSObject(left, right, key);
 
-      else if (_GroupJoinStrategy == GroupJoinStrategy.Flatten)
+      else if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.GroupThenFlatten)
         foreach (var (left, right, key) in JoinLeftAndRight<PSObject[]>())
           WriteFlattenedPSObjectList(left, right, key);
 
@@ -92,18 +100,18 @@ namespace CollectionUtils.JoinCommandHandlers
       if (left?.Length > 0 && right?.Length > 0)
         for (var l = 0; l < left.Length; l++)
           for (var r = 0; r < right.Length; r++)
-            WriteObject(CreatePSObject(left[l], right[r], key));
+            PowerShellWriter.WriteObject(CreatePSObject(left[l], right[r], key));
 
       else if (left?.Length > 0)
         for (var l = 0; l < left.Length; l++)
-          WriteObject(CreatePSObject(left[l], null, key));
+          PowerShellWriter.WriteObject(CreatePSObject(left[l], null, key));
 
       else
         for (var r = 0; r < right!.Length; r++)
-          WriteObject(CreatePSObject(null, right[r], key));
+          PowerShellWriter.WriteObject(CreatePSObject(null, right[r], key));
     }
 
-    private void WritePSObject(object? left, object? right, object key) => WriteObject(CreatePSObject(left, right, key));
+    private void WritePSObject(object? left, object? right, object key) => PowerShellWriter.WriteObject(CreatePSObject(left, right, key));
 
     private PSObject CreatePSObject(object? left, object? right, object key)
     {

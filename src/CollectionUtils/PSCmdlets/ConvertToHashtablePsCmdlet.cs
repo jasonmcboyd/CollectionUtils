@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CollectionUtils.JoinCommandHandlers;
+using CollectionUtils.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -30,7 +32,7 @@ namespace CollectionUtils.PSCmdlets
     public IEqualityComparer<string> DefaultStringComparer { get; set; } = StringComparer.OrdinalIgnoreCase;
 
     [Parameter()]
-    public SwitchParameter AsLookup { get; set; }
+    public ConvertToHashtableKeyCollisionPreference KeyCollisionPreference { get; set; } = ConvertToHashtableKeyCollisionPreference.Error;
 
     #endregion
 
@@ -68,10 +70,17 @@ namespace CollectionUtils.PSCmdlets
 
       ValidateComparers();
 
-      if (AsLookup)
-        _HashtableBuilder = new ListOfPSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
-      else
-        _HashtableBuilder = new PSObjectHashtableBuilder(_KeyFields, Comparer?.ToArray(), DefaultStringComparer);
+      _HashtableBuilder =
+        KeyCollisionPreference == ConvertToHashtableKeyCollisionPreference.Group
+        ? new ListOfPSObjectHashtableBuilder(
+          _KeyFields,
+          Comparer?.ToArray(),
+          DefaultStringComparer)
+        : new PSObjectHashtableBuilder(
+          _KeyFields,
+          Comparer?.ToArray(),
+          DefaultStringComparer,
+          KeyCollisionPreference.ToKeyCollisionPreference().SelectStrategy(new PowerShellWriter(this)));
 
       base.BeginProcessing();
     }

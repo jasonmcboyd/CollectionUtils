@@ -11,17 +11,6 @@ namespace CollectionUtils
   internal abstract class HashtableBuilderBase<TValue, TResult> : IHashtableBuilder
   {
     public HashtableBuilderBase(
-      object[] objects,
-      KeyField[] keyFields,
-      KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer,
-      Func<TValue, TResult> resultSelector)
-      : this(keyFields, keyComparers, defaultStringComparer, resultSelector)
-    {
-      AddObjects(objects);
-    }
-
-    public HashtableBuilderBase(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
@@ -123,6 +112,10 @@ namespace CollectionUtils
         result.Add(key, _ResultSelector((TValue)value));
 
       return result;
+    }
+
+    protected virtual void OnKeyCollission()
+    {
     }
 
     public void Dispose()

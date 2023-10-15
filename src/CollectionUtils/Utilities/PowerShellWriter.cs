@@ -12,7 +12,7 @@ namespace CollectionUtils.Utilities
     private Cmdlet Cmdlet { get; }
 
     public void WriteObject(object obj) => Cmdlet.WriteObject(obj);
-    public void WriterError(ErrorRecord errorRecord) => Cmdlet.WriteError(errorRecord);
+    public void WriteError(ErrorRecord errorRecord) => Cmdlet.WriteError(errorRecord);
     public void WriteVerbose(string message) => Cmdlet.WriteVerbose(message);
     public void WriteDebug(string message) => Cmdlet.WriteDebug(message);
     public void WriteWarning(string message) => Cmdlet.WriteWarning(message);
