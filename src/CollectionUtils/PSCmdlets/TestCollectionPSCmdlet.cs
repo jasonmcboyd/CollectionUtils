@@ -5,7 +5,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsDiagnostic.Test, PSCmdletNouns.Collection)]
   [OutputType(typeof(bool))]
-  public class TestCollectionPSCmdlet : PSCmdlet
+  public sealed class TestCollectionPSCmdlet : PSCmdlet
   {
     #region Parameters
 

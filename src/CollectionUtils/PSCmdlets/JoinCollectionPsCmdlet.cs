@@ -10,7 +10,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsCommon.Join, PSCmdletNouns.Collection)]
   [OutputType(typeof(PSObject[]))]
-  public class JoinCollectionPsCmdlet : PSCmdlet, IDisposable
+  public sealed class JoinCollectionPsCmdlet : PSCmdlet, IDisposable
   {
     #region Common Parameters
 
@@ -200,7 +200,7 @@ namespace CollectionUtils.PSCmdlets
 
     private IJoinCommandHandler? _CommandHandler = null;
 
-    private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource _CancellationTokenSource = new();
 
     private KeyField[] _LeftKeyFields = default!;
     private KeyField[] _RightKeyFields = default!;

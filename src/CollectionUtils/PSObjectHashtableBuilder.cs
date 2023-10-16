@@ -15,7 +15,7 @@ namespace CollectionUtils
       _KeyCollisionStrategy = keyCollisionStrategy;
     }
 
-    private static PSObject ResultSelector(object obj) => new PSObject(obj);
+    private static PSObject ResultSelector(object obj) => new(obj);
 
     private readonly KeyCollisionStrategy _KeyCollisionStrategy;
 
@@ -25,11 +25,6 @@ namespace CollectionUtils
 
       if (!TryAdd(obj, x => x))
         _KeyCollisionStrategy(key, obj);
-    }
-
-    protected override void OnKeyCollission()
-    {
-      
     }
   }
 }

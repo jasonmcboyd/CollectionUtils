@@ -45,8 +45,8 @@ namespace CollectionUtils.JoinCommandHandlers
     private readonly KeyedJoinType _KeyedJoinType;
     private readonly JoinCollectionKeyCollisionPreference _KeyCollisionPreference;
 
-    private IHashtableBuilder _LeftHashtableBuilder;
-    private IHashtableBuilder _RightHashtableBuilder;
+    private readonly IHashtableBuilder _LeftHashtableBuilder;
+    private readonly IHashtableBuilder _RightHashtableBuilder;
 
     public override void Next(PSObject left)
     {

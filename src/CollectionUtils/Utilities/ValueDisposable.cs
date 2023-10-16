@@ -2,7 +2,7 @@
 
 namespace CollectionUtils.Utilities
 {
-  internal struct ValueDisposable<T> : IDisposable
+  internal readonly struct ValueDisposable<T> : IDisposable
   {
     public ValueDisposable(T value, Action<T> onDispose) : this(value)
     {
@@ -16,14 +16,14 @@ namespace CollectionUtils.Utilities
 
     public T Value { get; }
 
-    private Action<T>? _OnDispose = null;
+    private readonly Action<T>? _OnDispose = null;
 
     public void Dispose() => _OnDispose?.Invoke(Value);
   }
 
   internal static class ValueDisposable
   {
-    public static ValueDisposable<T> Create<T>(T value, Action<T> onDispose) => new ValueDisposable<T>(value, onDispose);
-    public static ValueDisposable<T> Create<T>(T value) => new ValueDisposable<T>(value);
+    public static ValueDisposable<T> Create<T>(T value, Action<T> onDispose) => new(value, onDispose);
+    public static ValueDisposable<T> Create<T>(T value) => new(value);
   }
 }

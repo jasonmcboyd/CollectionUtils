@@ -2,7 +2,7 @@
 
 namespace CollectionUtils.Utilities
 {
-  public class PowerShellWriter
+  internal class PowerShellWriter
   {
     public PowerShellWriter(Cmdlet cmdlet)
     {

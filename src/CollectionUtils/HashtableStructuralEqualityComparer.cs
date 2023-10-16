@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CollectionUtils
 {
-  public class HashtableStructuralEqualityComparer : EqualityComparer<Hashtable>
+  internal class HashtableStructuralEqualityComparer : EqualityComparer<Hashtable>
   {
     public HashtableStructuralEqualityComparer(params string[] keysToCompare)
       : this(keysToCompare.Select(key => new KeyComparer(key)).ToArray(), null)

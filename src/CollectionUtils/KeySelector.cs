@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace CollectionUtils
 {
-  public class KeySelector
+  internal class KeySelector
   {
     public KeySelector(KeyField[] keyFields)
     {

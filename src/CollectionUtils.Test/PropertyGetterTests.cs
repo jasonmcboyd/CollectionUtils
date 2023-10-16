@@ -11,7 +11,7 @@ namespace CollectionUtils.Test
   [TestClass]
   public class PropertyGetterTests
   {
-    private void AddObject(PowerShell shell)
+    private static void AddObject(PowerShell shell)
     {
       shell.InvokeScript("class IdValuePair { [int] $Id; [string] $Value }");
 
@@ -22,7 +22,7 @@ namespace CollectionUtils.Test
       shell.InvokeScript("$obj.Value = 'one'");
     }
 
-    private void AddHashtable(PowerShell shell, bool wrapInPSObject = false)
+    private static void AddHashtable(PowerShell shell, bool wrapInPSObject = false)
     {
       shell.InvokeScript("$obj = @{ Id = 1; Value = 'one' }");
 
@@ -33,13 +33,13 @@ namespace CollectionUtils.Test
       }
     }
 
-    private void AddPSCustomObject(PowerShell shell)
+    private static void AddPSCustomObject(PowerShell shell)
       => shell.InvokeScript("$obj = [pscustomobject]@{ Id = 1; Value = 'one' }");
 
-    private void AddGenericDictionary(PowerShell shell)
+    private static void AddGenericDictionary(PowerShell shell)
       => shell.InvokeScript("$obj = [System.Collections.Generic.Dictionary[string, object]]::new(); $obj.Add('Id', 1); $obj.Add('Value', 'one')");
 
-    private void AddDataTable(PowerShell shell) =>
+    private static void AddDataTable(PowerShell shell) =>
       shell.InvokeScript(@"
         $table = [System.Data.DataTable]::new();
         $table.Columns.Add('Id', [int]);
@@ -48,21 +48,18 @@ namespace CollectionUtils.Test
         $row['Id'] = 1;
         $row['Value'] = 'one'");
 
-    private string GetRowPropertyScript(string propertyName)
-      => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], '{propertyName}')";
-
-    private string GetPropertyScript(string propertyName)
+    private static string GetPropertyScript(string propertyName)
       => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, '{propertyName}')";
 
-    private string GetPropertyScriptBlock()
+    private static string GetPropertyScriptBlock()
       => $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, {PSBuilder.KeyField("Id", "$_.Id")})";
 
-    private string GetRowPropertyScriptBlock()
+    private static string GetRowPropertyScriptBlock()
       => $"[{typeof(PropertyGetter).FullName}]::GetProperty($table.Rows[0], {PSBuilder.KeyField("Id", "$_['Id']")})";
 
-    private object GetObject() => new { Id = 1, Value = "one" };
+    private static object GetObject() => new { Id = 1, Value = "one" };
 
-    private DataTable GetDataTable()
+    private static DataTable GetDataTable()
     {
       var table = new DataTable();
 
@@ -77,11 +74,11 @@ namespace CollectionUtils.Test
       return table;
     }
 
-    private Dictionary<string, object> GetDictionary() =>
-      new Dictionary<string, object> { { "Id", 1 }, { "Value", "one" } };
+    private static Dictionary<string, object> GetDictionary() =>
+      new() { { "Id", 1 }, { "Value", "one" } };
 
-    private Hashtable GetHashtable() =>
-      new Hashtable { { "Id", 1 }, { "Value", "one" } };
+    private static Hashtable GetHashtable() =>
+      new() { { "Id", 1 }, { "Value", "one" } };
 
     [TestMethod]
     public void GetProperty_TypeIsObject()

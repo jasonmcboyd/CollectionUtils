@@ -75,7 +75,7 @@ namespace CollectionUtils
 
     private static object? GetDataRowProperty(DataRow dataRow, string propertyName) => dataRow[propertyName];
 
-    private static readonly Dictionary<(string, string), PropertyInfo> _PropertyInfos = new Dictionary<(string, string), PropertyInfo>(new TupleComparer());
+    private static readonly Dictionary<(string, string), PropertyInfo> _PropertyInfos = new(new TupleComparer());
 
     private static object? GetObjectProperty(
       object obj,
@@ -83,10 +83,7 @@ namespace CollectionUtils
     {
       var type = obj.GetType();
 
-      var assemblyQualifiedName = type.AssemblyQualifiedName;
-
-      if (assemblyQualifiedName is null)
-        throw new PropertyResolutionException(obj, propertyName);
+      var assemblyQualifiedName = type.AssemblyQualifiedName ?? throw new PropertyResolutionException(obj, propertyName);
 
       var propertyInfo =
         _PropertyInfos

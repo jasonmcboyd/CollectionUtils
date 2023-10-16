@@ -58,21 +58,15 @@ namespace CollectionUtils.Test.CommandBuilders
 
     public JoinCollectionCommandBuilder KeyedJoin(KeyedJoinType keyedJoinType)
     {
-      switch (keyedJoinType)
+      return keyedJoinType switch
       {
-        case KeyedJoinType.Disjunct:
-          return DisjunctJoin();
-        case KeyedJoinType.Inner:
-          return InnerJoin();
-        case KeyedJoinType.Left:
-          return LeftJoin();
-        case KeyedJoinType.Outer:
-          return OuterJoin();
-        case KeyedJoinType.Right:
-          return RightJoin();
-        default:
-          throw new InvalidOperationException();
-      }
+        KeyedJoinType.Disjunct => DisjunctJoin(),
+        KeyedJoinType.Inner => InnerJoin(),
+        KeyedJoinType.Left => LeftJoin(),
+        KeyedJoinType.Outer => OuterJoin(),
+        KeyedJoinType.Right => RightJoin(),
+        _ => throw new InvalidOperationException(),
+      };
     }
   }
 }

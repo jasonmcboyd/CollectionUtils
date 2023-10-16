@@ -28,8 +28,5 @@ namespace CollectionUtils.Utilities
 
       return ValueDisposable.Create(result, value => arrayPool.Return(value));
     }
-
-    public static ValueDisposable<T[]> RentAsDisposable<T>(this ArrayPool<T> arrayPool) =>
-      ValueDisposable.Create(Array.Empty<T>());
   }
 }

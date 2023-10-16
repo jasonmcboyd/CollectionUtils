@@ -10,7 +10,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsData.ConvertTo, PSCmdletNouns.Hashtable)]
   [OutputType(typeof(Hashtable))]
-  public class ConvertToHashtablePSCmdlet : PSCmdlet, IDisposable
+  public sealed class ConvertToHashtablePSCmdlet : PSCmdlet, IDisposable
   {
     #region Parameters
 
@@ -36,7 +36,7 @@ namespace CollectionUtils.PSCmdlets
 
     #endregion
 
-    private CancellationTokenSource _CancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource _CancellationTokenSource = new();
 
     private KeyField[] _KeyFields = default!;
 

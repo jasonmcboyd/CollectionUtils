@@ -16,7 +16,7 @@ namespace CollectionUtils.Test.CommandBuilders
 
     private List<CommandPart> CommandParts { get; } = new List<CommandPart>();
 
-    private string CommandPartToString(CommandPart commandPart)
+    private static string CommandPartToString(CommandPart commandPart)
     {
       if (!commandPart.IncludeParameterName)
         return commandPart.Value ?? throw new ArgumentException("Command part cannot have no paramter and no value.");
@@ -41,7 +41,7 @@ namespace CollectionUtils.Test.CommandBuilders
     {
       var result =
         CommandParts
-        .Select(commandPart => CommandPartToString(commandPart))
+        .Select(commandPart => CommandBuilder<T>.CommandPartToString(commandPart))
         .JoinStrings(" ");
 
       return
@@ -50,7 +50,7 @@ namespace CollectionUtils.Test.CommandBuilders
         : $"{PipedCommand} | {result}";
     }
 
-    private struct CommandPart
+    private readonly struct CommandPart
     {
       public CommandPart(
         string parameter,

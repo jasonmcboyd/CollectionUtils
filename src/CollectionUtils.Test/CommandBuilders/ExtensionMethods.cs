@@ -4,9 +4,10 @@
   {
     public static T Pipe<T>(this string pipedCommand) where T : CommandBuilder<T>, new()
     {
-      var result = new T();
-
-      result.PipedCommand = pipedCommand;
+      var result = new T
+      {
+        PipedCommand = pipedCommand
+      };
 
       return result;
     }
@@ -15,9 +16,10 @@
       where TPipedCommand : CommandBuilder<TPipedCommand>
       where TResult : CommandBuilder<TResult>, new()
     {
-      var result = new TResult();
-
-      result.PipedCommand = pipedCommand.ToString();
+      var result = new TResult
+      {
+        PipedCommand = pipedCommand.ToString()
+      };
 
       return result;
     }

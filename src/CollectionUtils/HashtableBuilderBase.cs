@@ -36,8 +36,7 @@ namespace CollectionUtils
     private IEqualityComparer? _EqualityComparer;
     private IEqualityComparer GetEqualityComparer(object obj)
     {
-      if (_EqualityComparer is null)
-        _EqualityComparer = EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer);
+      _EqualityComparer ??= EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer);
 
       return _EqualityComparer;
     }
@@ -45,8 +44,7 @@ namespace CollectionUtils
     private Hashtable? _InternalDictionary;
     private Hashtable GetInternalDictionary(object obj)
     {
-      if (_InternalDictionary is null)
-        _InternalDictionary = new Hashtable(GetEqualityComparer(obj));
+      _InternalDictionary ??= new Hashtable(GetEqualityComparer(obj));
 
       return _InternalDictionary;
     }
@@ -112,10 +110,6 @@ namespace CollectionUtils
         result.Add(key, _ResultSelector((TValue)value));
 
       return result;
-    }
-
-    protected virtual void OnKeyCollission()
-    {
     }
 
     public void Dispose()
