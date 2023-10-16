@@ -18,32 +18,6 @@ namespace CollectionUtils.Utilities
       return result;
     }
 
-    public static void AppendToCollection<TKey, TValue, TCollection>(
-      this Dictionary<TKey, TCollection> dictionary,
-      TKey key,
-      TValue value)
-      where TKey : notnull
-      where TCollection : ICollection<TValue>, new()
-    {
-      if (!dictionary.TryGetValue(key, out var collection))
-      {
-        collection = new TCollection();
-        dictionary.Add(key, collection);
-      }
-
-      collection.Add(value);
-    }
-
-    public static bool TryAdd(this IDictionary dictionary, object key, object value)
-    {
-      if (dictionary.Contains(key))
-        return false;
-
-      dictionary.Add(key, value);
-
-      return true;
-    }
-
     public static bool TryGet<T>(this IDictionary dictionary, object key, [MaybeNullWhen(false)] out T value)
     {
       value = default!;

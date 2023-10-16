@@ -262,8 +262,6 @@ namespace CollectionUtils.Test
       Assert.AreEqual(1, result);
     }
 
-
-
     [TestMethod]
     public void GetProperty_TypeIsObjectWrappedInPSObject()
     {

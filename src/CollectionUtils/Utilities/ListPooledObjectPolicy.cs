@@ -25,14 +25,15 @@ namespace CollectionUtils.Utilities
 
     private int MaximumRetainedCapacity { get; set; } = 4 * 1024;
 
-    public List<T> Create() => new List<T>(InitialCapacity);
+    public List<T> Create() => new(InitialCapacity);
 
     public bool Return(List<T> obj)
     {
       if (obj.Capacity > MaximumRetainedCapacity)
       {
         // Too big. Discard this one.
-        // Shouldn't need to clear the list here to allow the elements to be GC'd because the list should not be referenced by anything.
+        // Shouldn't need to clear the list here to allow the elements to be
+        // GC'd because the list should not be referenced by anything.
         return false;
       }
 
