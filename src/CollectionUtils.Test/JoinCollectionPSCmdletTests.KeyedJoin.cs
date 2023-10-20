@@ -208,6 +208,48 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
+    [DynamicData(nameof(GetKeyedJoinTestData), DynamicDataSourceType.Method)]
+    public void Invoke_UseLeftKeyAndRightKeyParametersWithScriptBlock_CorrectCountOfObjectsReturned(
+      string leftCollection,
+      string rightCollection,
+      string key,
+      KeyedJoinType joinType,
+      int expectedLeftCount,
+      int expectedInnerCount,
+      int expectedRightCount)
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript($"$left = {leftCollection}");
+      shell.InvokeScript($"$right = {rightCollection}");
+
+      var command =
+        PSBuilder
+        .JoinCollection()
+        .Left("$left")
+        .Right("$right")
+        .KeyedJoin(joinType)
+        .LeftKey(PSBuilder.KeyParameter("MyId", $"$_.{key}"))
+        .RightKey(PSBuilder.KeyParameter("MyId", $"$_.{key}"));
+
+      // Act
+      var results =
+        shell
+        .InvokeCommandBuilder(command)
+        .Cast<dynamic>()
+        .ToArray();
+
+      var left = results.Where(x => x.Right is null).ToArray();
+      var right = results.Where(x => x.Left is null).ToArray();
+      var inner = results.Where(x => x.Left is not null && x.Right is not null).ToArray();
+
+      Assert.AreEqual(expectedLeftCount, left.Length);
+      Assert.AreEqual(expectedRightCount, right.Length);
+      Assert.AreEqual(expectedInnerCount, inner.Length);
+    }
+
+    [TestMethod]
     public void Invoke_LeftKeyCaseDoesNotMatchRightKeyCase_CorrectResultsReturned()
     {
       // Arrange
@@ -264,6 +306,157 @@ namespace CollectionUtils.Test
         .ToArray();
 
       Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    [Ignore("Not implemented yet")]
+    public void Invoke_LeftKeyIsProperty_RightKeyIsScriptBlock_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'One' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .LeftKey("Value")
+        .RightKey(PSBuilder.KeyParameter("Value", $"$_.value"))
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_RightCollectionIsEmpty_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @()");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_RightCollectionIsEmpty_KeyCollisionPreferenceIsGroup_ResultRightIsEmptyArray()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @()");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .KeyedJoin(KeyedJoinType.Outer)
+        .KeyCollisionPreference("Group", true);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+      Assert.IsNotNull(result[0].Right);
+    }
+
+    [TestMethod]
+    public void Invoke_LeftCollectionIsEmpty_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @()");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'one' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_LeftCollectionIsEmpty_KeyCollisionPreferenceIsGroup_LeftResultIsEmptyArray()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @()");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'one' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .Key("Value")
+        .KeyedJoin(KeyedJoinType.Outer)
+        .KeyCollisionPreference("Group", true);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+      Assert.IsNotNull(result[0].Left);
     }
 
     [TestMethod]

@@ -60,7 +60,7 @@ namespace CollectionUtils.JoinCommandHandlers
     {
       if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.Group)
         foreach (var (left, right, key) in JoinLeftAndRight<PSObject[]>())
-          WritePSObject(left, right, key);
+          WritePSObject(left ?? Array.Empty<PSObject>(), right ?? Array.Empty<PSObject>(), key);
 
       else if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.GroupThenFlatten)
         foreach (var (left, right, key) in JoinLeftAndRight<PSObject[]>())
