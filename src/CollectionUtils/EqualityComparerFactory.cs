@@ -1,5 +1,4 @@
-﻿using CollectionUtils.Exceptions;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -13,26 +12,33 @@ namespace CollectionUtils
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer)
     {
+      if (!IsCompositeKey(keyFields) && keyComparers?.Length ==1)
+        return keyComparers[0].Comparer;
+
       if (IsCompositeKey(keyFields))
         return GetHashTableComparer(keyFields, keyComparers, defaultStringComparer);
-      else if (keyComparers?.Length == 1)
-        return keyComparers[0].Comparer;
-      else
-        return GetObjectComparer(obj, keyFields[0], defaultStringComparer);
+
+      return GetObjectComparer(obj, keyFields, defaultStringComparer);
     }
 
     private static bool IsCompositeKey(KeyField[] keyFields) => keyFields.Length > 1;
 
     private static IEqualityComparer GetObjectComparer(
       object obj,
-      KeyField keyField,
-      IEqualityComparer<string> defaultSringComparer) =>
-      GetPropertyType(obj, keyField) == typeof(string)
-      ? (IEqualityComparer)defaultSringComparer
-      : EqualityComparer<object>.Default;
+      KeyField[] keyFields,
+      IEqualityComparer<string> defaultSringComparer)
+    {
+      var keySelector = new KeySelector(keyFields);
 
-    private static Type GetPropertyType(object obj, KeyField keyField) =>
-      PropertyGetter.GetProperty(obj, keyField)?.GetType() ?? throw new NullKeyException(obj);
+      var key = keySelector.GetKey(obj);
+
+      var type = key.GetType();
+
+      if (type == typeof(string))
+        return (IEqualityComparer)defaultSringComparer;
+
+      return EqualityComparer<object>.Default;
+    }
 
     private static IEqualityComparer GetHashTableComparer(
       KeyField[] keyFields,

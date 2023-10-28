@@ -309,7 +309,6 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    [Ignore("Not implemented yet")]
     public void Invoke_LeftKeyIsProperty_RightKeyIsScriptBlock_CorrectResultsReturned()
     {
       // Arrange
@@ -324,6 +323,36 @@ namespace CollectionUtils.Test
         .Right("$right")
         .LeftKey("Value")
         .RightKey(PSBuilder.KeyParameter("Value", $"$_.value"))
+        .KeyedJoin(KeyedJoinType.Outer);
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var result =
+        output
+        .Cast<dynamic>()
+        .ToArray();
+
+      Assert.AreEqual(1, result.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_LeftKeyIsScriptBlock_RightKeyIsProperty_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'Value' = 'one' } )");
+      shell.InvokeScript("$right = @( @{ 'Value' = 'One' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .LeftKey(PSBuilder.KeyParameter("Value", $"$_.value"))
+        .RightKey("Value")
         .KeyedJoin(KeyedJoinType.Outer);
 
       // Act

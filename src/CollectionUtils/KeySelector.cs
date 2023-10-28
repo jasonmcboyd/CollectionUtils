@@ -1,5 +1,6 @@
 ﻿using CollectionUtils.Exceptions;
 using System.Collections;
+using System.Management.Automation;
 
 namespace CollectionUtils
 {
@@ -17,9 +18,15 @@ namespace CollectionUtils
       ? GetKeyAsObject(obj)
       : GetKeyAsHashtable(obj);
 
-    private object GetKeyAsObject(object obj) =>
-      PropertyGetter.GetProperty(obj, _KeyFields[0])
-      ?? throw new NullKeyException(obj);
+    private object GetKeyAsObject(object obj)
+    {
+      var key = PropertyGetter.GetProperty(obj, _KeyFields[0]) ?? throw new NullKeyException(obj);
+
+      if (key is PSObject psObject)
+        key = psObject.BaseObject;
+
+      return key;
+    }
 
     private object GetKeyAsHashtable(object obj)
     {

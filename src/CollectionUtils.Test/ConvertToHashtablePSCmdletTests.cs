@@ -281,37 +281,7 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void InvokeWithoutPipeline_Test()
-    {
-      // Arrange
-      using var shell = PowerShellUtilities.CreateShell();
-
-      shell.InvokeScript("$objs = @( [pscustomobject]@{ 'firstname' = 'jason'; 'lastname' = 'boyd' }, [pscustomobject]@{ 'FirstName' = 'Jason'; 'LastName' = 'Boyd' } )");
-
-      var command =
-        PSBuilder
-        .ConvertToHashTable()
-        .InputObject("$objs")
-        .Key("firstName, lastName")
-        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
-
-      // Act
-      var output =
-        shell
-        .InvokeCommandBuilder(command);
-
-      var results =
-        output
-        .Cast<PSObject>()
-        .Select(x => x.BaseObject)
-        .Cast<Hashtable>()
-        .Single();
-
-      Assert.AreEqual(1, results.Count);
-    }
-
-    [TestMethod]
-    public void InvokeWithoutPipeline_AsLookup_ValuesAreArrays()
+    public void InvokeWithoutPipeline_KeyCollisionPreferenceIsGroup_ValuesAreArrays()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
