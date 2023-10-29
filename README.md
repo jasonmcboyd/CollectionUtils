@@ -106,7 +106,7 @@ jason                          {[Id, 2], [Name, jason]}
 
 ```powershell
 ConvertTo-Hashtable -InputObject $objs -Key Name -KeyCollisionPreference Warn
-$${\color{yellow}WARNING: Key collision detected for key jason.}$$
+WARNING: Key collision detected for key jason.
 
 Name                           Value
 ----                           -----
