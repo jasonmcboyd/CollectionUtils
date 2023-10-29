@@ -68,4 +68,5 @@ New-ModuleManifest `
   -LicenseUri 'https://raw.githubusercontent.com/jasonmcboyd/CollectionUtils/main/LICENSE' `
   -ProjectUri 'https://github.com/jasonmcboyd/CollectionUtils' `
   -FunctionsToExport $functionsToExport `
-  -Description 'A collection of utilities for working with collections in PowerShell'
+  -Description 'A collection of utilities for working with collections in PowerShell' `
+  -Tags 'Join','InnerJoin','OuterJoin','LeftJoin','RightJoin','CrossJoin','ZipJoin','DataTable','HashTable'

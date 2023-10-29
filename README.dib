@@ -1,0 +1,20 @@
+# CollectionUtils
+
+## Installation
+
+`Install-Module CollectionUtils -AllowPrerelease`
+
+## Commands
+
+- [`ConvertFrom-DataTable`](###ConvertFrom-DataTable): Converts a `System.Data.DataTable` to a collection of PSObjects.
+- `ConvertTo-Hashtable`: Converts a collection of objects to a `Hashtable`.
+- `Join-Collection`: Joins two collections together.
+- `Test-Collection`: Tests any or all items in a collections.
+
+### ConvertFrom-DataTable
+
+### ConvertTo-Hashtable
+
+### Join-Collection
+
+### Test-Collection
