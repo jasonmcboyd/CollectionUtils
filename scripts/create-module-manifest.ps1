@@ -69,4 +69,4 @@ New-ModuleManifest `
   -ProjectUri 'https://github.com/jasonmcboyd/CollectionUtils' `
   -FunctionsToExport $functionsToExport `
   -Description 'A collection of utilities for working with collections in PowerShell' `
-  -Tags 'Join','InnerJoin','OuterJoin','LeftJoin','RightJoin','CrossJoin','ZipJoin','DataTable','HashTable'
+  -Tags 'Join','InnerJoin','OuterJoin','LeftJoin','RightJoin','CrossJoin','ZipJoin','DataTable','HashTable','Partition'

@@ -8,7 +8,7 @@ schema: 2.0.0
 # ConvertFrom-DataTable
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Converts a collection of DataTables or DataRows to a collection of PSObjects.
 
 ## SYNTAX
 
@@ -23,16 +23,57 @@ ConvertFrom-DataTable [-Row] <DataRow[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Converts `[System.Data.DataTable[]]` or `[System.Data.DataRow[]]` to a collection of PSObjects. Each column on in the DataTable or DataRow will be a property on the PSObject.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
-PS C:\> {{ Add example code here }}
+ConvertFrom-DataTable -Table $table
 ```
 
-{{ Add example description here }}
+Converts DataTables to a collection of PSObjects.
+
+### Example 2
+
+```powershell
+ConvertFrom-DataTable $table
+```
+
+Infers the input type, binds it to the `Table` parameter, and converts it to a collection of PSObjects.
+
+### Example 3
+
+```powershell
+$table | ConvertFrom-DataTable
+```
+
+Pipes DataTables and converts them to a collection of PSObjects.
+
+### Example 4
+
+```powershell
+ConvertFrom-DataTable -Row $table.Where({ $_['Age'] -eq 19 })
+```
+
+Converts DataRows to a collection of PSObjects.
+
+### Example 5
+
+```powershell
+ConvertFrom-DataTable $table.Where({ $_['Age'] -eq 19 })
+```
+
+Infers the input type, binds it to the `Row` parameter, and converts it to a collection of PSObjects.
+
+### Example 6
+
+```powershell
+$table.Where({ $_['Age'] -eq 19 }) | ConvertFrom-DataTable
+```
+
+Pipes DataRows and converts them to a collection of PSObjects.
 
 ## PARAMETERS
 
