@@ -8,7 +8,7 @@ schema: 2.0.0
 # Test-Collection
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Tests that any or all items in a collection meet a condition.
 
 ## SYNTAX
 
@@ -23,21 +23,54 @@ Test-Collection [-PredicateScript] <ScriptBlock> [-InputObject] <PSObject[]> [-A
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Tests that any or all items in a collection meet a condition.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+$objs = 0..10
+
+Test-Collection -PredicateScript { $_ % 2 -eq 0 } -InputObject $objs -Any
+
+True
 ```
 
-{{ Add example description here }}
+Tests that any elements in the collection are even.
+
+### Example 2
+```powershell
+$objs = 0..10
+
+Test-Collection { $_ % 2 -eq 0 } $objs -Any
+
+True
+```
+
+Tests that any elements in the collection are even using positional parameters.
+
+### Example 3
+```powershell
+0..10 | Test-Collection { $_ % 2 -eq 0 } -Any
+
+True
+```
+
+Pipes the input collection and tests that any elements in the collection are even using positional parameters.
+
+### Example 4
+```powershell
+0..10 | Test-Collection { $_ % 2 -eq 0 } -All
+
+False
+```
+
+Tests that all elements in the collection are even.
 
 ## PARAMETERS
 
 ### -All
-{{ Fill All Description }}
+Switch to test if all items in the collection meet the condition.
 
 ```yaml
 Type: SwitchParameter
@@ -52,7 +85,7 @@ Accept wildcard characters: False
 ```
 
 ### -Any
-{{ Fill Any Description }}
+Switch to test if any items in the collection meet the condition.
 
 ```yaml
 Type: SwitchParameter
@@ -67,7 +100,7 @@ Accept wildcard characters: False
 ```
 
 ### -InputObject
-{{ Fill InputObject Description }}
+The collection of objects to test.
 
 ```yaml
 Type: PSObject[]
@@ -82,7 +115,7 @@ Accept wildcard characters: False
 ```
 
 ### -PredicateScript
-{{ Fill PredicateScript Description }}
+The script block to test each item in the collection. The script block must return a boolean value.
 
 ```yaml
 Type: ScriptBlock

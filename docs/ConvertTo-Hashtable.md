@@ -56,6 +56,12 @@ Pipes a collection of objects to `ConvertTo-Hashtable` using the `Name` property
 $objs = [pscustomobject]@{ Name = 'John'; Age = 19 }, [pscustomobject]@{ Name = 'Jane'; Age = 19 }
 
 $objs | ConvertTo-Hashtable -Key Age
+
+ConvertTo-Hashtable: Key collision detected for key 19.
+
+Name                           Value
+----                           -----
+John                           @{Name=John; Age=19}
 ```
 
 Outputs the following error:

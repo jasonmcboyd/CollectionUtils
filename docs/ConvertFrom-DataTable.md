@@ -78,7 +78,7 @@ Pipes DataRows and converts them to a collection of PSObjects.
 ## PARAMETERS
 
 ### -Row
-{{ Fill Row Description }}
+A collection of `System.Data.DataTable` to convert to a collection of PSObjects.
 
 ```yaml
 Type: DataRow[]
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -Table
-{{ Fill Table Description }}
+A collection of `System.Data.DataRow` to convert to a collection of PSObjects.
 
 ```yaml
 Type: DataTable[]
