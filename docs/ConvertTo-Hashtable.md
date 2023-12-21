@@ -52,23 +52,18 @@ John                           @{Name=John; Age=19}
 Pipes a collection of objects to `ConvertTo-Hashtable` using the `Name` property as the key.
 
 ### Example 3
+
+Writes to the error stream:
+
+> ConvertTo-Hashtable: Key collision detected for key 19
+
+Then outputs a hashtable with the objects that did not collide on the key.
+
 ```powershell
 $objs = [pscustomobject]@{ Name = 'John'; Age = 19 }, [pscustomobject]@{ Name = 'Jane'; Age = 19 }
 
 $objs | ConvertTo-Hashtable -Key Age
-
-ConvertTo-Hashtable: Key collision detected for key 19.
-
-Name                           Value
-----                           -----
-John                           @{Name=John; Age=19}
 ```
-
-Outputs the following error:
-
-> ConvertTo-Hashtable: Key collision detected for key 19.
-
-Outputs a hashtable with the objects that did not collide on the key.
 
 ```
 Name                           Value
@@ -77,17 +72,17 @@ John                           @{Name=John; Age=19}
 ```
 
 ### Example 4
+Writes to the warning stream::
+
+> WARNING: Key collision detected for key 19.
+
+Then outputs a hashtable with the objects that did not collide on the key.
+
 ```powershell
 $objs = [pscustomobject]@{ Name = 'John'; Age = 19 }, [pscustomobject]@{ Name = 'Jane'; Age = 19 }
 
 $objs | ConvertTo-Hashtable -Key Age -KeyCollisionPreference Warn
 ```
-
-Outputs the following warning:
-
-> WARNING: Key collision detected for key 19.
-
-Outputs a hashtable with the objects that did not collide on the key.
 
 ```
 Name                           Value
@@ -106,7 +101,7 @@ Name                           Value
 John                           @{Name=John; Age=19}
 ```
 
-Outpus a hashtable with objects that did not collide on the key and ignores the objects that did collide on the key.
+Outputs a hashtable with objects that did not collide on the key and ignores the objects that did collide on the key.
 
 ### Example 6
 ```powershell
@@ -217,7 +212,7 @@ Partitions a collection into buckets of 5 items each.
 ## PARAMETERS
 
 ### -Comparer
-The collection of `IEqualityComparer` to use when comparing each property of the key. If this is not specified the default comparer for each property type will be used unless that type is a string in which case the `DefaultStringComparer` will be used.
+The collection of `IEqualityComparer` to use when comparing each property of the key. If this is not specified the default comparer for each property type will be used, unless that type is a string, in which case the `DefaultStringComparer` will be used.
 
 ```yaml
 Type: KeyComparerParameter

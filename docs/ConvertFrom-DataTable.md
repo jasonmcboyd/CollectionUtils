@@ -31,6 +31,8 @@ Converts `[System.Data.DataTable[]]` or `[System.Data.DataRow[]]` to a collectio
 
 ```powershell
 ConvertFrom-DataTable -Table $table
+ConvertFrom-DataTable $table
+$table | ConvertFrom-DataTable
 ```
 
 Converts DataTables to a collection of PSObjects.
@@ -38,42 +40,12 @@ Converts DataTables to a collection of PSObjects.
 ### Example 2
 
 ```powershell
-ConvertFrom-DataTable $table
-```
-
-Infers the input type, binds it to the `Table` parameter, and converts it to a collection of PSObjects.
-
-### Example 3
-
-```powershell
-$table | ConvertFrom-DataTable
-```
-
-Pipes DataTables and converts them to a collection of PSObjects.
-
-### Example 4
-
-```powershell
 ConvertFrom-DataTable -Row $table.Where({ $_['Age'] -eq 19 })
-```
-
-Converts DataRows to a collection of PSObjects.
-
-### Example 5
-
-```powershell
 ConvertFrom-DataTable $table.Where({ $_['Age'] -eq 19 })
-```
-
-Infers the input type, binds it to the `Row` parameter, and converts it to a collection of PSObjects.
-
-### Example 6
-
-```powershell
 $table.Where({ $_['Age'] -eq 19 }) | ConvertFrom-DataTable
 ```
 
-Pipes DataRows and converts them to a collection of PSObjects.
+Converts DataRows to a collection of PSObjects.
 
 ## PARAMETERS
 
