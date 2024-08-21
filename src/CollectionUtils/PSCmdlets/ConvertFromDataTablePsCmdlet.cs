@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Management.Automation;
 
 namespace CollectionUtils.PSCmdlets
@@ -76,7 +77,7 @@ namespace CollectionUtils.PSCmdlets
       {
         var column = columns[i];
         var columnName = column.ColumnName;
-        var columnValue = row[columnName];
+        var columnValue = row[columnName] is DBNull ? null : row[columnName];
 
         psObject.Properties.Add(new PSNoteProperty(columnName, columnValue));
       }
