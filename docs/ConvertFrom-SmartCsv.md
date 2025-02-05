@@ -5,21 +5,15 @@ online version:
 schema: 2.0.0
 ---
 
-# ConvertFrom-DataTable
+# ConvertFrom-SmartCsv
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
 
 ## SYNTAX
 
-### Table
 ```
-ConvertFrom-DataTable [-Table] <DataTable[]> [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### Row
-```
-ConvertFrom-DataTable [-Row] <DataRow[]> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ConvertFrom-SmartCsv [-CsvInput] <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -36,27 +30,12 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Row
-{{ Fill Row Description }}
+### -CsvInput
+{{ Fill CsvInput Description }}
 
 ```yaml
-Type: DataRow[]
-Parameter Sets: Row
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -Table
-{{ Fill Table Description }}
-
-```yaml
-Type: DataTable[]
-Parameter Sets: Table
+Type: String
+Parameter Sets: (All)
 Aliases:
 
 Required: True
@@ -86,9 +65,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.Data.DataTable[]
-
-### System.Data.DataRow[]
+### System.String
 
 ## OUTPUTS
 

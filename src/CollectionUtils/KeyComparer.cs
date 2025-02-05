@@ -15,8 +15,8 @@ namespace CollectionUtils
       Comparer = comparer;
     }
 
-    public string Key { get; private set; }
-    public IEqualityComparer Comparer { get; private set; }
+    public string Key { get; }
+    public IEqualityComparer Comparer { get; }
 
     public void Deconstruct(out string key, out IEqualityComparer comparer)
     {

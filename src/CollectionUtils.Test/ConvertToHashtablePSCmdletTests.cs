@@ -31,7 +31,6 @@ namespace CollectionUtils.Test
 
       var results =
         output
-        .Cast<PSObject>()
         .Select(x => x.BaseObject)
         .Cast<Hashtable>()
         .Single();
@@ -57,7 +56,6 @@ namespace CollectionUtils.Test
 
       var results =
         output
-        .Cast<PSObject>()
         .Select(x => x.BaseObject)
         .Cast<Hashtable>()
         .Single();
@@ -88,7 +86,6 @@ namespace CollectionUtils.Test
 
       var results =
         output
-        .Cast<PSObject>()
         .Select(x => x.BaseObject)
         .Cast<Hashtable>()
         .Single();

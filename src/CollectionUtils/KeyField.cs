@@ -17,7 +17,7 @@ namespace CollectionUtils
       Expression = expression;
     }
 
-    public string Property { get; set; } = default!;
+    public string Property { get; set; }
     public ScriptBlock? Expression { get; set; }
   }
 }
