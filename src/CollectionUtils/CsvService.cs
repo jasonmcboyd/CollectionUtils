@@ -232,15 +232,6 @@ namespace CollectionUtils
       public List<string> Values { get; } = new();
     }
 
-    private enum ValueType
-    {
-      Boolean,
-      Decimal,
-      DateTime,
-      Integer,
-      String
-    }
-
     private struct ValueDefinition
     {
       public ValueDefinition(ValueType valueType, bool isNullable)

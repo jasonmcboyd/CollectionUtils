@@ -5,6 +5,7 @@
     internal const string Collection = "Collection";
     internal const string DataTable = "DataTable";
     internal const string Hashtable = "Hashtable";
+    internal const string Property = "Property";
     internal const string SmartCsv = "SmartCsv";
   }
 }
