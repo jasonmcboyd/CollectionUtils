@@ -49,7 +49,7 @@ namespace CollectionUtils
     {
       return
         rawCsvColumns
-        .Select(column => InferValueDefinitionFromCollection(column.Values))
+        .Select(InferValueDefinitionFromCollection)
         .Select(valueType => new ValueConverter(valueType))
         .ToArray();
     }
@@ -86,75 +86,96 @@ namespace CollectionUtils
       return rawCsvColumns;
     }
 
-    private ValueDefinition InferValueDefinitionFromCollection(IEnumerable<string?> values)
+    private ValueDefinition InferValueDefinitionFromCollection(RawCsvColumn rawCsvColumn)
     {
-      var isBoolean = true;
-      var isInteger = true;
-      var isDecimal = true;
-      var isDateTime = true;
+      var matchedBoolean = false;
+      var matchedInteger = false;
+      var matchedDecimal = false;
+      var matchedDateTime = false;
+      var matchedString = false;
 
-      var hasNull = false;
-      var hasBlank = false;
+      var matchedNull = false;
+      var matchedBlank = false;
 
-      foreach (var value in values)
+      foreach (var value in rawCsvColumn.Values)
       {
-        if (value is null || value.Equals("null", StringComparison.OrdinalIgnoreCase))
+        if (value.Equals("null", StringComparison.OrdinalIgnoreCase))
         {
-          hasNull = true;
+          matchedNull = true;
           continue;
         }
 
         if (string.IsNullOrWhiteSpace(value))
         {
-          hasBlank = true;
+          matchedBlank = true;
           continue;
         }
 
-        if (isBoolean && !bool.TryParse(value, out var _))
-          isBoolean = false;
+        // Order matters here. If it successfully parses the integer, then
+        // it will also successfully parse as a decimal. By testing the
+        // integer first we can preempt the decimal test if it matches.
+        // If at the end of the test we have matched on the integer type
+        // but never the decimal type, then we know all values are integer.
+        // If we have matched on integer or decimal, then we know at least
+        // one value was not a whole number so we should treat all values
+        // as decimals.
+        if (int.TryParse(value, out var _))
+        {
+          matchedInteger = true;
+          continue;
+        }
 
-        if (isInteger && !int.TryParse(value, out var _))
-          isInteger = false;
+        if (decimal.TryParse(value, out var _))
+        {
+          matchedDecimal = true;
+          continue;
+        }
 
-        if (isDecimal && !decimal.TryParse(value, out var _))
-          isDecimal = false;
+        if (bool.TryParse(value, out var _))
+        {
+          matchedBoolean = true;
+          continue;
+        }
 
-        if (isDateTime && !DateTime.TryParse(value, out var _))
-          isDateTime = false;
+        if (DateTime.TryParse(value, out var _))
+        {
+          matchedDateTime = true;
+          continue;
+        }
 
-        if (!isBoolean && !isInteger && !isDecimal && !isDateTime)
-          break;
+        matchedString = true;
+        break;
       }
 
-      if (!isBoolean && !isInteger && !isDecimal && !isDateTime)
-        return new ValueDefinition(ValueType.String, hasNull);
+      if (matchedString || (!matchedInteger && !matchedDateTime && !matchedDecimal && !matchedBoolean))
+        return new ValueDefinition(ValueType.String, matchedNull);
 
       var matchCount = 0;
 
-      if (isDateTime)
+      if (matchedDateTime)
         matchCount++;
 
-      if (isBoolean)
+      if (matchedBoolean)
         matchCount++;
 
-      if (isInteger || isDecimal)
+      if (matchedInteger || matchedDecimal)
         matchCount++;
 
       if (matchCount != 1)
-        throw new InvalidOperationException("Unable to infer the datatype because it matched on multiple possible types.");
+        throw new InvalidOperationException($"Unable to infer the datatype for '{rawCsvColumn.ColumnName}' because it matched on multiple types.");
 
-      // Order matters because if the value is an integer is will also be a decimal.
-      if (isInteger)
-        return new ValueDefinition(ValueType.Integer, hasNull || hasBlank);
+      // Order matters here. We must test decimal before we test integer.
+      if (matchedDecimal)
+        return new ValueDefinition(ValueType.Decimal, matchedNull || matchedBlank);
 
-      if (isDecimal)
-        return new ValueDefinition(ValueType.Decimal, hasNull || hasBlank);
+      if (matchedInteger)
+        return new ValueDefinition(ValueType.Integer, matchedNull || matchedBlank);
 
-      if (isDateTime)
-        return new ValueDefinition(ValueType.DateTime, hasNull || hasBlank);
+      if (matchedDateTime)
+        return new ValueDefinition(ValueType.DateTime, matchedNull || matchedBlank);
 
-      if (isBoolean)
-        return new ValueDefinition(ValueType.Boolean, hasNull || hasBlank);
+      if (matchedBoolean)
+        return new ValueDefinition(ValueType.Boolean, matchedNull || matchedBlank);
 
       throw new InvalidOperationException("Unhandled type encountered.");
     }
