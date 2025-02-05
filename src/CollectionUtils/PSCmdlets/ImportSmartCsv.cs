@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Management.Automation;
 using System.Threading;
 
@@ -24,7 +25,13 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
-      var csvInput = File.ReadAllText(Path!);
+      string csvInput;
+
+      using (var stream = new FileStream(Path!, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      using (var reader = new StreamReader(stream))
+      {
+        csvInput = reader.ReadToEnd();
+      }
 
       if (_CancellationTokenSource.IsCancellationRequested)
         return;
