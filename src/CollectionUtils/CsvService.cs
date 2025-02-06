@@ -25,8 +25,6 @@ namespace CollectionUtils
 
       var typeCodes = InferTypeCodesForRawCsvColumns(rawCsvColumns);
 
-      var valueConverter = new ValueConverter();
-
       for (int row = 0; row < rowCount; row++)
       {
         var psObject = new PSObject();
@@ -35,7 +33,7 @@ namespace CollectionUtils
         {
           var columnName = rawCsvColumns[column].ColumnName;
           var rawValue = rawCsvColumns[column].Values[row];
-          var parsedValue = valueConverter.ConvertValue(rawValue, typeCodes[column]);
+          var parsedValue = TypeConverter.Parse(rawValue, typeCodes[column]);
 
           psObject.Properties.Add(new PSNoteProperty(columnName, parsedValue));
         }
@@ -179,21 +177,6 @@ namespace CollectionUtils
         return TypeCode.Boolean;
 
       throw new InvalidOperationException("Unhandled type encountered.");
-    }
-
-    private class ValueConverter
-    {
-      public object? ConvertValue(string? value, TypeCode typeCode)
-      {
-        if (value == null
-            || value.Equals("null", StringComparison.OrdinalIgnoreCase)
-            || (typeCode != TypeCode.String && string.IsNullOrWhiteSpace(value)))
-        {
-          return null;
-        }
-
-        return TypeConverter.Parse(value, typeCode);
-      }
     }
 
     private class RawCsvColumn

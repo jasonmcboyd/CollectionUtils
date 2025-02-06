@@ -6,7 +6,7 @@ namespace CollectionUtils
   {
     public static object? Convert(object? value, TypeCode type)
     {
-      if (value == null)
+      if (value == null || value == DBNull.Value)
         return null;
 
       if (value is not IConvertible)
@@ -17,8 +17,11 @@ namespace CollectionUtils
 
     public static object? Parse(string? value, TypeCode type)
     {
-      if (string.IsNullOrWhiteSpace(value))
+      if (string.IsNullOrWhiteSpace(value)
+          || value.Equals("null", StringComparison.OrdinalIgnoreCase))
+      {
         return null;
+      }
 
       switch (type)
       {

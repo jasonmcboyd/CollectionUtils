@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Convert-Property [-InputObject] <PSObject[]> [-Property] <String> [-Type] <ValueType>
+Convert-Property [-InputObject] <PSObject[]> [-Property] <String> [-Type] <TypeCode>
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -65,10 +65,10 @@ Accept wildcard characters: False
 {{ Fill Type Description }}
 
 ```yaml
-Type: ValueType
+Type: TypeCode
 Parameter Sets: (All)
 Aliases:
-Accepted values: Boolean, Decimal, DateTime, Integer, String
+Accepted values: Empty, Object, DBNull, Boolean, Char, SByte, Byte, Int16, UInt16, Int32, UInt32, Int64, UInt64, Single, Double, Decimal, DateTime, String
 
 Required: True
 Position: 3
