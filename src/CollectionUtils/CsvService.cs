@@ -23,17 +23,19 @@ namespace CollectionUtils
       if (rowCount == 0)
         yield break;
 
-      var valueConverters = CreateValueConverters(rawCsvColumns).ToArray();
+      var typeCodes = InferTypeCodesForRawCsvColumns(rawCsvColumns);
+
+      var valueConverter = new ValueConverter();
 
       for (int row = 0; row < rowCount; row++)
       {
         var psObject = new PSObject();
 
-        for (int column = 0; column < valueConverters.Length; column++)
+        for (int column = 0; column < typeCodes.Length; column++)
         {
           var columnName = rawCsvColumns[column].ColumnName;
           var rawValue = rawCsvColumns[column].Values[row];
-          var parsedValue = valueConverters[column].ConvertValue(rawValue);
+          var parsedValue = valueConverter.ConvertValue(rawValue, typeCodes[column]);
 
           psObject.Properties.Add(new PSNoteProperty(columnName, parsedValue));
         }
@@ -45,12 +47,11 @@ namespace CollectionUtils
       }
     }
 
-    private ValueConverter[] CreateValueConverters(RawCsvColumn[] rawCsvColumns)
+    private TypeCode[] InferTypeCodesForRawCsvColumns(RawCsvColumn[] rawCsvColumns)
     {
       return
         rawCsvColumns
-        .Select(InferValueDefinitionFromCollection)
-        .Select(valueType => new ValueConverter(valueType))
+        .Select(InferTypeCodeFromCollection)
         .ToArray();
     }
 
@@ -86,7 +87,7 @@ namespace CollectionUtils
       return rawCsvColumns;
     }
 
-    private ValueDefinition InferValueDefinitionFromCollection(RawCsvColumn rawCsvColumn)
+    private TypeCode InferTypeCodeFromCollection(RawCsvColumn rawCsvColumn)
     {
       var matchedBoolean = false;
       var matchedInteger = false;
@@ -148,7 +149,7 @@ namespace CollectionUtils
       }
 
       if (matchedString || (!matchedInteger && !matchedDateTime && !matchedDecimal && !matchedBoolean))
-        return new ValueDefinition(ValueType.String, matchedNull);
+        return TypeCode.String;
 
       var matchCount = 0;
 
@@ -166,58 +167,32 @@ namespace CollectionUtils
 
       // Order matters here. We must test decimal before we test integer.
       if (matchedDecimal)
-        return new ValueDefinition(ValueType.Decimal, matchedNull || matchedBlank);
+        return TypeCode.Decimal;
 
       if (matchedInteger)
-        return new ValueDefinition(ValueType.Integer, matchedNull || matchedBlank);
+        return TypeCode.Int32;
 
       if (matchedDateTime)
-        return new ValueDefinition(ValueType.DateTime, matchedNull || matchedBlank);
+        return TypeCode.DateTime;
 
       if (matchedBoolean)
-        return new ValueDefinition(ValueType.Boolean, matchedNull || matchedBlank);
+        return TypeCode.Boolean;
 
       throw new InvalidOperationException("Unhandled type encountered.");
     }
 
     private class ValueConverter
     {
-      public ValueConverter(ValueDefinition valueDefinition)
-      {
-        ValueDefinition = valueDefinition;
-      }
-
-      private ValueDefinition ValueDefinition { get; }
-
-      public object? ConvertValue(string? value)
+      public object? ConvertValue(string? value, TypeCode typeCode)
       {
         if (value == null
             || value.Equals("null", StringComparison.OrdinalIgnoreCase)
-            || (ValueDefinition.ValueType != ValueType.String && string.IsNullOrWhiteSpace(value)))
+            || (typeCode != TypeCode.String && string.IsNullOrWhiteSpace(value)))
         {
           return null;
         }
 
-        switch (ValueDefinition.ValueType)
-        {
-          case ValueType.Boolean:
-              return bool.Parse(value);
-
-          case ValueType.DateTime:
-              return DateTime.Parse(value);
-
-          case ValueType.Decimal:
-              return decimal.Parse(value);
-
-          case ValueType.Integer:
-              return int.Parse(value);
-
-          case ValueType.String:
-              return value;
-
-          default:
-            throw new NotImplementedException($"Conversion of value type '{ValueDefinition}' has not been implemented.");
-        }
+        return TypeConverter.Parse(value, typeCode);
       }
     }
 
@@ -230,40 +205,6 @@ namespace CollectionUtils
 
       public string ColumnName { get; set; }
       public List<string> Values { get; } = new();
-    }
-
-    private struct ValueDefinition
-    {
-      public ValueDefinition(ValueType valueType, bool isNullable)
-      {
-        ValueType = valueType;
-        IsNullable = isNullable;
-
-        switch (valueType)
-        {
-          case ValueType.Boolean:
-            Type = IsNullable ? typeof(bool?) : typeof(bool);
-            break;
-          case ValueType.DateTime:
-            Type = IsNullable ? typeof(DateTime?) : typeof(DateTime);
-            break;
-          case ValueType.Decimal:
-            Type = IsNullable ? typeof(decimal?) : typeof(decimal);
-            break;
-          case ValueType.Integer:
-            Type = IsNullable ? typeof(int?) : typeof(int);
-            break;
-          case ValueType.String:
-            Type = typeof(string);
-            break;
-          default:
-            throw new NotImplementedException($"Value type '{ValueType}' has not been implemented.");
-        }
-      }
-
-      public ValueType ValueType { get; }
-      public bool IsNullable { get; }
-      public Type Type { get; }
     }
   }
 }

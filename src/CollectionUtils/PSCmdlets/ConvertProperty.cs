@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Management.Automation;
-using System.Threading;
 
 namespace CollectionUtils.PSCmdlets
 {
@@ -25,7 +23,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(
       Mandatory = true,
       Position = 3)]
-    public ValueType Type { get; set; } = default!;
+    public TypeCode Type { get; set; } = default!;
 
     #endregion
 
@@ -54,30 +52,16 @@ namespace CollectionUtils.PSCmdlets
       foreach (var property in obj.Properties)
       {
         var newValue =
-          property.Name.Equals(Property, StringComparison.OrdinalIgnoreCase)
-          ? GetPropertyValue(property.Value)
-          : property.Value;
+          !property.Name.Equals(Property, StringComparison.OrdinalIgnoreCase)
+          ? property.Value
+          : property.Value is string stringValue
+          ? TypeConverter.Parse(stringValue, Type)
+          : TypeConverter.Convert(property.Value, Type);
 
         psObject.Properties.Add(new PSNoteProperty(property.Name, newValue));
       }
 
       return psObject;
-    }
-
-    private object? GetPropertyValue(object? value)
-    {
-      if (value == null)
-        return null;
-
-      return Type switch
-      {
-        ValueType.Boolean => Convert.ChangeType(value, TypeCode.Boolean),
-        ValueType.DateTime => Convert.ChangeType(value, TypeCode.DateTime),
-        ValueType.Decimal => Convert.ChangeType(value, TypeCode.Decimal),
-        ValueType.Integer => Convert.ChangeType(value, TypeCode.Int32),
-        ValueType.String => value.ToString(),
-        _ => throw new NotImplementedException($"Conversion has not been implemented for '{Type}'.")
-      };
     }
 
     protected override void StopProcessing()
@@ -86,7 +70,5 @@ namespace CollectionUtils.PSCmdlets
 
       base.StopProcessing();
     }
-
-
   }
 }
