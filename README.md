@@ -26,6 +26,11 @@ Converts a collection of objects to a `Hashtable`.
 Imports a CSV file into a collection of PSObjects and attempts to infer data types.
 
 
+### **[`Import-SmartExcel`](./docs/Import-SmartExcel.md)**
+
+Imports an Excel file into a collection of PSObjects and attempts to infer data types.
+
+
 ### **[`Join-Collection`](./docs/Join-Collection.md)**
 
 Joins two collections together.
