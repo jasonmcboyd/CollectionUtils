@@ -1,29 +1,25 @@
-﻿using NotVisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Management.Automation;
 using System.Threading;
 
-namespace CollectionUtils
+namespace CollectionUtils.Data
 {
-  internal class CsvService
+  internal static class DataColumnsService
   {
-    public IEnumerable<PSObject> ParseCsvInput(
-      string csvInput,
+    public static IEnumerable<PSObject> ConvertDataColumnsToPsObject(
+      DataColumn[] dataColumns,
       CancellationToken cancellationToken)
     {
-      var rawCsvColumns = ParseRawCsvColumns(csvInput);
-
-      if (cancellationToken.IsCancellationRequested)
+      if (dataColumns.Length == 0)
         yield break;
 
-      var rowCount = rawCsvColumns == null ? 0 : rawCsvColumns[0].Values.Count;
+      var rowCount = dataColumns[0].Values.Count;
 
       if (rowCount == 0)
         yield break;
 
-      var typeCodes = InferTypeCodesForRawCsvColumns(rawCsvColumns);
+      var typeCodes = DataColumnsService.InferTypeCodesForRawCsvColumns(dataColumns);
 
       for (int row = 0; row < rowCount; row++)
       {
@@ -31,8 +27,8 @@ namespace CollectionUtils
 
         for (int column = 0; column < typeCodes.Length; column++)
         {
-          var columnName = rawCsvColumns[column].ColumnName;
-          var rawValue = rawCsvColumns[column].Values[row];
+          var columnName = dataColumns[column].ColumnName;
+          var rawValue = dataColumns[column].Values[row];
           var parsedValue = TypeConverter.Parse(rawValue, typeCodes[column]);
 
           psObject.Properties.Add(new PSNoteProperty(columnName, parsedValue));
@@ -41,51 +37,18 @@ namespace CollectionUtils
         yield return psObject;
 
         if (cancellationToken.IsCancellationRequested)
-          yield break;
+          throw new OperationCanceledException();
       }
     }
-
-    private TypeCode[] InferTypeCodesForRawCsvColumns(RawCsvColumn[] rawCsvColumns)
+    public static TypeCode[] InferTypeCodesForRawCsvColumns(DataColumn[] dataColumns)
     {
       return
-        rawCsvColumns
+        dataColumns
         .Select(InferTypeCodeFromCollection)
         .ToArray();
     }
 
-    private RawCsvColumn[]? ParseRawCsvColumns(string csvInput)
-    {
-      using var csvReader = new StringReader(csvInput);
-      using var parser = new CsvTextFieldParser(csvReader);
-
-      if (parser.EndOfData)
-        return null;
-
-      var rawCsvColumns =
-        parser
-        .ReadFields()
-        .Select(field => new RawCsvColumn(field.Trim()))
-        .ToArray();
-
-      var rowCount = 0;
-
-      while (!parser.EndOfData)
-      {
-        string[] fields = parser.ReadFields();
-        rowCount++;
-
-        if (fields.Length != rawCsvColumns.Length)
-          throw new InvalidOperationException(
-            $"Encountered a row at line {rowCount} that did not have the same number of fields as headers.");
-
-        for (int i = 0; i < fields.Length; i++)
-          rawCsvColumns[i].Values.Add(fields[i]);
-      }
-
-      return rawCsvColumns;
-    }
-
-    private TypeCode InferTypeCodeFromCollection(RawCsvColumn rawCsvColumn)
+    public static TypeCode InferTypeCodeFromCollection(DataColumn dataColumns)
     {
       var matchedBoolean = false;
       var matchedInteger = false;
@@ -96,9 +59,9 @@ namespace CollectionUtils
       var matchedNull = false;
       var matchedBlank = false;
 
-      foreach (var value in rawCsvColumn.Values)
+      foreach (var value in dataColumns.Values)
       {
-        if (value.Equals("null", StringComparison.OrdinalIgnoreCase))
+        if (value == null || value.Equals("null", StringComparison.OrdinalIgnoreCase))
         {
           matchedNull = true;
           continue;
@@ -146,7 +109,7 @@ namespace CollectionUtils
         break;
       }
 
-      if (matchedString || (!matchedInteger && !matchedDateTime && !matchedDecimal && !matchedBoolean))
+      if (matchedString || !matchedInteger && !matchedDateTime && !matchedDecimal && !matchedBoolean)
         return TypeCode.String;
 
       var matchCount = 0;
@@ -161,7 +124,7 @@ namespace CollectionUtils
         matchCount++;
 
       if (matchCount != 1)
-        throw new InvalidOperationException($"Unable to infer the datatype for '{rawCsvColumn.ColumnName}' because it matched on multiple types.");
+        throw new InvalidOperationException($"Unable to infer the datatype for '{dataColumns.ColumnName}' because it matched on multiple types.");
 
       // Order matters here. We must test decimal before we test integer.
       if (matchedDecimal)
@@ -179,15 +142,5 @@ namespace CollectionUtils
       throw new InvalidOperationException("Unhandled type encountered.");
     }
 
-    private class RawCsvColumn
-    {
-      public RawCsvColumn(string columnName)
-      {
-        ColumnName = columnName;
-      }
-
-      public string ColumnName { get; set; }
-      public List<string> Values { get; } = new();
-    }
   }
 }

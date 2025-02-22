@@ -7,5 +7,6 @@
     internal const string Hashtable = "Hashtable";
     internal const string Property = "Property";
     internal const string SmartCsv = "SmartCsv";
+    internal const string SmartExcel = "SmartExcel";
   }
 }

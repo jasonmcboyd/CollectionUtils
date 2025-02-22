@@ -53,6 +53,7 @@ $version =
 $functionsToExport = @(
   'ConvertFrom-DataTable'
   'ConvertFrom-SmartCsv'
+  'ConvertFrom-SmartExcel'
   'Convert-Property'
   'ConvertTo-Hashtable'
   'Import-SmartCsv'
