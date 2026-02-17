@@ -196,5 +196,75 @@ namespace CollectionUtils.Test
         Directory.Delete(tempDir, true);
       }
     }
+
+    [TestMethod]
+    public void Invoke_FileOpenByAnotherProcess_SucceedsWithFileShareReadWrite()
+    {
+      // Arrange: Create an Excel file, then hold it open with a competing FileStream
+      // (simulating Excel or another process). Before the fix, File.Open defaulted to
+      // FileShare.None, which caused an IOException when the file was already open.
+      // After the fix, FileShare.ReadWrite allows concurrent access.
+      using var shell = PowerShellUtilities.CreateShell();
+
+      var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+      Directory.CreateDirectory(tempDir);
+
+      var xlsxPath = Path.Combine(tempDir, "shared_access.xlsx");
+
+      var sheetXml = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<worksheet xmlns=""http://schemas.openxmlformats.org/spreadsheetml/2006/main"">
+  <dimension ref=""A1:A2""/>
+  <sheetData>
+    <row r=""1"">
+      <c r=""A1"" t=""s""><v>0</v></c>
+    </row>
+    <row r=""2"">
+      <c r=""A2"" t=""s""><v>1</v></c>
+    </row>
+  </sheetData>
+</worksheet>";
+
+      var sharedStringsXml = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<sst xmlns=""http://schemas.openxmlformats.org/spreadsheetml/2006/main"" count=""2"" uniqueCount=""2"">
+  <si><t>Name</t></si>
+  <si><t>Alice</t></si>
+</sst>";
+
+      CreateXlsx(xlsxPath, sheetXml, sharedStringsXml);
+
+      try
+      {
+        // Hold the file open with a competing FileStream, as Excel would.
+        using var holdOpen = new FileStream(
+          xlsxPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+        var command = $"Import-SmartExcel -Path '{xlsxPath}'";
+
+        // Act - should succeed despite the file being held open
+        var results = shell.InvokeScript(command).ToArray();
+
+        // Check for errors
+        if (shell.HadErrors)
+        {
+          var errors = string.Join("; ", shell.Streams.Error.Select(e => e.ToString()));
+          Assert.Fail($"PowerShell command had errors: {errors}");
+        }
+
+        // Assert - import should succeed and return data
+        Assert.AreEqual(1, results.Length,
+          $"Expected 1 worksheet result, got {results.Length}");
+
+        var worksheet = results[0];
+        Assert.AreEqual("Sheet1", worksheet.Properties["WorksheetName"].Value);
+
+        var data = (PSObject[])worksheet.Properties["Data"].Value;
+        Assert.AreEqual(1, data.Length);
+        Assert.AreEqual("Alice", data[0].Properties["Name"].Value);
+      }
+      finally
+      {
+        Directory.Delete(tempDir, true);
+      }
+    }
   }
 }

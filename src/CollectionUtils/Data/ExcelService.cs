@@ -40,7 +40,7 @@ namespace CollectionUtils.Data
       int[] worksheetIndexes,
       CancellationToken cancellationToken)
     {
-      using var stream = File.Open(workbookPath, FileMode.Open, FileAccess.Read);
+      using var stream = new FileStream(workbookPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
       using var reader = ExcelReaderFactory.CreateReader(stream);
 
       var index = 0;

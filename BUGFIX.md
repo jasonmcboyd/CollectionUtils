@@ -41,7 +41,7 @@ Bugs identified during code review. Organized by severity.
   - `reader.Read()` returns `false` for empty sheets but the result is discarded. Subsequent `reader[columnIndex]` access throws.
   - **Fix:** Check the return value and `continue` to the next sheet if `false`.
 
-- [ ] **#7 — Excel file opened without `FileShare.Read`**
+- [x] **#7 — Excel file opened without `FileShare.Read`**
   - `src/CollectionUtils/Data/ExcelService.cs:43`
   - `File.Open` defaults to `FileShare.None`, locking the file exclusively. Cannot import files currently open in Excel.
   - **Fix:** Use `new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)` as the CSV importer already does.
