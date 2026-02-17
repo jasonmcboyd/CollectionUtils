@@ -16,7 +16,7 @@ Bugs identified during code review. Organized by severity.
   - The `$functionsToExport` array contains `'ConvertFrom-SmartExcel'`, but the actual cmdlet is `Import-SmartExcel`. The Excel import feature is invisible to PSGallery users.
   - **Fix:** Change `'ConvertFrom-SmartExcel'` to `'Import-SmartExcel'` in the exports list.
 
-- [ ] **#3 — CI/CD publishes to PSGallery on every push to every branch**
+- [x] **#3 — CI/CD publishes to PSGallery on every push to every branch**
   - `.github/workflows/publish-release.yml:3`
   - Triggers on `on: [push]` with no branch or tag filter. Every push (including feature branches and WIP) publishes a new version.
   - **Fix:** Restrict to tag pushes (e.g., `on: push: tags: ['v*']`) or add a branch filter and environment gate.
