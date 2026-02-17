@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Management.Automation;
 using System.Threading;
 using CollectionUtils.Data;
@@ -25,9 +25,11 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
+      var resolvedPath = SessionState.Path.GetUnresolvedProviderPathFromPSPath(Path!);
+
       string csvInput;
 
-      using (var stream = new FileStream(Path!, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+      using (var stream = new FileStream(resolvedPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
       using (var reader = new StreamReader(stream))
       {
         csvInput = reader.ReadToEnd();

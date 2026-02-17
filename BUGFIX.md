@@ -25,7 +25,7 @@ Bugs identified during code review. Organized by severity.
 
 ## High
 
-- [ ] **#4 — Relative paths resolve against .NET working directory, not PowerShell `$PWD`**
+- [x] **#4 — Relative paths resolve against .NET working directory, not PowerShell `$PWD`**
   - `src/CollectionUtils/PSCmdlets/ImportSmartCsv.cs:30`
   - `src/CollectionUtils/PSCmdlets/ImportSmartExcel.cs:50` (via ExcelService)
   - After `Set-Location`, PowerShell `$PWD` and .NET `Environment.CurrentDirectory` diverge. Relative paths like `.\data.csv` open the wrong file or throw "file not found."

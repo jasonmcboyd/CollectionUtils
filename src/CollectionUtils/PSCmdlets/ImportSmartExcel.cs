@@ -1,4 +1,4 @@
-﻿using CollectionUtils.Data;
+using CollectionUtils.Data;
 using System;
 using System.Management.Automation;
 using System.Threading;
@@ -47,7 +47,9 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
-      foreach (var psObject in _ExcelService.ReadExcelWorkbook(Path!, SheetName ?? Array.Empty<string>(), SheetIndex ?? Array.Empty<int>(), _CancellationTokenSource.Token))
+      var resolvedPath = SessionState.Path.GetUnresolvedProviderPathFromPSPath(Path!);
+
+      foreach (var psObject in _ExcelService.ReadExcelWorkbook(resolvedPath, SheetName ?? Array.Empty<string>(), SheetIndex ?? Array.Empty<int>(), _CancellationTokenSource.Token))
         WriteObject(psObject);
 
       base.ProcessRecord();
