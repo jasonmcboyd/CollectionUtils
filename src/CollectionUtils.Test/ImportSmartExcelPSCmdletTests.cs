@@ -147,5 +147,54 @@ namespace CollectionUtils.Test
         Directory.Delete(tempDir, true);
       }
     }
+
+    [TestMethod]
+    public void Invoke_EmptyWorksheet_DoesNotThrow()
+    {
+      // Arrange: Create an Excel file with a completely empty worksheet (no rows).
+      // Before the fix, reader.Read() returned false but the result was discarded,
+      // causing subsequent reader[columnIndex] access to throw.
+      using var shell = PowerShellUtilities.CreateShell();
+
+      var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+      Directory.CreateDirectory(tempDir);
+
+      var xlsxPath = Path.Combine(tempDir, "empty_sheet.xlsx");
+
+      // Sheet with empty sheetData - no rows at all
+      var sheetXml = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<worksheet xmlns=""http://schemas.openxmlformats.org/spreadsheetml/2006/main"">
+  <sheetData/>
+</worksheet>";
+
+      var sharedStringsXml = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<sst xmlns=""http://schemas.openxmlformats.org/spreadsheetml/2006/main"" count=""0"" uniqueCount=""0"">
+</sst>";
+
+      CreateXlsx(xlsxPath, sheetXml, sharedStringsXml);
+
+      try
+      {
+        var command = $"Import-SmartExcel -Path '{xlsxPath}'";
+
+        // Act - should not throw
+        var results = shell.InvokeScript(command).ToArray();
+
+        // Check for errors
+        if (shell.HadErrors)
+        {
+          var errors = string.Join("; ", shell.Streams.Error.Select(e => e.ToString()));
+          Assert.Fail($"PowerShell command had errors: {errors}");
+        }
+
+        // Assert - empty sheet should produce no worksheet results
+        Assert.AreEqual(0, results.Length,
+          $"Expected 0 worksheet results for empty sheet, got {results.Length}");
+      }
+      finally
+      {
+        Directory.Delete(tempDir, true);
+      }
+    }
   }
 }

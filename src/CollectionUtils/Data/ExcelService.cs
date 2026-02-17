@@ -61,7 +61,11 @@ namespace CollectionUtils.Data
         {
           var columnCount = reader.FieldCount;
 
-          reader.Read();
+          if (!reader.Read())
+          {
+            index++;
+            continue;
+          }
 
           var columns =
             Enumerable

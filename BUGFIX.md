@@ -36,7 +36,7 @@ Bugs identified during code review. Organized by severity.
   - `reader[columnIndex].ToString()` throws when a header cell is empty/null. Empty trailing columns are extremely common in Excel files.
   - **Fix:** Use `reader[columnIndex]?.ToString() ?? $"Column{columnIndex}"` or similar null-safe logic.
 
-- [ ] **#6 — `reader.Read()` return value not checked — crashes on empty worksheets**
+- [x] **#6 — `reader.Read()` return value not checked — crashes on empty worksheets**
   - `src/CollectionUtils/Data/ExcelService.cs:61`
   - `reader.Read()` returns `false` for empty sheets but the result is discarded. Subsequent `reader[columnIndex]` access throws.
   - **Fix:** Check the return value and `continue` to the next sheet if `false`.
