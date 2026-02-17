@@ -47,39 +47,43 @@ namespace CollectionUtils.Data
 
       do
       {
+        var shouldProcess = true;
+
         if (worksheetNames.Length > 0 || worksheetIndexes.Length > 0)
         {
           var matchedWorksheetName = worksheetNames.Any(worksheetName => worksheetName.Equals(reader.Name, StringComparison.OrdinalIgnoreCase));
           var matchedWorksheetIndex = worksheetIndexes.Any(worksheetIndex => worksheetIndex == index);
 
-          if (!matchedWorksheetIndex && !matchedWorksheetName)
-            continue;
+          shouldProcess = matchedWorksheetIndex || matchedWorksheetName;
         }
 
-        var columnCount = reader.FieldCount;
-
-        reader.Read();
-
-        var columns =
-          Enumerable
-          .Range(0, columnCount)
-          .Select(columnIndex => reader[columnIndex].ToString())
-          .Select(columnName => new DataColumn(columnName)).ToArray();
-
-        while (reader.Read())
+        if (shouldProcess)
         {
-          if (cancellationToken.IsCancellationRequested)
-            throw new OperationCanceledException();
+          var columnCount = reader.FieldCount;
 
-          for (int i = 0; i < columns.Length; i++)
-            columns[i].Values.Add(reader[i]?.ToString());
+          reader.Read();
+
+          var columns =
+            Enumerable
+            .Range(0, columnCount)
+            .Select(columnIndex => reader[columnIndex].ToString())
+            .Select(columnName => new DataColumn(columnName)).ToArray();
+
+          while (reader.Read())
+          {
+            if (cancellationToken.IsCancellationRequested)
+              throw new OperationCanceledException();
+
+            for (int i = 0; i < columns.Length; i++)
+              columns[i].Values.Add(reader[i]?.ToString());
+          }
+
+          yield return new WorksheetDataColumns
+          {
+            WorksheetName = reader.Name,
+            DataColumns = columns
+          };
         }
-
-        yield return new WorksheetDataColumns
-        {
-          WorksheetName = reader.Name,
-          DataColumns = columns
-        };
 
         index++;
       } while (reader.NextResult());
