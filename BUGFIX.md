@@ -31,7 +31,7 @@ Bugs identified during code review. Organized by severity.
   - After `Set-Location`, PowerShell `$PWD` and .NET `Environment.CurrentDirectory` diverge. Relative paths like `.\data.csv` open the wrong file or throw "file not found."
   - **Fix:** Resolve paths via `SessionState.Path.GetUnresolvedProviderPathFromPSPath(Path)` before passing to file APIs.
 
-- [ ] **#5 — NullReferenceException on null Excel header cells**
+- [x] **#5 — NullReferenceException on null Excel header cells**
   - `src/CollectionUtils/Data/ExcelService.cs:66`
   - `reader[columnIndex].ToString()` throws when a header cell is empty/null. Empty trailing columns are extremely common in Excel files.
   - **Fix:** Use `reader[columnIndex]?.ToString() ?? $"Column{columnIndex}"` or similar null-safe logic.

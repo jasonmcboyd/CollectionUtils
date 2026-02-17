@@ -66,7 +66,7 @@ namespace CollectionUtils.Data
           var columns =
             Enumerable
             .Range(0, columnCount)
-            .Select(columnIndex => reader[columnIndex].ToString())
+            .Select(columnIndex => reader[columnIndex]?.ToString() ?? $"Column{columnIndex}")
             .Select(columnName => new DataColumn(columnName)).ToArray();
 
           while (reader.Read())
