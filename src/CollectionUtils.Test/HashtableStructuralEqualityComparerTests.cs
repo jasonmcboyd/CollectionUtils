@@ -193,5 +193,91 @@ namespace CollectionUtils.Test
       Assert.IsFalse(result);
       Assert.AreNotEqual(leftGuid, rightGuid);
     }
+    [TestMethod]
+    public void MultipleKeys_SwappedStringValues_HashCodesDoNotCollide()
+    {
+      // Arrange - this scenario caused collisions with XOR because XOR is commutative
+      var left = new Hashtable { { "FirstName", "alice" }, { "LastName", "bob" } };
+      var right = new Hashtable { { "FirstName", "bob" }, { "LastName", "alice" } };
+
+      var sut = new HashtableStructuralEqualityComparer("FirstName", "LastName");
+
+      // Act
+      var leftHash = sut.GetHashCode(left);
+      var rightHash = sut.GetHashCode(right);
+      var result = sut.Equals(left, right);
+
+      // Assert
+      Assert.IsFalse(result);
+      Assert.AreNotEqual(leftHash, rightHash);
+    }
+
+    [TestMethod]
+    public void MultipleKeys_IdenticalStringValues_HashCodeIsNotZero()
+    {
+      // Arrange - with XOR, identical values across keys cancel out to zero
+      var obj = new Hashtable { { "FirstName", "same" }, { "LastName", "same" } };
+
+      var sut = new HashtableStructuralEqualityComparer("FirstName", "LastName");
+
+      // Act
+      var hashCode = sut.GetHashCode(obj);
+
+      // Assert - hash should not degenerate to zero just because the values are equal
+      Assert.AreNotEqual(0, hashCode);
+    }
+
+    [TestMethod]
+    public void MultipleKeys_SwappedIntValues_HashCodesDoNotCollide()
+    {
+      // Arrange - same as swapped strings but with integers
+      var left = new Hashtable { { "A", 1 }, { "B", 2 } };
+      var right = new Hashtable { { "A", 2 }, { "B", 1 } };
+
+      var sut = new HashtableStructuralEqualityComparer("A", "B");
+
+      // Act
+      var leftHash = sut.GetHashCode(left);
+      var rightHash = sut.GetHashCode(right);
+      var result = sut.Equals(left, right);
+
+      // Assert
+      Assert.IsFalse(result);
+      Assert.AreNotEqual(leftHash, rightHash);
+    }
+
+    [TestMethod]
+    public void MultipleKeys_IdenticalIntValues_HashCodeIsNotZero()
+    {
+      // Arrange - with XOR, identical int values across keys cancel out to zero
+      var obj = new Hashtable { { "A", 42 }, { "B", 42 } };
+
+      var sut = new HashtableStructuralEqualityComparer("A", "B");
+
+      // Act
+      var hashCode = sut.GetHashCode(obj);
+
+      // Assert
+      Assert.AreNotEqual(0, hashCode);
+    }
+
+    [TestMethod]
+    public void MultipleKeys_NullValues_HashCodeIsConsistent()
+    {
+      // Arrange
+      var left = new Hashtable { { "A", null }, { "B", null } };
+      var right = new Hashtable { { "A", null }, { "B", null } };
+
+      var sut = new HashtableStructuralEqualityComparer("A", "B");
+
+      // Act
+      var leftHash = sut.GetHashCode(left);
+      var rightHash = sut.GetHashCode(right);
+      var result = sut.Equals(left, right);
+
+      // Assert
+      Assert.IsTrue(result);
+      Assert.AreEqual(leftHash, rightHash);
+    }
   }
 }

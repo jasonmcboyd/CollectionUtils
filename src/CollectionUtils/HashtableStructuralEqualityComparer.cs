@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -63,7 +63,7 @@ namespace CollectionUtils
 
     public override int GetHashCode([DisallowNull] Hashtable obj)
     {
-      var hashCode = 0;
+      var hashCode = new HashCode();
 
       for (int i = 0; i < _KeyComparers.Length; i++)
       {
@@ -71,15 +71,15 @@ namespace CollectionUtils
 
         var value = obj[key];
 
-        if (value is string && comparer == EqualityComparer<object>.Default)
-          hashCode ^= _DefaultStringComparer.GetHashCode((string)value!);
+        if (value is string stringValue && comparer == EqualityComparer<object>.Default)
+          hashCode.Add(stringValue, _DefaultStringComparer);
         else if (value is null)
-          hashCode ^= 0;
+          hashCode.Add(0);
         else
-          hashCode ^= comparer.GetHashCode(value);
+          hashCode.Add(comparer.GetHashCode(value));
       }
 
-      return hashCode;
+      return hashCode.ToHashCode();
     }
   }
 }

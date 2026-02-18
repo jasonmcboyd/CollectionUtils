@@ -104,7 +104,7 @@ Bugs identified during code review. Organized by severity.
   - `resultsFromScriptBlock[0]` with no empty check. Key expressions like `{ }` crash with `IndexOutOfRangeException`.
   - **Fix:** Check for empty results and throw a descriptive error.
 
-- [ ] **#18 — XOR hash combination in `HashtableStructuralEqualityComparer`**
+- [x] **#18 — XOR hash combination in `HashtableStructuralEqualityComparer`**
   - `src/CollectionUtils/HashtableStructuralEqualityComparer.cs:64-83`
   - XOR is commutative and self-cancelling. Composite keys with identical or swapped field values collide, degrading performance to O(n).
   - **Fix:** Use `HashCode.Combine` (already used in `PropertyGetter.TupleComparer`).
