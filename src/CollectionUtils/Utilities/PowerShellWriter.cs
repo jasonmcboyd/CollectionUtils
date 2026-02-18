@@ -1,4 +1,4 @@
-﻿using System.Management.Automation;
+using System.Management.Automation;
 
 namespace CollectionUtils.Utilities
 {
@@ -13,6 +13,7 @@ namespace CollectionUtils.Utilities
 
     public void WriteObject(object obj) => Cmdlet.WriteObject(obj);
     public void WriteError(ErrorRecord errorRecord) => Cmdlet.WriteError(errorRecord);
+    public void ThrowTerminatingError(ErrorRecord errorRecord) => Cmdlet.ThrowTerminatingError(errorRecord);
     public void WriteVerbose(string message) => Cmdlet.WriteVerbose(message);
     public void WriteDebug(string message) => Cmdlet.WriteDebug(message);
     public void WriteWarning(string message) => Cmdlet.WriteWarning(message);

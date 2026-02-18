@@ -1,4 +1,4 @@
-﻿using CollectionUtils.JoinCommandHandlers;
+using CollectionUtils.JoinCommandHandlers;
 using CollectionUtils.Utilities;
 using System.ComponentModel;
 using System.Management.Automation;
@@ -15,16 +15,13 @@ namespace CollectionUtils
       {
         KeyCollisionPreference.Error => (key, value) =>
         {
-          powerShellWriter.WriteError(
+          powerShellWriter.ThrowTerminatingError(
             new ErrorRecord(
               new PSArgumentException(
                 $"Key collision detected for key {key}."),
                 "KeyCollision",
                 ErrorCategory.InvalidArgument,
                 null));
-
-          // TODO:
-          //_CancellationTokenSource.Cancel();
         },
         KeyCollisionPreference.Ignore => (key, value) => { },
         KeyCollisionPreference.Warn => (key, value) =>

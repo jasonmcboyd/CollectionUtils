@@ -56,7 +56,7 @@ Bugs identified during code review. Organized by severity.
   - `Dictionary<(string,string), PropertyInfo>` mutated via `GetOrAdd` without synchronization. Corrupts in multi-runspace scenarios (`ForEach-Object -Parallel`).
   - **Fix:** Replace with `ConcurrentDictionary<TKey, TValue>`.
 
-- [ ] **#10 — `KeyCollisionPreference.Error` does not stop processing**
+- [x] **#10 — `KeyCollisionPreference.Error` does not stop processing**
   - `src/CollectionUtils/PSCmdletKeyCollisionStrategySelector.cs:16-28`
   - Calls `WriteError` (non-terminating) but cancellation is commented out with a TODO. Duplicate keys are silently dropped. Behaves identically to `Ignore`.
   - **Fix:** Uncomment and implement the cancellation, or use `ThrowTerminatingError`.
