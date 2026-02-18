@@ -312,5 +312,40 @@ namespace CollectionUtils.Test
       PSObjectCollectionAssert.AreEqual(results.Get<PSObject[]>(1), new[] { 1, 4, 7 });
       PSObjectCollectionAssert.AreEqual(results.Get<PSObject[]>(2), new[] { 2, 5, 8 });
     }
+
+    [TestMethod]
+    public void InvokeWithoutPipeline_ComparerKeyDifferentCaseThanKeyParameter_DoesNotProduceValidationError()
+    {
+      // Arrange
+      // Bug #19: Comparer key "value" should match Key parameter "Value" case-insensitively.
+      // Before the fix, this would trigger a validation error because == is case-sensitive.
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .Comparer("@{ value = [System.StringComparer]::Ordinal }");
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      // Assert
+      Assert.IsFalse(shell.HadErrors, "Command should not produce validation errors when comparer key differs only in case.");
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(2, results.Count);
+    }
   }
 }

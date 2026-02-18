@@ -109,7 +109,7 @@ Bugs identified during code review. Organized by severity.
   - XOR is commutative and self-cancelling. Composite keys with identical or swapped field values collide, degrading performance to O(n).
   - **Fix:** Use `HashCode.Combine` (already used in `PropertyGetter.TupleComparer`).
 
-- [ ] **#19 — Case-sensitive comparer validation in `ConvertToHashtable`**
+- [x] **#19 — Case-sensitive comparer validation in `ConvertToHashtable`**
   - `src/CollectionUtils/PSCmdlets/ConvertToHashtablePsCmdlet.cs:52`
   - Uses `==` (case-sensitive) to match comparer keys. `Join-Collection` correctly uses `StringComparison.OrdinalIgnoreCase`.
   - **Fix:** Use `.Equals(keyComparer.Key, StringComparison.OrdinalIgnoreCase)`.

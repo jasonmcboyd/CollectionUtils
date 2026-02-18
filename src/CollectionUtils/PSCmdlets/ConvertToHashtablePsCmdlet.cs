@@ -49,7 +49,7 @@ namespace CollectionUtils.PSCmdlets
 
       foreach (var keyComparer in Comparer)
       {
-        if (_KeyFields.FirstOrDefault(keyField => keyField.Property == keyComparer.Key) is null)
+        if (_KeyFields.All(keyField => !keyField.Property.Equals(keyComparer.Key, StringComparison.OrdinalIgnoreCase)))
         {
           WriteError(
             new ErrorRecord(
