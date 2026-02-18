@@ -66,7 +66,7 @@ Bugs identified during code review. Organized by severity.
   - `RightKey` for `DisjunctJoin` is `Position = 4`, same as `LeftKey`. All other join types correctly use Position 5 for `RightKey`.
   - **Fix:** Change `Position = 4` to `Position = 5` for the `DisjunctJoin|LeftKey|RightKey` parameter set.
 
-- [ ] **#12 — `ValidateKeyFields` incorrectly requires matching property names between `LeftKey`/`RightKey`**
+- [x] **#12 — `ValidateKeyFields` incorrectly requires matching property names between `LeftKey`/`RightKey`**
   - `src/CollectionUtils/PSCmdlets/JoinCollectionPsCmdlet.cs:226-246`
   - Rejects the primary use case for separate `LeftKey`/`RightKey` — joining on different property names (e.g., `EmployeeId` vs `EmpId`).
   - **Fix:** Only validate that `LeftKey` and `RightKey` have the same count. Remove the property name matching loop.

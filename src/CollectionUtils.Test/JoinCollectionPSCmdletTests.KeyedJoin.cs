@@ -280,6 +280,34 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
+    public void Invoke_LeftKeyAndRightKeyHaveDifferentPropertyNames_CorrectResultsReturned()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$left = @( @{ 'EmployeeId' = 1; 'Name' = 'Alice' }, @{ 'EmployeeId' = 2; 'Name' = 'Bob' } )");
+      shell.InvokeScript("$right = @( @{ 'EmpId' = 1; 'Department' = 'Engineering' }, @{ 'EmpId' = 3; 'Department' = 'Marketing' } )");
+
+      var command =
+        new JoinCollectionCommandBuilder()
+        .Left("$left")
+        .Right("$right")
+        .LeftKey("EmployeeId")
+        .RightKey("EmpId")
+        .KeyedJoin(KeyedJoinType.Inner);
+
+      // Act
+      var results =
+        shell
+        .InvokeCommandBuilder(command)
+        .Cast<dynamic>()
+        .ToArray();
+
+      // Assert - EmployeeId 1 matches EmpId 1, so we expect exactly 1 inner join result
+      Assert.AreEqual(1, results.Length);
+    }
+
+    [TestMethod]
     public void Invoke_KeyValueCasesDoNotMatch_DefaultStringComparer_CorrectResultsReturned()
     {
       // Arrange

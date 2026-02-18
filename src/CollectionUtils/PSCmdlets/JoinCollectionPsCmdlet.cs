@@ -222,28 +222,6 @@ namespace CollectionUtils.PSCmdlets
 
         _CancellationTokenSource.Cancel();
       }
-
-      foreach (var leftKeyField in _LeftKeyFields)
-      {
-        var leftPropertyName = leftKeyField.Property;
-
-        var rightKeyField =
-          _RightKeyFields
-          .FirstOrDefault(rightKeyField => rightKeyField.Property.Equals(leftPropertyName, StringComparison.OrdinalIgnoreCase));
-
-        if (rightKeyField is null)
-        {
-          WriteError(
-            new ErrorRecord(
-              new PSArgumentException(
-                $"LeftKey contains a property name ({leftPropertyName}) that is not in RightKey."),
-                "LeftKeyPropertyNameNotInRightKey",
-                ErrorCategory.InvalidArgument,
-                null));
-
-          _CancellationTokenSource.Cancel();
-        }
-      }
     }
 
     private void ValidateComparers()
