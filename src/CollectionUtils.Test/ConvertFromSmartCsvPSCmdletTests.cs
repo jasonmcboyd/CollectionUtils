@@ -122,5 +122,29 @@ namespace CollectionUtils.Test
       // Assert — header-only CSV should return no data rows
       Assert.AreEqual(0, results.Length);
     }
+
+    [TestMethod]
+    public void Invoke_NullPipedInput_DoesNotThrowNullReferenceException()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      var command = "$null | ConvertFrom-SmartCsv";
+
+      // Act
+      var results =
+        shell
+        .InvokeScript(command)
+        .ToArray();
+
+      // Assert — piping $null must not produce a NullReferenceException.
+      // Verify no errors contain NullReferenceException.
+      foreach (var error in shell.Streams.Error)
+      {
+        Assert.IsFalse(
+          error.Exception is NullReferenceException,
+          "Piping $null should not cause a NullReferenceException.");
+      }
+    }
   }
 }

@@ -25,7 +25,10 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
-      foreach (var psObject in _CsvService.ParseCsvInput(CsvInput!, _CancellationTokenSource.Token))
+      if (CsvInput is null)
+        return;
+
+      foreach (var psObject in _CsvService.ParseCsvInput(CsvInput, _CancellationTokenSource.Token))
         WriteObject(psObject);
 
       base.ProcessRecord();
