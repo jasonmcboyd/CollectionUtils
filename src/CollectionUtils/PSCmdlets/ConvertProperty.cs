@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Management.Automation;
 
 namespace CollectionUtils.PSCmdlets
@@ -36,7 +36,25 @@ namespace CollectionUtils.PSCmdlets
         if (_ShouldStop)
           break;
 
-        WriteObject(BuildNewObject(obj));
+        try
+        {
+          WriteObject(BuildNewObject(obj));
+        }
+        catch (Exception ex) when (
+          ex is FormatException
+          || ex is OverflowException
+          || ex is InvalidCastException
+          || ex is InvalidOperationException)
+        {
+          WriteError(
+            new ErrorRecord(
+              ex,
+              "ConversionFailed",
+              ErrorCategory.InvalidData,
+              obj));
+
+          WriteObject(obj);
+        }
       }
 
       base.ProcessRecord();
