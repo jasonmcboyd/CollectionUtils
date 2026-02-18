@@ -99,7 +99,7 @@ Bugs identified during code review. Organized by severity.
   - `src/CollectionUtils/PSCmdlets/ConvertToHashtablePsCmdlet.cs:39` (Dispose exists but skips token source)
   - **Fix:** Implement `IDisposable` and dispose the `CancellationTokenSource`, or dispose in `EndProcessing`/`StopProcessing`.
 
-- [ ] **#17 — ScriptBlock result assumed non-empty in PropertyGetter**
+- [x] **#17 — ScriptBlock result assumed non-empty in PropertyGetter**
   - `src/CollectionUtils/PropertyGetter.cs:57`
   - `resultsFromScriptBlock[0]` with no empty check. Key expressions like `{ }` crash with `IndexOutOfRangeException`.
   - **Fix:** Check for empty results and throw a descriptive error.

@@ -405,5 +405,27 @@ namespace CollectionUtils.Test
       Assert.AreEqual(0, exceptions.Count, $"Concurrent access produced {exceptions.Count} error(s). First: {exceptions.FirstOrDefault()?.Message}");
     }
 
+    [TestMethod]
+    public void GetPropertyWithScriptBlock_EmptyScriptBlock_ThrowsScriptBlockEmptyResultException()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+      AddPSCustomObject(shell);
+
+      var emptyKeyField = $"[{typeof(KeyField).FullName}]::new('Id', {{ }})";
+      var script = $"[{typeof(PropertyGetter).FullName}]::GetProperty($obj, {emptyKeyField})";
+
+      // Act
+      var output = shell.InvokeScript(script);
+
+      // Assert
+      Assert.IsTrue(shell.HadErrors, "Expected an error when ScriptBlock returns no results.");
+      Assert.IsTrue(shell.Streams.Error.Count > 0, "Expected at least one error record.");
+      var errorRecord = shell.Streams.Error[0];
+      Assert.IsTrue(
+        errorRecord.Exception.InnerException is ScriptBlockEmptyResultException,
+        $"Expected ScriptBlockEmptyResultException but got: {errorRecord.Exception.GetType().Name}: {errorRecord.Exception.Message}");
+    }
+
   }
 }

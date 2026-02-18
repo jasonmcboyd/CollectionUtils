@@ -55,6 +55,9 @@ namespace CollectionUtils
           variablesToDefine: scriptBlockVariables,
           args: null);
 
+      if (resultsFromScriptBlock.Count == 0)
+        throw new Exceptions.ScriptBlockEmptyResultException(obj);
+
       return resultsFromScriptBlock[0];
     }
 
