@@ -1,4 +1,4 @@
-﻿using CollectionUtils.JoinCommandHandlers;
+using CollectionUtils.JoinCommandHandlers;
 using CollectionUtils.Utilities;
 using System;
 using System.Collections;
@@ -70,6 +70,9 @@ namespace CollectionUtils.PSCmdlets
 
       ValidateComparers();
 
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
+
       _HashtableBuilder =
         KeyCollisionPreference == ConvertToHashtableKeyCollisionPreference.Group
         ? new ListOfPSObjectHashtableBuilder(
@@ -87,9 +90,8 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
-      // TODO:
-      //if (_ShouldStop)
-      //  return;
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
 
       _HashtableBuilder!.AddObjects(InputObject);
       
@@ -98,6 +100,9 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void EndProcessing()
     {
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
+
       WriteObject(_HashtableBuilder!.GetHashtable());
 
       base.EndProcessing();

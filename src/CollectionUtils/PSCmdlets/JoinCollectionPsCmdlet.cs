@@ -303,6 +303,9 @@ namespace CollectionUtils.PSCmdlets
       ValidateKeyFields();
       ValidateComparers();
 
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
+
       _CommandHandler = GetCommandHandler();
 
       base.BeginProcessing();
@@ -310,6 +313,9 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void ProcessRecord()
     {
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
+
       var left =
         Left
         .Cast<object>()
@@ -324,6 +330,9 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void EndProcessing()
     {
+      if (_CancellationTokenSource.IsCancellationRequested)
+        return;
+
       _CommandHandler!.WriteRemainingObjects();
 
       base.EndProcessing();
