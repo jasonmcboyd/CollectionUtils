@@ -61,7 +61,7 @@ Bugs identified during code review. Organized by severity.
   - Calls `WriteError` (non-terminating) but cancellation is commented out with a TODO. Duplicate keys are silently dropped. Behaves identically to `Ignore`.
   - **Fix:** Uncomment and implement the cancellation, or use `ThrowTerminatingError`.
 
-- [ ] **#11 — `DisjunctJoin` positional parameter conflict (`LeftKey` and `RightKey` both at Position 4)**
+- [x] **#11 — `DisjunctJoin` positional parameter conflict (`LeftKey` and `RightKey` both at Position 4)**
   - `src/CollectionUtils/PSCmdlets/JoinCollectionPsCmdlet.cs:141-144`
   - `RightKey` for `DisjunctJoin` is `Position = 4`, same as `LeftKey`. All other join types correctly use Position 5 for `RightKey`.
   - **Fix:** Change `Position = 4` to `Position = 5` for the `DisjunctJoin|LeftKey|RightKey` parameter set.

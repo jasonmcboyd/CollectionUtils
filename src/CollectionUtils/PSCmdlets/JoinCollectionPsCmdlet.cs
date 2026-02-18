@@ -141,7 +141,7 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(
       Mandatory = true,
       ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
-      Position = 4)]
+      Position = 5)]
     [Parameter(
       Mandatory = true,
       ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey),
