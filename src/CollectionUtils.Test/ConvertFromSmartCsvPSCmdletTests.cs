@@ -82,5 +82,45 @@ namespace CollectionUtils.Test
       Assert.AreEqual(44, results[0].Properties["Value"].Value);
       Assert.IsNull(results[1].Properties["Value"].Value);
     }
+
+    [TestMethod]
+    public void Invoke_EmptyCsvString_ReturnsNoResults()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$csv = \"\"");
+
+      var command = "ConvertFrom-SmartCsv -CsvInput $csv";
+
+      // Act
+      var results =
+        shell
+        .InvokeScript(command)
+        .ToArray();
+
+      // Assert — should return empty, not throw NullReferenceException
+      Assert.AreEqual(0, results.Length);
+    }
+
+    [TestMethod]
+    public void Invoke_HeaderOnlyCsv_ReturnsNoResults()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$csv = \"Name,Age\"");
+
+      var command = "ConvertFrom-SmartCsv -CsvInput $csv";
+
+      // Act
+      var results =
+        shell
+        .InvokeScript(command)
+        .ToArray();
+
+      // Assert — header-only CSV should return no data rows
+      Assert.AreEqual(0, results.Length);
+    }
   }
 }

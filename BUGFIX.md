@@ -87,7 +87,7 @@ Bugs identified during code review. Organized by severity.
   - All `Parse`/`TryParse` calls use the current thread's `CultureInfo`. Data from different locales is silently misinterpreted (e.g., decimal separators, date formats).
   - **Fix:** Use `CultureInfo.InvariantCulture` for parsing, or accept a `-Culture` parameter.
 
-- [ ] **#15 — `ReadFields()` return value not null-checked in CsvService**
+- [x] **#15 — `ReadFields()` return value not null-checked in CsvService**
   - `src/CollectionUtils/Data/CsvService.cs:35,43`
   - `CsvTextFieldParser.ReadFields()` can return null at end-of-data. Subsequent `.Select()` or `.Length` throws on malformed CSV files.
   - **Fix:** Add null checks after `ReadFields()` calls.

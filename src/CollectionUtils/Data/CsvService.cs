@@ -30,9 +30,13 @@ namespace CollectionUtils.Data
       if (parser.EndOfData)
         return Array.Empty<DataColumn>();
 
+      var headerFields = parser.ReadFields();
+
+      if (headerFields is null)
+        return Array.Empty<DataColumn>();
+
       var dataColumns =
-        parser
-        .ReadFields()
+        headerFields
         .Select(field => new DataColumn(field.Trim()))
         .ToArray();
 
@@ -40,7 +44,11 @@ namespace CollectionUtils.Data
 
       while (!parser.EndOfData)
       {
-        string[] fields = parser.ReadFields();
+        string[]? fields = parser.ReadFields();
+
+        if (fields is null)
+          break;
+
         rowCount++;
 
         if (fields.Length != dataColumns.Length)
