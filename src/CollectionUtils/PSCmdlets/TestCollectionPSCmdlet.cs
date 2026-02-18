@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Management.Automation;
 
 namespace CollectionUtils.PSCmdlets
@@ -52,7 +52,7 @@ namespace CollectionUtils.PSCmdlets
     private Quantifier SelectedQuantifier => All ? Quantifier.All : Quantifier.Any;
 
     private bool _ShouldStop = false;
-    private bool? _Result = null;
+    private bool _ResultWritten = false;
 
     protected override void BeginProcessing()
     {
@@ -90,9 +90,10 @@ namespace CollectionUtils.PSCmdlets
         {
           case (Quantifier.All, true):
           case (Quantifier.Any, false):
-            _Result = !scriptBlockReturnsFalse;
-            StopProcessing();
-            return;
+            _ShouldStop = true;
+            _ResultWritten = true;
+            WriteObject(!scriptBlockReturnsFalse);
+            throw new PipelineStoppedException();
           default:
             // Do nothing.
             break;
@@ -104,7 +105,8 @@ namespace CollectionUtils.PSCmdlets
 
     protected override void EndProcessing()
     {
-      WriteObject(_Result is not null ? _Result.Value : SelectedQuantifier == Quantifier.All);
+      if (!_ResultWritten)
+        WriteObject(SelectedQuantifier == Quantifier.All);
 
       base.EndProcessing();
     }
