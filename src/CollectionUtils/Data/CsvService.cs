@@ -53,7 +53,7 @@ namespace CollectionUtils.Data
 
         if (fields.Length != dataColumns.Length)
           throw new InvalidOperationException(
-            $"Encountered a row at line {rowCount} that did not have the same number of fields as headers.");
+            $"Encountered a row at line {rowCount + 1} that did not have the same number of fields as headers. The header is on line 1.");
 
         for (int i = 0; i < fields.Length; i++)
           dataColumns[i].Values.Add(fields[i]);

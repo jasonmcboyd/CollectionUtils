@@ -146,5 +146,31 @@ namespace CollectionUtils.Test
           "Piping $null should not cause a NullReferenceException.");
       }
     }
+
+    [TestMethod]
+    public void Invoke_MismatchedColumnCount_ErrorMessageReportsCorrectFileLineNumber()
+    {
+      // Arrange — Header on line 1, valid data on line 2, mismatched row on line 3.
+      using var shell = PowerShellUtilities.CreateShell();
+
+      // CSV: header has 2 columns, first data row is fine, second data row has 3 columns.
+      shell.InvokeScript("$csv = \"Name,Age`r`nAlice,30`r`nBob,25,Extra\"");
+
+      var command = "ConvertFrom-SmartCsv -CsvInput $csv";
+
+      // Act — invoke the command; the error ends up in the error stream.
+      shell.InvokeScript(command);
+
+      // Assert — there must be at least one error.
+      Assert.IsTrue(
+        shell.Streams.Error.Count > 0,
+        "Expected an error for mismatched column count.");
+
+      var errorMessage = shell.Streams.Error[0].Exception.Message;
+
+      // The error message must reference line 3 (file line), not line 2 (data row).
+      StringAssert.Contains(errorMessage, "line 3",
+        "Error message should report file line 3 for the second data row (header is line 1).");
+    }
   }
 }
