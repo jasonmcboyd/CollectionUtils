@@ -61,10 +61,10 @@ namespace CollectionUtils
       PSObject obj,
       string propertyName)
     {
-      // TODO: How do I check if a property exists without instantiating an Enumerable?
-      // I need a way to distinguish between a property that doesn't exist and a property
-      // with a value that is null.
       var propertyInfo = obj.Properties[propertyName];
+
+      if (propertyInfo is null)
+        throw new PropertyResolutionException(obj, propertyName);
 
       return propertyInfo.Value;
     }

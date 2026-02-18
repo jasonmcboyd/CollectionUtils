@@ -46,7 +46,7 @@ Bugs identified during code review. Organized by severity.
   - `File.Open` defaults to `FileShare.None`, locking the file exclusively. Cannot import files currently open in Excel.
   - **Fix:** Use `new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)` as the CSV importer already does.
 
-- [ ] **#8 — NullReferenceException when PSObject is missing a key property**
+- [x] **#8 — NullReferenceException when PSObject is missing a key property**
   - `src/CollectionUtils/PropertyGetter.cs:67-69`
   - `obj.Properties[propertyName]` returns null for missing properties, then `.Value` throws. Has a TODO acknowledging the issue.
   - **Fix:** Add a null check and throw a descriptive `PropertyResolutionException` or `NullKeyException`.

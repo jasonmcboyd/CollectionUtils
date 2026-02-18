@@ -1,3 +1,4 @@
+using CollectionUtils.Exceptions;
 using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using Markdig.Extensions.Tables;
@@ -320,6 +321,49 @@ namespace CollectionUtils.Test
       // Assert
       Assert.IsInstanceOfType<int>(result);
       Assert.AreEqual(1, result);
+    }
+
+    [TestMethod]
+    public void GetProperty_TypeIsPSCustomObject_MissingProperty_ThrowsPropertyResolutionException()
+    {
+      // Arrange
+      var psObject = new PSObject();
+      psObject.Properties.Add(new PSNoteProperty("Id", 1));
+      psObject.Properties.Add(new PSNoteProperty("Value", "one"));
+
+      // Act & Assert
+      Assert.ThrowsException<PropertyResolutionException>(
+        () => PropertyGetter.GetProperty(psObject, new KeyField("NonExistent")));
+    }
+
+    [TestMethod]
+    public void GetProperty_TypeIsPSCustomObject_ExistingProperty_ReturnsValue()
+    {
+      // Arrange
+      var psObject = new PSObject();
+      psObject.Properties.Add(new PSNoteProperty("Id", 1));
+      psObject.Properties.Add(new PSNoteProperty("Value", "one"));
+
+      // Act
+      var result = PropertyGetter.GetProperty(psObject, new KeyField("Id"));
+
+      // Assert
+      Assert.IsInstanceOfType<int>(result);
+      Assert.AreEqual(1, result);
+    }
+
+    [TestMethod]
+    public void GetProperty_TypeIsPSCustomObject_NullPropertyValue_ReturnsNull()
+    {
+      // Arrange
+      var psObject = new PSObject();
+      psObject.Properties.Add(new PSNoteProperty("Id", null));
+
+      // Act
+      var result = PropertyGetter.GetProperty(psObject, new KeyField("Id"));
+
+      // Assert
+      Assert.IsNull(result);
     }
 
   }
