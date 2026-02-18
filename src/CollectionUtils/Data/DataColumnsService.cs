@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Management.Automation;
 using System.Threading;
 
@@ -81,13 +82,13 @@ namespace CollectionUtils.Data
         // If we have matched on integer or decimal, then we know at least
         // one value was not a whole number so we should treat all values
         // as decimals.
-        if (int.TryParse(value, out var _))
+        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var _))
         {
           matchedInteger = true;
           continue;
         }
 
-        if (decimal.TryParse(value, out var _))
+        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var _))
         {
           matchedDecimal = true;
           continue;
@@ -99,7 +100,7 @@ namespace CollectionUtils.Data
           continue;
         }
 
-        if (DateTime.TryParse(value, out var _))
+        if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var _))
         {
           matchedDateTime = true;
           continue;

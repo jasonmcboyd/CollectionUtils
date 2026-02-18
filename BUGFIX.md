@@ -81,7 +81,7 @@ Bugs identified during code review. Organized by severity.
 
 ## Medium
 
-- [ ] **#14 — Culture-sensitive parsing in type inference and conversion**
+- [x] **#14 — Culture-sensitive parsing in type inference and conversion**
   - `src/CollectionUtils/TypeConverter.cs:43-48`
   - `src/CollectionUtils/Data/DataColumnsService.cs:84,90,102`
   - All `Parse`/`TryParse` calls use the current thread's `CultureInfo`. Data from different locales is silently misinterpreted (e.g., decimal separators, date formats).
