@@ -118,6 +118,7 @@ namespace CollectionUtils.PSCmdlets
     public void Dispose()
     {
       _HashtableBuilder?.Dispose();
+      _CancellationTokenSource.Dispose();
     }
   }
 }

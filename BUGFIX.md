@@ -92,7 +92,7 @@ Bugs identified during code review. Organized by severity.
   - `CsvTextFieldParser.ReadFields()` can return null at end-of-data. Subsequent `.Select()` or `.Length` throws on malformed CSV files.
   - **Fix:** Add null checks after `ReadFields()` calls.
 
-- [ ] **#16 — `CancellationTokenSource` never disposed in 4 cmdlets**
+- [x] **#16 — `CancellationTokenSource` never disposed in 4 cmdlets**
   - `src/CollectionUtils/PSCmdlets/ConvertFromSmartCsv.cs:22`
   - `src/CollectionUtils/PSCmdlets/ImportSmartCsv.cs:23`
   - `src/CollectionUtils/PSCmdlets/ImportSmartExcel.cs:45`

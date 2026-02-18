@@ -7,7 +7,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsData.Import, PSCmdletNouns.SmartExcel, DefaultParameterSetName = nameof(Path))]
   [OutputType(typeof(PSObject[]))]
-  public sealed class ImportSmartExcel : PSCmdlet
+  public sealed class ImportSmartExcel : PSCmdlet, IDisposable
   {
     #region Parameters
 
@@ -60,6 +60,11 @@ namespace CollectionUtils.PSCmdlets
       _CancellationTokenSource.Cancel();
 
       base.StopProcessing();
+    }
+
+    public void Dispose()
+    {
+      _CancellationTokenSource.Dispose();
     }
   }
 }

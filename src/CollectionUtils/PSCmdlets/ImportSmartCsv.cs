@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Management.Automation;
 using System.Threading;
@@ -7,7 +8,7 @@ namespace CollectionUtils.PSCmdlets
 {
   [Cmdlet(VerbsData.Import, PSCmdletNouns.SmartCsv)]
   [OutputType(typeof(PSObject[]))]
-  public sealed class ImportSmartCsv : PSCmdlet
+  public sealed class ImportSmartCsv : PSCmdlet, IDisposable
   {
     #region Parameters
 
@@ -49,6 +50,11 @@ namespace CollectionUtils.PSCmdlets
       _CancellationTokenSource.Cancel();
 
       base.StopProcessing();
+    }
+
+    public void Dispose()
+    {
+      _CancellationTokenSource.Dispose();
     }
   }
 }
