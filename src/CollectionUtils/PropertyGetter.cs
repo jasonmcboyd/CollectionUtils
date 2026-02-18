@@ -3,6 +3,7 @@ using CollectionUtils.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Management.Automation;
 using System.Reflection;
@@ -75,7 +76,7 @@ namespace CollectionUtils
 
     private static object? GetDataRowProperty(DataRow dataRow, string propertyName) => dataRow[propertyName];
 
-    private static readonly Dictionary<(string, string), PropertyInfo> _PropertyInfos = new(new TupleComparer());
+    private static readonly ConcurrentDictionary<(string, string), PropertyInfo> _PropertyInfos = new(new TupleComparer());
 
     private static object? GetObjectProperty(
       object obj,
@@ -89,7 +90,7 @@ namespace CollectionUtils
         _PropertyInfos
         .GetOrAdd(
           (type.AssemblyQualifiedName!, propertyName),
-          () => type.GetProperties().FirstOrDefault(property => property.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)) ?? throw new PropertyResolutionException(obj, propertyName));
+          _ => type.GetProperties().FirstOrDefault(property => property.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)) ?? throw new PropertyResolutionException(obj, propertyName));
 
       return propertyInfo.GetValue(obj);
     }

@@ -1,4 +1,6 @@
 using CollectionUtils.Exceptions;
+using System;
+using System.Linq;
 using CollectionUtils.Test.CommandBuilders;
 using CollectionUtils.Test.Utils;
 using Markdig.Extensions.Tables;
@@ -364,6 +366,43 @@ namespace CollectionUtils.Test
 
       // Assert
       Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void GetProperty_TypeIsObject_ConcurrentAccess_DoesNotCorrupt()
+    {
+      // Arrange
+      var obj = GetObject();
+      var keyField = new KeyField("Id");
+      var exceptions = new System.Collections.Concurrent.ConcurrentBag<Exception>();
+      const int threadCount = 16;
+      const int iterationsPerThread = 500;
+      using var barrier = new System.Threading.Barrier(threadCount);
+
+      // Act
+      var threads = Enumerable.Range(0, threadCount).Select(_ => new System.Threading.Thread(() =>
+      {
+        barrier.SignalAndWait();
+        for (int i = 0; i < iterationsPerThread; i++)
+        {
+          try
+          {
+            var result = PropertyGetter.GetProperty(obj, keyField);
+            if (result is not int intResult || intResult != 1)
+              exceptions.Add(new Exception($"Unexpected result: {result}"));
+          }
+          catch (Exception ex)
+          {
+            exceptions.Add(ex);
+          }
+        }
+      })).ToList();
+
+      foreach (var thread in threads) thread.Start();
+      foreach (var thread in threads) thread.Join();
+
+      // Assert
+      Assert.AreEqual(0, exceptions.Count, $"Concurrent access produced {exceptions.Count} error(s). First: {exceptions.FirstOrDefault()?.Message}");
     }
 
   }

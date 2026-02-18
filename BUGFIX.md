@@ -51,7 +51,7 @@ Bugs identified during code review. Organized by severity.
   - `obj.Properties[propertyName]` returns null for missing properties, then `.Value` throws. Has a TODO acknowledging the issue.
   - **Fix:** Add a null check and throw a descriptive `PropertyResolutionException` or `NullKeyException`.
 
-- [ ] **#9 — Thread-unsafe static dictionary in PropertyGetter**
+- [x] **#9 — Thread-unsafe static dictionary in PropertyGetter**
   - `src/CollectionUtils/PropertyGetter.cs:78`
   - `Dictionary<(string,string), PropertyInfo>` mutated via `GetOrAdd` without synchronization. Corrupts in multi-runspace scenarios (`ForEach-Object -Parallel`).
   - **Fix:** Replace with `ConcurrentDictionary<TKey, TValue>`.
