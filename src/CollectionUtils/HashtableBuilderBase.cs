@@ -14,19 +14,22 @@ namespace CollectionUtils
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
+      bool expandKey,
       Func<TValue, TResult> resultSelector)
     {
       _KeyFields = keyFields;
       _KeyComparers = keyComparers;
       _DefaultStringComparer = defaultStringComparer;
+      _ExpandKey = expandKey;
       _ResultSelector = resultSelector;
 
-      KeySelector = new KeySelector(keyFields);
+      KeySelector = new KeySelector(keyFields, expandKey);
     }
 
     private readonly KeyField[] _KeyFields;
     private readonly KeyComparer[]? _KeyComparers;
     private readonly IEqualityComparer<string> _DefaultStringComparer;
+    private readonly bool _ExpandKey;
     private readonly Func<TValue, TResult> _ResultSelector;
 
     protected KeySelector KeySelector { get; }
@@ -36,7 +39,7 @@ namespace CollectionUtils
     private IEqualityComparer? _EqualityComparer;
     private IEqualityComparer GetEqualityComparer(object obj)
     {
-      _EqualityComparer ??= EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer);
+      _EqualityComparer ??= EqualityComparerFactory.Create(obj, _KeyFields, _KeyComparers, _DefaultStringComparer, _ExpandKey);
 
       return _EqualityComparer;
     }

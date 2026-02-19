@@ -264,6 +264,7 @@ namespace CollectionUtils.Test
         .Right("$right")
         .LeftKey("Id")
         .RightKey("id")
+        .ExpandKey()
         .KeyedJoin(KeyedJoinType.Outer);
 
       // Act
@@ -294,6 +295,7 @@ namespace CollectionUtils.Test
         .Right("$right")
         .LeftKey("EmployeeId")
         .RightKey("EmpId")
+        .ExpandKey()
         .KeyedJoin(KeyedJoinType.Inner);
 
       // Act
@@ -351,6 +353,7 @@ namespace CollectionUtils.Test
         .Right("$right")
         .LeftKey("Value")
         .RightKey(PSBuilder.KeyParameter("Value", $"$_.value"))
+        .ExpandKey()
         .KeyedJoin(KeyedJoinType.Outer);
 
       // Act
@@ -381,6 +384,7 @@ namespace CollectionUtils.Test
         .Right("$right")
         .LeftKey(PSBuilder.KeyParameter("Value", $"$_.value"))
         .RightKey("Value")
+        .ExpandKey()
         .KeyedJoin(KeyedJoinType.Outer);
 
       // Act

@@ -34,6 +34,9 @@ namespace CollectionUtils.PSCmdlets
     [Parameter()]
     public ConvertToHashtableKeyCollisionPreference KeyCollisionPreference { get; set; } = ConvertToHashtableKeyCollisionPreference.Error;
 
+    [Parameter()]
+    public SwitchParameter ExpandKey { get; set; }
+
     #endregion
 
     private readonly CancellationTokenSource _CancellationTokenSource = new();
@@ -78,11 +81,13 @@ namespace CollectionUtils.PSCmdlets
         ? new ListOfPSObjectHashtableBuilder(
           _KeyFields,
           Comparer?.ToArray(),
-          DefaultStringComparer)
+          DefaultStringComparer,
+          ExpandKey.IsPresent)
         : new PSObjectHashtableBuilder(
           _KeyFields,
           Comparer?.ToArray(),
           DefaultStringComparer,
+          ExpandKey.IsPresent,
           KeyCollisionPreference.ToKeyCollisionPreference().SelectStrategy(new PowerShellWriter(this)));
 
       base.BeginProcessing();

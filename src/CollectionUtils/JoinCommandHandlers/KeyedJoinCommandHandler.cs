@@ -15,6 +15,7 @@ namespace CollectionUtils.JoinCommandHandlers
       KeyField[] rightKeyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
+      bool expandKey,
       KeyedJoinType keyedJoinType,
       JoinCollectionKeyCollisionPreference keyCollisionPreference,
       PowerShellWriter powerShellWriter,
@@ -24,19 +25,18 @@ namespace CollectionUtils.JoinCommandHandlers
       _KeyedJoinType = keyedJoinType;
       _KeyCollisionPreference = keyCollisionPreference;
 
-
       if (_KeyCollisionPreference == JoinCollectionKeyCollisionPreference.Group
         || _KeyCollisionPreference == JoinCollectionKeyCollisionPreference.GroupThenFlatten)
       {
-        _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer);
-        _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer);
+        _RightHashtableBuilder = new ListOfPSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer, expandKey);
+        _LeftHashtableBuilder = new ListOfPSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer, expandKey);
       }
       else
       {
         var keyCollisionStrategy = keyCollisionPreference.ToKeyCollisionPreference().SelectStrategy(powerShellWriter);
 
-        _RightHashtableBuilder = new PSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer, keyCollisionStrategy);
-        _LeftHashtableBuilder = new PSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer, keyCollisionStrategy);
+        _RightHashtableBuilder = new PSObjectHashtableBuilder(rightKeyFields, keyComparers, defaultStringComparer, expandKey, keyCollisionStrategy);
+        _LeftHashtableBuilder = new PSObjectHashtableBuilder(leftKeyFields, keyComparers, defaultStringComparer, expandKey, keyCollisionStrategy);
       }
 
       _RightHashtableBuilder.AddObjects(rightCollection);

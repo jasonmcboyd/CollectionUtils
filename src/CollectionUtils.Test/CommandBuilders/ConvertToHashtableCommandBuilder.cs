@@ -22,5 +22,8 @@ namespace CollectionUtils.Test.CommandBuilders
 
     public ConvertToHashtableCommandBuilder KeyCollisionPreference(string value, bool includeParameterName = true) =>
       AddCommandParameter(nameof(ConvertToHashtablePSCmdlet.KeyCollisionPreference), value, includeParameterName);
+
+    public ConvertToHashtableCommandBuilder ExpandKey() =>
+      AddCommandSwitch(nameof(ConvertToHashtablePSCmdlet.ExpandKey));
   }
 }

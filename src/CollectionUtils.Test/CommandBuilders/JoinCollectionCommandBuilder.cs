@@ -56,6 +56,9 @@ namespace CollectionUtils.Test.CommandBuilders
     public JoinCollectionCommandBuilder RightJoin() =>
       AddCommandSwitch(nameof(JoinCollectionPsCmdlet.RightJoin));
 
+    public JoinCollectionCommandBuilder ExpandKey() =>
+      AddCommandSwitch(nameof(JoinCollectionPsCmdlet.ExpandKey));
+
     public JoinCollectionCommandBuilder KeyedJoin(KeyedJoinType keyedJoinType)
     {
       return keyedJoinType switch

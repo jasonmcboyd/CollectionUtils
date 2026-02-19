@@ -9,8 +9,9 @@ namespace CollectionUtils
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
       IEqualityComparer<string> defaultStringComparer,
+      bool expandKey,
       KeyCollisionStrategy keyCollisionStrategy)
-      : base(keyFields, keyComparers, defaultStringComparer, ResultSelector)
+      : base(keyFields, keyComparers, defaultStringComparer, expandKey, ResultSelector)
     {
       _KeyCollisionStrategy = keyCollisionStrategy;
     }

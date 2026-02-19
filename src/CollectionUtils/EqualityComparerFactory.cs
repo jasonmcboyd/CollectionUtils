@@ -10,15 +10,16 @@ namespace CollectionUtils
       object obj,
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
+      IEqualityComparer<string> defaultStringComparer,
+      bool expandKey)
     {
-      if (!IsCompositeKey(keyFields) && keyComparers?.Length ==1)
+      if (expandKey && !IsCompositeKey(keyFields) && keyComparers?.Length == 1)
         return keyComparers[0].Comparer;
 
-      if (IsCompositeKey(keyFields))
-        return GetHashTableComparer(keyFields, keyComparers, defaultStringComparer);
+      if (expandKey && !IsCompositeKey(keyFields))
+        return GetObjectComparer(obj, keyFields, defaultStringComparer);
 
-      return GetObjectComparer(obj, keyFields, defaultStringComparer);
+      return GetHashTableComparer(keyFields, keyComparers, defaultStringComparer);
     }
 
     private static bool IsCompositeKey(KeyField[] keyFields) => keyFields.Length > 1;
@@ -26,16 +27,16 @@ namespace CollectionUtils
     private static IEqualityComparer GetObjectComparer(
       object obj,
       KeyField[] keyFields,
-      IEqualityComparer<string> defaultSringComparer)
+      IEqualityComparer<string> defaultStringComparer)
     {
-      var keySelector = new KeySelector(keyFields);
+      var keySelector = new KeySelector(keyFields, expandKey: true);
 
       var key = keySelector.GetKey(obj);
 
       var type = key.GetType();
 
       if (type == typeof(string))
-        return (IEqualityComparer)defaultSringComparer;
+        return (IEqualityComparer)defaultStringComparer;
 
       return EqualityComparer<object>.Default;
     }
@@ -51,7 +52,13 @@ namespace CollectionUtils
           keyComparers ?? Enumerable.Empty<KeyComparer>(),
           keyField => keyField.Property,
           keyComparer => keyComparer.Key,
-          (keyField, keyComparers) => keyComparers.FirstOrDefault() ?? new KeyComparer(keyField.Property),
+          (keyField, keyComparers) =>
+          {
+            var matched = keyComparers.FirstOrDefault();
+            return matched is null
+              ? new KeyComparer(keyField.Property)
+              : new KeyComparer(keyField.Property, matched.Comparer);
+          },
           StringComparer.OrdinalIgnoreCase)
         .ToArray();
 

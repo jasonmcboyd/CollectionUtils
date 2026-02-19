@@ -10,7 +10,7 @@ namespace CollectionUtils.Test
   public class ConvertToHashtablePSCmdletTests
   {
     [TestMethod]
-    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsInt_ResultKeyIsInt()
+    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsInt_DefaultBehavior_ResultKeyIsHashtable()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
@@ -36,23 +36,87 @@ namespace CollectionUtils.Test
         .Single();
 
       Assert.AreEqual(1, results.Count);
-      Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is int));
+      Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is Hashtable));
     }
 
     [TestMethod]
-    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsString_ResultKeyIsString()
+    public void InvokeWithoutPipeline_SingleKeyField_KeyValueIsString_DefaultBehavior_ResultKeyIsHashtable()
     {
       // Arrange
       using var shell = PowerShellUtilities.CreateShell();
 
       shell.InvokeScript("$objs = @( @{ Id = 1; Value = 'one' } )");
 
-      var script = "ConvertTo-Hashtable -InputObject $objs -Key Value";
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value");
 
       // Act
       var output =
         shell
-        .InvokeScript(script);
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(1, results.Count);
+      Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is Hashtable));
+    }
+
+    [TestMethod]
+    public void InvokeWithoutPipeline_SingleKeyField_ExpandKey_KeyValueIsInt_ResultKeyIsInt()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @( @{ Id = 1; Value = 'one' } )");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Id")
+        .ExpandKey();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      var results =
+        output
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      Assert.AreEqual(1, results.Count);
+      Assert.IsTrue(results.Cast<DictionaryEntry>().All(x => x.Key is int));
+    }
+
+    [TestMethod]
+    public void InvokeWithoutPipeline_SingleKeyField_ExpandKey_KeyValueIsString_ResultKeyIsString()
+    {
+      // Arrange
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @( @{ Id = 1; Value = 'one' } )");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .ExpandKey();
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
 
       var results =
         output
@@ -290,7 +354,8 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key(PSBuilder.KeyParameter("Mod", "$_ % 3"))
-        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString());
+        .KeyCollisionPreference(ConvertToHashtableKeyCollisionPreference.Group.ToString())
+        .ExpandKey();
 
       // Act
       var output =
@@ -314,11 +379,12 @@ namespace CollectionUtils.Test
     }
 
     [TestMethod]
-    public void InvokeWithoutPipeline_ComparerKeyDifferentCaseThanKeyParameter_DoesNotProduceValidationError()
+    public void InvokeWithoutPipeline_ComparerKeyDifferentCaseThanKeyParameter_ExpandKey_DoesNotProduceValidationError()
     {
       // Arrange
       // Bug #19: Comparer key "value" should match Key parameter "Value" case-insensitively.
       // Before the fix, this would trigger a validation error because == is case-sensitive.
+      // Uses -ExpandKey to exercise the single-key expanded path where the comparer is applied directly.
       using var shell = PowerShellUtilities.CreateShell();
 
       shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
@@ -328,7 +394,8 @@ namespace CollectionUtils.Test
         .ConvertToHashTable()
         .InputObject("$objs")
         .Key("Value")
-        .Comparer("@{ value = [System.StringComparer]::Ordinal }");
+        .Comparer("@{ value = [System.StringComparer]::Ordinal }")
+        .ExpandKey();
 
       // Act
       var output =
@@ -346,6 +413,50 @@ namespace CollectionUtils.Test
         .Single();
 
       Assert.AreEqual(2, results.Count);
+    }
+
+    [TestMethod]
+    public void InvokeWithoutPipeline_ComparerKeyDifferentCaseThanKeyParameter_DefaultBehavior_CorrectResultsReturned()
+    {
+      // Arrange
+      // Regression test for bug where ConvertTo-Hashtable fails when the -Comparer key
+      // differs in case from the -Key parameter AND -ExpandKey is not specified.
+      // For example: -Key "Value" -Comparer @{ value = [System.StringComparer]::Ordinal }
+      // The HashtableStructuralEqualityComparer could not find entries in the key Hashtable
+      // due to case-sensitive lookups, causing incorrect behavior.
+      using var shell = PowerShellUtilities.CreateShell();
+
+      shell.InvokeScript("$objs = @(@{ Value = 'one' }, @{ Value = 'ONE' })");
+
+      var command =
+        PSBuilder
+        .ConvertToHashTable()
+        .InputObject("$objs")
+        .Key("Value")
+        .Comparer("@{ value = [System.StringComparer]::Ordinal }");
+
+      // Act
+      var output =
+        shell
+        .InvokeCommandBuilder(command);
+
+      // Assert
+      Assert.IsFalse(shell.HadErrors, "Command should not produce errors when comparer key differs only in case from the Key parameter.");
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      // StringComparer.Ordinal treats "one" and "ONE" as different, so we expect 2 entries.
+      Assert.AreEqual(2, results.Count);
+
+      // Without -ExpandKey, keys should be Hashtables (the default wrapping behavior).
+      Assert.IsTrue(
+        results.Cast<DictionaryEntry>().All(x => x.Key is Hashtable),
+        "Keys should be Hashtables when -ExpandKey is not specified.");
     }
 
     [TestMethod]

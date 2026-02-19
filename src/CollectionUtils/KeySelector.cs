@@ -6,15 +6,17 @@ namespace CollectionUtils
 {
   internal class KeySelector
   {
-    public KeySelector(KeyField[] keyFields)
+    public KeySelector(KeyField[] keyFields, bool expandKey)
     {
       _KeyFields = keyFields;
+      _ExpandKey = expandKey;
     }
 
     private readonly KeyField[] _KeyFields;
-    
+    private readonly bool _ExpandKey;
+
     public object GetKey(object obj) =>
-      _KeyFields.Length == 1
+      _ExpandKey && _KeyFields.Length == 1
       ? GetKeyAsObject(obj)
       : GetKeyAsHashtable(obj);
 

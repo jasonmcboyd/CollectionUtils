@@ -196,6 +196,18 @@ namespace CollectionUtils.PSCmdlets
     [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
     public JoinCollectionKeyCollisionPreference KeyCollisionPreference { get; set; } = JoinCollectionKeyCollisionPreference.Error;
 
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(LeftKey) + "|" + nameof(RightKey))]
+    [Parameter(ParameterSetName = nameof(DisjunctJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(InnerJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(LeftJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(OuterJoin) + "|" + nameof(Key))]
+    [Parameter(ParameterSetName = nameof(RightJoin) + "|" + nameof(Key))]
+    public SwitchParameter ExpandKey { get; set; }
+
     #endregion Keyed Join Parameters
 
     private IJoinCommandHandler? _CommandHandler = null;
@@ -276,6 +288,7 @@ namespace CollectionUtils.PSCmdlets
           _RightKeyFields,
           Comparer?.ToArray(),
           DefaultStringComparer,
+          ExpandKey.IsPresent,
           GetKeyedJoinType(),
           KeyCollisionPreference,
           new PowerShellWriter(this),

@@ -9,8 +9,9 @@ namespace CollectionUtils
     public ListOfPSObjectHashtableBuilder(
       KeyField[] keyFields,
       KeyComparer[]? keyComparers,
-      IEqualityComparer<string> defaultStringComparer)
-      : base(keyFields, keyComparers, defaultStringComparer, ResultSelector)
+      IEqualityComparer<string> defaultStringComparer,
+      bool expandKey)
+      : base(keyFields, keyComparers, defaultStringComparer, expandKey, ResultSelector)
     {
     }
 
