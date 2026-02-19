@@ -5,6 +5,9 @@ Set-strictMode -Version Latest
 #
 # Install-Module platyPS
 
-Import-Module $PSScriptRoot/../src/CollectionUtils/bin/Debug/net6.0/CollectionUtils.dll
+$csprojPath = "$PSScriptRoot/../src/CollectionUtils/CollectionUtils.csproj"
+$targetFramework = ([xml](Get-Content $csprojPath)).Project.PropertyGroup.TargetFramework
+
+Import-Module $PSScriptRoot/../src/CollectionUtils/bin/Debug/$targetFramework/CollectionUtils.dll
 
 New-MarkdownHelp -Module CollectionUtils -OutputFolder $PSScriptRoot/../docs/ -Force
