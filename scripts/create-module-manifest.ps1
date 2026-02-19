@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param (
   [Parameter(Mandatory = $true)]
-  [int]
-  $PatchVersion
+  [string]
+  $Version
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,21 +22,6 @@ function GetModuleFiles {
   "$ModuleName.psd1"
 }
 
-function GetVersionNumber {
-  param (
-    [int]
-    $MajorVersion,
-
-    [int]
-    $MinorVersion,
-
-    [int]
-    $PatchVersion
-  )
-
-  [System.Version]::new($MajorVersion, $MinorVersion, $PatchVersion)
-}
-
 . $PSScriptRoot/variables.ps1
 
 $fileList =
@@ -44,11 +29,11 @@ $fileList =
     -ModuleFolder $publishVariables.ModuleFolder `
     -ModuleName $publishVariables.ModuleName
 
-$version =
-  GetVersionNumber `
-    -MajorVersion $publishVariables.MajorVersion `
-    -MinorVersion $publishVariables.MinorVersion `
-    -PatchVersion $PatchVersion
+# Parse version from tag (e.g., "v0.0.61-alpha" -> version "0.0.61", prerelease "alpha")
+$versionString = $Version -replace '^v', ''
+$parts = $versionString -split '-', 2
+$version = [System.Version]::new($parts[0])
+$prerelease = if ($parts.Length -gt 1) { $parts[1] } else { $null }
 
 $functionsToExport = @(
   'ConvertFrom-DataTable'
@@ -61,16 +46,22 @@ $functionsToExport = @(
   'Test-Collection'
 )
 
-New-ModuleManifest `
-  -Path $publishVariables.ManifestPath `
-  -Author 'Jason Boyd' `
-  -ModuleVersion $version `
-  -Prerelease 'alpha' `
-  -Guid $publishVariables.Guid `
-  -RootModule "$($publishVariables.ModuleName).dll" `
-  -FileList $fileList `
-  -LicenseUri 'https://raw.githubusercontent.com/jasonmcboyd/CollectionUtils/main/LICENSE' `
-  -ProjectUri 'https://github.com/jasonmcboyd/CollectionUtils' `
-  -FunctionsToExport $functionsToExport `
-  -Description 'A collection of utilities for working with collections in PowerShell' `
-  -Tags 'Join','InnerJoin','OuterJoin','LeftJoin','RightJoin','CrossJoin','ZipJoin','DataTable','HashTable','Partition'
+$manifestParams = @{
+  Path              = $publishVariables.ManifestPath
+  Author            = 'Jason Boyd'
+  ModuleVersion     = $version
+  Guid              = $publishVariables.Guid
+  RootModule        = "$($publishVariables.ModuleName).dll"
+  FileList          = $fileList
+  LicenseUri        = 'https://raw.githubusercontent.com/jasonmcboyd/CollectionUtils/main/LICENSE'
+  ProjectUri        = 'https://github.com/jasonmcboyd/CollectionUtils'
+  FunctionsToExport = $functionsToExport
+  Description       = 'A collection of utilities for working with collections in PowerShell'
+  Tags              = 'Join','InnerJoin','OuterJoin','LeftJoin','RightJoin','CrossJoin','ZipJoin','DataTable','HashTable','Partition'
+}
+
+if ($prerelease) {
+  $manifestParams['Prerelease'] = $prerelease
+}
+
+New-ModuleManifest @manifestParams

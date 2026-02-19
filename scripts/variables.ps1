@@ -3,8 +3,6 @@ Set-strictMode -Version Latest
 
 $publishVariables = @{
   Guid           = '28db5ff8-be2b-4bb2-bdd9-c112ced131b8'
-  MajorVersion   = 0
-  MinorVersion   = 0
   RepositoryRoot = (Split-Path $PSScriptRoot -Parent)
 }
 

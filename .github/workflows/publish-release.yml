@@ -31,7 +31,7 @@ jobs:
         run: dotnet publish ./src/CollectionUtils --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained --verbosity normal
       - name: Create Module Manifest
         shell: pwsh
-        run: ./scripts/create-module-manifest.ps1 -PatchVersion ${{ github.run_number }}
+        run: ./scripts/create-module-manifest.ps1 -Version "${{ github.ref_name }}"
       - name: Publish To PowerShell Gallery
         shell: pwsh
         run: Publish-Module -Path ./publish/CollectionUtils -Repository PSGallery -NuGetApiKey ${{ secrets.POWERSHELL_GALLERY_API_KEY }}
