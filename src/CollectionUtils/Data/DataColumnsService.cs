@@ -59,6 +59,7 @@ namespace CollectionUtils.Data
 
       var matchedNull = false;
       var matchedBlank = false;
+      var integerOnlyZeroAndOne = true;
 
       foreach (var value in dataColumns.Values)
       {
@@ -84,6 +85,9 @@ namespace CollectionUtils.Data
         // as decimals.
         if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var _))
         {
+          if (value != "1" && value != "0")
+            integerOnlyZeroAndOne = false;
+
           matchedInteger = true;
           continue;
         }
@@ -130,6 +134,9 @@ namespace CollectionUtils.Data
       // Order matters here. We must test decimal before we test integer.
       if (matchedDecimal)
         return TypeCode.Decimal;
+
+      if (matchedInteger && integerOnlyZeroAndOne)
+        return TypeCode.Boolean;
 
       if (matchedInteger)
         return TypeCode.Int32;

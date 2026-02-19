@@ -85,8 +85,8 @@ namespace CollectionUtils.Test
       var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
       Directory.CreateDirectory(tempDir);
 
-      File.WriteAllText(Path.Combine(tempDir, "a.csv"), "Id\r\n1");
-      File.WriteAllText(Path.Combine(tempDir, "b.csv"), "Id\r\n2");
+      File.WriteAllText(Path.Combine(tempDir, "a.csv"), "Id\r\n10");
+      File.WriteAllText(Path.Combine(tempDir, "b.csv"), "Id\r\n20");
 
       try
       {
@@ -99,8 +99,8 @@ namespace CollectionUtils.Test
 
         // Assert
         Assert.AreEqual(2, results.Length);
-        Assert.AreEqual(1, results[0].Properties["Id"].Value);
-        Assert.AreEqual(2, results[1].Properties["Id"].Value);
+        Assert.AreEqual(10, results[0].Properties["Id"].Value);
+        Assert.AreEqual(20, results[1].Properties["Id"].Value);
       }
       finally
       {
