@@ -347,5 +347,38 @@ namespace CollectionUtils.Test
 
       Assert.AreEqual(2, results.Count);
     }
+
+    [TestMethod]
+    public void InvokeWithPipeline_NoMatchingItems_ReturnedHashtableUsesConfiguredComparer()
+    {
+      // Arrange
+      // Bug #26: When no objects are added, the empty hashtable should still
+      // use the configured comparer (default is case-insensitive).
+      using var shell = PowerShellUtilities.CreateShell();
+
+      var script = "@(@{ Value = 'one' }) | Where-Object { $false } | ConvertTo-Hashtable -Key Value";
+
+      // Act
+      var output =
+        shell
+        .InvokeScript(script);
+
+      var results =
+        output
+        .Cast<PSObject>()
+        .Select(x => x.BaseObject)
+        .Cast<Hashtable>()
+        .Single();
+
+      // Assert - the hashtable is empty
+      Assert.AreEqual(0, results.Count);
+
+      // Verify the comparer is case-insensitive (the default) by adding
+      // a key and looking it up with different casing.
+      results.Add("hello", "world");
+      Assert.IsTrue(results.ContainsKey("HELLO"),
+        "Empty hashtable should use the configured case-insensitive comparer, "
+        + "but key lookup with different casing failed.");
+    }
   }
 }

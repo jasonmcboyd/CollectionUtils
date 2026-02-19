@@ -99,10 +99,8 @@ namespace CollectionUtils
 
       var dict = _InternalDictionary;
 
-      // TODO: This is not correct because the hashtable will not have the same
-      // comparer as the dictionary.
       if (dict is null)
-        return new Hashtable();
+        return new Hashtable(_EqualityComparer ?? (IEqualityComparer)_DefaultStringComparer);
 
       var result = new Hashtable(dict.Count, _EqualityComparer);
 
