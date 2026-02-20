@@ -29,6 +29,11 @@ jobs:
         run: dotnet test ./src --configuration Release --no-build
       - name: Publish
         run: dotnet publish ./src/CollectionUtils --configuration Release --no-build --output ./publish/CollectionUtils --no-self-contained --verbosity normal
+      - name: Compile Help Documentation
+        shell: pwsh
+        run: |
+          Install-Module -Name platyPS -Scope CurrentUser -Force
+          New-ExternalHelp -Path ./docs -OutputPath ./publish/CollectionUtils -Force
       - name: Create Module Manifest
         shell: pwsh
         run: ./scripts/create-module-manifest.ps1 -Version "${{ github.ref_name }}"
