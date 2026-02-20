@@ -72,6 +72,33 @@ Tests use **MSTest** and run PowerShell commands in-process via `Microsoft.Power
 
 GitHub Actions workflow (`.github/workflows/publish-release.yml`) runs on tag pushes matching `v*`: build → test → publish DLL → generate manifest → publish to PSGallery. Module version is derived from the tag (e.g., tag `v0.1.0-alpha` publishes version `0.1.0-alpha`).
 
+## PowerShell Help Documentation (PlatyPS)
+
+User-facing `Get-Help` documentation lives in `docs/` as markdown files, one per cmdlet. These are authored in [PlatyPS](https://github.com/PowerShell/platyPS) format.
+
+### Workflow
+
+1. **Regenerate stubs** when the command surface changes (new cmdlet, new/removed/renamed parameter, changed parameter sets):
+   ```powershell
+   ./scripts/update-docs.ps1
+   ```
+   This builds the module in Debug, imports it, and runs `New-MarkdownHelp -Force` to regenerate the markdown stubs from the compiled DLL. It overwrites existing files, so any hand-written content will be replaced with `{{ Fill in }}` placeholders.
+
+2. **Fill in the placeholders** — the `technical-writer` agent should update the `{{ Fill in }}` placeholder text with real synopsis, description, parameter descriptions, examples, notes, and related links. Preserve the YAML metadata blocks (parameter type, position, pipeline input, etc.) exactly as platyPS generated them.
+
+3. **Compile to MAML XML** (for packaging into the module):
+   ```powershell
+   New-ExternalHelp -Path ./docs -OutputPath ./publish/CollectionUtils -Force
+   ```
+
+### Guidelines for the technical-writer agent
+
+- When a cmdlet is added or its parameters change, run `update-docs.ps1` first to regenerate the structural stubs, then fill in all `{{ }}` placeholders.
+- Provide practical, realistic examples (not toy `{{ Add example }}` stubs). For `Join-Collection` in particular, include examples for every join type with relatable data (employees/departments, orders/products, etc.).
+- Document default values in prose (e.g., "Defaults to `[StringComparer]::OrdinalIgnoreCase`") even though the YAML block may show `None`.
+- Cross-link related cmdlets in the RELATED LINKS section.
+- Do not modify the YAML parameter metadata blocks — those are auto-generated from the compiled cmdlet attributes.
+
 ## Key Source Files
 
 - Cmdlet implementations: `src/CollectionUtils/PSCmdlets/`
@@ -80,3 +107,4 @@ GitHub Actions workflow (`.github/workflows/publish-release.yml`) runs on tag pu
 - Property access (PSObject/Hashtable/DataRow/reflection): `src/CollectionUtils/PropertyGetter.cs`
 - Type conversion: `src/CollectionUtils/TypeConverter.cs`
 - Manifest script: `scripts/create-module-manifest.ps1`
+- Doc generation script: `scripts/update-docs.ps1`
