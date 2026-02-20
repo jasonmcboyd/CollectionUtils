@@ -30,7 +30,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-ZipJoin] [-Progre
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-DisjunctJoin] [-Key] <KeyParameter[]>
  [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -39,7 +39,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-DisjunctJoin] [-K
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-DisjunctJoin] [-LeftKey] <KeyParameter[]>
  [-RightKey] <KeyParameter[]> [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -48,7 +48,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-DisjunctJoin] [-L
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-InnerJoin] [-Key] <KeyParameter[]>
  [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -57,7 +57,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-InnerJoin] [-Key]
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-InnerJoin] [-LeftKey] <KeyParameter[]>
  [-RightKey] <KeyParameter[]> [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -66,7 +66,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-InnerJoin] [-Left
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-LeftJoin] [-Key] <KeyParameter[]>
  [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -75,7 +75,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-LeftJoin] [-Key] 
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-LeftJoin] [-LeftKey] <KeyParameter[]>
  [-RightKey] <KeyParameter[]> [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -84,7 +84,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-LeftJoin] [-LeftK
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-OuterJoin] [-Key] <KeyParameter[]>
  [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -93,7 +93,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-OuterJoin] [-Key]
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-OuterJoin] [-LeftKey] <KeyParameter[]>
  [-RightKey] <KeyParameter[]> [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -102,7 +102,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-OuterJoin] [-Left
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-RightJoin] [-Key] <KeyParameter[]>
  [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -111,7 +111,7 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-RightJoin] [-Key]
 Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-RightJoin] [-LeftKey] <KeyParameter[]>
  [-RightKey] <KeyParameter[]> [-Comparer <KeyComparerParameter>]
  [-DefaultStringComparer <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <JoinCollectionKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -160,13 +160,13 @@ Join-Collection -Left $employees -Right $departments -InnerJoin -Key 'Department
 ```
 
 ```
-Name  DepartmentId DepartmentName
-----  ------------ --------------
-Alice            1 Engineering
-Bob              2 Marketing
+Left                          Right                                         Key
+----                          -----                                         ---
+@{Name=Bob; DepartmentId=2}   @{DepartmentId=2; DepartmentName=Marketing}   {[DepartmentId, 2]}
+@{Name=Alice; DepartmentId=1} @{DepartmentId=1; DepartmentName=Engineering} {[DepartmentId, 1]}
 ```
 
-An InnerJoin returns only the rows where a key exists in both collections. Charlie (DepartmentId 99) has no matching department and is excluded. The Finance department (DepartmentId 3) has no matching employee and is excluded. This mirrors `SELECT * FROM employees INNER JOIN departments ON employees.DepartmentId = departments.DepartmentId` in SQL.
+Each output object has `Left`, `Right`, and `Key` properties. `Left` and `Right` hold the original objects from each collection; `Key` holds the key value used for matching (wrapped in a hashtable by default). An InnerJoin returns only the rows where a key exists in both collections. Charlie (DepartmentId 99) has no matching department and is excluded. The Finance department (DepartmentId 3) has no matching employee and is excluded. This mirrors `SELECT * FROM employees INNER JOIN departments ON employees.DepartmentId = departments.DepartmentId` in SQL.
 
 
 ### Example 2: Left join — all employees, with department info where available
@@ -176,14 +176,14 @@ Join-Collection -Left $employees -Right $departments -LeftJoin -Key 'DepartmentI
 ```
 
 ```
-Name    DepartmentId DepartmentName
-----    ------------ --------------
-Alice              1 Engineering
-Bob                2 Marketing
-Charlie           99
+Left                             Right                                         Key
+----                             -----                                         ---
+@{Name=Bob; DepartmentId=2}      @{DepartmentId=2; DepartmentName=Marketing}   {[DepartmentId, 2]}
+@{Name=Charlie; DepartmentId=99}                                               {[DepartmentId, 99]}
+@{Name=Alice; DepartmentId=1}    @{DepartmentId=1; DepartmentName=Engineering} {[DepartmentId, 1]}
 ```
 
-A LeftJoin returns every item from the left collection regardless of whether a match exists on the right. Charlie appears with a null `DepartmentName` because DepartmentId 99 does not exist in the departments collection. The Finance department is still excluded because it has no match on the left. Use LeftJoin when the left collection is your authoritative list and the right collection provides optional supplemental data.
+A LeftJoin returns every item from the left collection regardless of whether a match exists on the right. Charlie appears with a null `Right` because DepartmentId 99 does not exist in the departments collection. The Finance department is still excluded because it has no match on the left. Use LeftJoin when the left collection is your authoritative list and the right collection provides optional supplemental data.
 
 
 ### Example 3: Right join — all departments, with employee info where available
@@ -193,14 +193,14 @@ Join-Collection -Left $employees -Right $departments -RightJoin -Key 'Department
 ```
 
 ```
-Name  DepartmentId DepartmentName
-----  ------------ --------------
-Alice            1 Engineering
-Bob              2 Marketing
-               3 Finance
+Left                          Right                                         Key
+----                          -----                                         ---
+@{Name=Bob; DepartmentId=2}   @{DepartmentId=2; DepartmentName=Marketing}   {[DepartmentId, 2]}
+@{Name=Alice; DepartmentId=1} @{DepartmentId=1; DepartmentName=Engineering} {[DepartmentId, 1]}
+                              @{DepartmentId=3; DepartmentName=Finance}     {[DepartmentId, 3]}
 ```
 
-A RightJoin is the mirror of LeftJoin. Every item from the right collection is returned. Finance appears with a null `Name` because no employee belongs to DepartmentId 3. Charlie is excluded because DepartmentId 99 has no match on the right. Use RightJoin when the right collection is your authoritative list.
+A RightJoin is the mirror of LeftJoin. Every item from the right collection is returned. Finance appears with a null `Left` because no employee belongs to DepartmentId 3. Charlie is excluded because DepartmentId 99 has no match on the right. Use RightJoin when the right collection is your authoritative list.
 
 
 ### Example 4: Outer join — the complete picture across both collections
@@ -210,15 +210,15 @@ Join-Collection -Left $employees -Right $departments -OuterJoin -Key 'Department
 ```
 
 ```
-Name    DepartmentId DepartmentName
-----    ------------ --------------
-Alice              1 Engineering
-Bob                2 Marketing
-Charlie           99
-                   3 Finance
+Left                             Right                                         Key
+----                             -----                                         ---
+@{Name=Bob; DepartmentId=2}      @{DepartmentId=2; DepartmentName=Marketing}   {[DepartmentId, 2]}
+@{Name=Charlie; DepartmentId=99}                                               {[DepartmentId, 99]}
+@{Name=Alice; DepartmentId=1}    @{DepartmentId=1; DepartmentName=Engineering} {[DepartmentId, 1]}
+                                 @{DepartmentId=3; DepartmentName=Finance}     {[DepartmentId, 3]}
 ```
 
-An OuterJoin returns everything from both collections. Matched records are merged normally. Charlie appears with no department name (his DepartmentId has no match on the right), and Finance appears with no employee name (its DepartmentId has no match on the left). This is the union of LeftJoin and RightJoin and corresponds to `FULL OUTER JOIN` in SQL.
+An OuterJoin returns everything from both collections. Matched records have both `Left` and `Right` populated. Charlie appears with a null `Right` (his DepartmentId has no match on the right), and Finance appears with a null `Left` (its DepartmentId has no match on the left). This is the union of LeftJoin and RightJoin and corresponds to `FULL OUTER JOIN` in SQL.
 
 
 ### Example 5: Disjunct join — find the mismatches for data quality auditing
@@ -228,13 +228,13 @@ Join-Collection -Left $employees -Right $departments -DisjunctJoin -Key 'Departm
 ```
 
 ```
-Name    DepartmentId DepartmentName
-----    ------------ --------------
-Charlie           99
-                   3 Finance
+Left                             Right                                     Key
+----                             -----                                     ---
+@{Name=Charlie; DepartmentId=99}                                           {[DepartmentId, 99]}
+                                 @{DepartmentId=3; DepartmentName=Finance} {[DepartmentId, 3]}
 ```
 
-A DisjunctJoin is the complement of InnerJoin — it returns only the records that did not find a match. Charlie has no department, and Finance has no employees. This is invaluable for data quality checks: finding orphaned foreign keys, records that failed to migrate, or items that exist in one system but not another. It corresponds to `FULL OUTER JOIN WHERE left.key IS NULL OR right.key IS NULL` in SQL.
+A DisjunctJoin is the complement of InnerJoin — it returns only the records that did not find a match. Charlie has no department (null `Right`), and Finance has no employees (null `Left`). This is invaluable for data quality checks: finding orphaned foreign keys, records that failed to migrate, or items that exist in one system but not another. It corresponds to `FULL OUTER JOIN WHERE left.key IS NULL OR right.key IS NULL` in SQL.
 
 
 ### Example 6: Cross join — generate all size/color combinations for a product catalog
@@ -256,20 +256,20 @@ Join-Collection -Left $sizes -Right $colors -CrossJoin
 ```
 
 ```
-Size   Color
-----   -----
-Small  Red
-Small  Blue
-Small  Green
-Medium Red
-Medium Blue
-Medium Green
-Large  Red
-Large  Blue
-Large  Green
+Left           Right
+----           -----
+@{Size=Small}  @{Color=Red}
+@{Size=Small}  @{Color=Blue}
+@{Size=Small}  @{Color=Green}
+@{Size=Medium} @{Color=Red}
+@{Size=Medium} @{Color=Blue}
+@{Size=Medium} @{Color=Green}
+@{Size=Large}  @{Color=Red}
+@{Size=Large}  @{Color=Blue}
+@{Size=Large}  @{Color=Green}
 ```
 
-A CrossJoin produces the Cartesian product of the two collections. Every item in Left is paired with every item in Right, producing 3 x 3 = 9 output rows. No key is needed. Use CrossJoin to generate combination matrices, test data sets, or scheduling grids.
+Each output object has `Left` and `Right` properties holding the original objects from each side. A CrossJoin produces the Cartesian product of the two collections. Every item in Left is paired with every item in Right, producing 3 x 3 = 9 output rows. No key is needed. Use CrossJoin to generate combination matrices, test data sets, or scheduling grids.
 
 
 ### Example 7: Zip join — pair items positionally
@@ -291,14 +291,14 @@ Join-Collection -Left $questions -Right $answers -ZipJoin
 ```
 
 ```
-Number Question                        Answer
------- --------                        ------
-     1 What is the capital of France?  Paris
-     2 What is 7 times 8?              56
-     3 Who wrote Hamlet?               Shakespeare
+Left                                                 Right
+----                                                 -----
+@{Number=1; Question=What is the capital of France?} @{Answer=Paris}
+@{Number=2; Question=What is 7 times 8?}             @{Answer=56}
+@{Number=3; Question=Who wrote Hamlet?}               @{Answer=Shakespeare}
 ```
 
-A ZipJoin pairs items by position rather than by key value. The first left item is paired with the first right item, the second with the second, and so on. If the collections have different lengths, output stops when the shorter collection is exhausted. Use ZipJoin to merge two parallel arrays where positional order is the relationship.
+Like CrossJoin, ZipJoin output has `Left` and `Right` properties but no `Key`. A ZipJoin pairs items by position rather than by key value. The first left item is paired with the first right item, the second with the second, and so on. If the collections have different lengths, output stops when the shorter collection is exhausted. Use ZipJoin to merge two parallel arrays where positional order is the relationship.
 
 
 ### Example 8: Different key names — use LeftKey and RightKey
@@ -316,18 +316,18 @@ $salaries = @(
     [PSCustomObject]@{ EmpId = 'E003'; AnnualSalary = 110000 }
 )
 
-Join-Collection -Left $employees -Right $salaries -InnerJoin -LeftKey 'EmployeeId' -RightKey 'EmpId'
+Join-Collection -Left $employees -Right $salaries -InnerJoin -LeftKey 'EmployeeId' -RightKey 'EmpId' -ExpandKey
 ```
 
 ```
-Name  EmployeeId EmpId AnnualSalary
-----  ---------- ----- ------------
-Alice E001       E001         95000
-Bob   E002       E002         82000
-Carol E003       E003        110000
+Left                           Right                              Key
+----                           -----                              ---
+@{Name=Alice; EmployeeId=E001} @{EmpId=E001; AnnualSalary=95000}  E001
+@{Name=Bob; EmployeeId=E002}   @{EmpId=E002; AnnualSalary=82000}  E002
+@{Name=Carol; EmployeeId=E003} @{EmpId=E003; AnnualSalary=110000} E003
 ```
 
-When the two collections use different property names for the same logical key, use `-LeftKey` and `-RightKey` instead of `-Key`. Both parameters must have the same number of elements. In this example the left collection identifies employees by `EmployeeId` while the right collection uses `EmpId`. The output includes both properties since they are technically different column names; you can use `Select-Object` afterwards to drop the redundant column.
+When the two collections use different property names for the same logical key, use `-LeftKey` and `-RightKey` instead of `-Key`. Both parameters must have the same number of elements. `-ExpandKey` is required here because without it, the left key would be wrapped as `@{EmployeeId = 'E001'}` and the right key as `@{EmpId = 'E001'}` — these are different hashtables and would never match. With `-ExpandKey`, both sides compare the raw value (`'E001'`) directly, so the join succeeds.
 
 
 ### Example 9: Script block keys — compute join keys on the fly
@@ -350,16 +350,45 @@ Join-Collection -Left $nameIndex -Right $badgeData -InnerJoin -LeftKey $leftKey 
 ```
 
 ```
-FirstName LastName Score FullName    BadgeNumber
---------- -------- ----- --------    -----------
-Alice     Smith       95 Alice Smith B-4421
-Bob       Jones       88 Bob Jones   B-1192
+Left                                         Right                                       Key
+----                                         -----                                       ---
+@{FirstName=Alice; LastName=Smith; Score=95} @{FullName=Alice Smith; BadgeNumber=B-4421} {[FullName, Alice Smith]}
+@{FirstName=Bob; LastName=Jones; Score=88}   @{FullName=Bob Jones; BadgeNumber=B-1192}   {[FullName, Bob Jones]}
 ```
 
-A key parameter can be a hashtable whose value is a script block. The hashtable key (`FullName` here) becomes the logical name of the computed field, and the script block is evaluated against each item to produce the match value. This lets you join on a derived value without modifying the source objects. Here, the left side concatenates `FirstName` and `LastName` to compute `FullName`, while the right side simply extracts the existing `FullName` property.
+A key parameter can be a hashtable whose value is a script block. The hashtable key (`FullName` here) becomes the logical name of the computed field, and the script block is evaluated against each item to produce the match value. This lets you join on a derived value without modifying the source objects. Here, the left side concatenates `FirstName` and `LastName` to compute `FullName`, while the right side simply extracts the existing `FullName` property. Because both sides use the same key name (`FullName`), the key hashtables match without needing `-ExpandKey`.
 
 
-### Example 10: KeyCollisionPreference Group — one employee, multiple projects
+### Example 10: ExpandKey — mixed key formats with scriptblock and simple string
+
+```powershell
+$nameIndex = @(
+    [PSCustomObject]@{ FirstName = 'Alice'; LastName = 'Smith';  Score = 95 }
+    [PSCustomObject]@{ FirstName = 'Bob';   LastName = 'Jones';  Score = 88 }
+)
+
+$badgeData = @(
+    [PSCustomObject]@{ FullName = 'Alice Smith';  BadgeNumber = 'B-4421' }
+    [PSCustomObject]@{ FullName = 'Bob Jones';    BadgeNumber = 'B-1192' }
+)
+
+$leftKey  = @{ FullName = { "$($_.FirstName) $($_.LastName)" } }
+$rightKey = 'FullName'
+
+Join-Collection -Left $nameIndex -Right $badgeData -InnerJoin -LeftKey $leftKey -RightKey $rightKey -ExpandKey
+```
+
+```
+Left                                         Right                                       Key
+----                                         -----                                       ---
+@{FirstName=Bob; LastName=Jones; Score=88}   @{FullName=Bob Jones; BadgeNumber=B-1192}   Bob Jones
+@{FirstName=Alice; LastName=Smith; Score=95} @{FullName=Alice Smith; BadgeNumber=B-4421} Alice Smith
+```
+
+Without `-ExpandKey`, the left key would be wrapped in a hashtable `@{FullName = 'Alice Smith'}` while the right key — a plain string property — would also be wrapped as `@{FullName = 'Alice Smith'}`, but because one key is a computed scriptblock and the other is a simple property name, the internal key structures would differ, producing zero matches. `-ExpandKey` causes both sides to compare the raw values directly (`'Alice Smith'` vs `'Alice Smith'`), enabling a computed left key to match a simple right key seamlessly. Notice the `Key` column now shows the unwrapped string value instead of a hashtable.
+
+
+### Example 11: KeyCollisionPreference Group — one employee, multiple projects
 
 ```powershell
 $employees = @(
@@ -376,20 +405,24 @@ $assignments = @(
 
 Join-Collection -Left $employees -Right $assignments -InnerJoin `
     -LeftKey 'EmployeeId' -RightKey 'EmpId' `
-    -KeyCollisionPreference Group
+    -KeyCollisionPreference Group -ExpandKey |
+    Format-List
 ```
 
 ```
-Name  EmployeeId EmpId Project
-----  ---------- ----- -------
-Alice E001       E001  {Alpha, Beta, Gamma}
-Bob   E002       E002  Alpha
+Left  : {@{Name=Bob; EmployeeId=E002}}
+Right : {@{EmpId=E002; Project=Alpha}}
+Key   : E002
+
+Left  : {@{Name=Alice; EmployeeId=E001}}
+Right : {@{EmpId=E001; Project=Alpha}, @{EmpId=E001; Project=Beta}, @{EmpId=E001; Project=Gamma}}
+Key   : E001
 ```
 
-By default, duplicate keys in the right collection cause an error. Setting `-KeyCollisionPreference Group` instead collects all matching right items into an array, so a single left item is joined to all of its right matches at once. The `Project` property for Alice becomes an array containing all three project names. Use `GroupThenFlatten` instead if you want a separate output row for each left/right pair rather than an array.
+By default, duplicate keys in the right collection cause an error. Setting `-KeyCollisionPreference Group` instead collects all matching right items into an array in the `Right` property. Alice's `Right` value contains all three of her project assignments, while Bob has a single-element array. `-ExpandKey` is needed here because the left and right key names differ (`EmployeeId` vs `EmpId`). The output is piped to `Format-List` because the grouped arrays are easier to read in list format. Use `GroupThenFlatten` instead if you want a separate output object for each left/right pair rather than an array.
 
 
-### Example 11: Custom comparer — case-sensitive matching on one field
+### Example 12: Custom comparer — case-sensitive matching on one field
 
 ```powershell
 $products = @(
@@ -409,14 +442,14 @@ Join-Collection -Left $products -Right $inventory -LeftJoin -Key 'SKU' -Comparer
 ```
 
 ```
-SKU      Description             StockCount
----      -----------             ----------
-widget-A Widget Type A                   42
-widget-a Widget Type A (variant)
-widget-B Widget Type B                   17
+Left                                                 Right                          Key
+----                                                 -----                          ---
+@{SKU=widget-A; Description=Widget Type A}           @{SKU=widget-A; StockCount=42} {[SKU, widget-A]}
+@{SKU=widget-a; Description=Widget Type A (variant)}                                {[SKU, widget-a]}
+@{SKU=widget-B; Description=Widget Type B}           @{SKU=widget-B; StockCount=17} {[SKU, widget-B]}
 ```
 
-By default all string key comparisons use `OrdinalIgnoreCase`, so `widget-A` and `widget-a` would be treated as the same key. The `-Comparer` parameter accepts a hashtable mapping field names to `IEqualityComparer` instances, overriding the default for that specific field. Here `[StringComparer]::Ordinal` makes the `SKU` comparison case-sensitive, so `widget-a` correctly finds no match and appears with a null `StockCount`. The `-DefaultStringComparer` parameter changes the default for all string key fields at once when you want global case-sensitive behavior.
+By default all string key comparisons use `OrdinalIgnoreCase`, so `widget-A` and `widget-a` would be treated as the same key. The `-Comparer` parameter accepts a hashtable mapping field names to `IEqualityComparer` instances, overriding the default for that specific field. Here `[StringComparer]::Ordinal` makes the `SKU` comparison case-sensitive, so `widget-a` correctly finds no match and appears with a null `Right`. The `-DefaultStringComparer` parameter changes the default for all string key fields at once when you want global case-sensitive behavior.
 
 ## PARAMETERS
 
@@ -482,6 +515,22 @@ Aliases:
 Required: True
 Position: 3
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExpandKey
+
+When specified with a single key field, each item's key value is used directly for comparison rather than being wrapped in a hashtable. This allows a simple property name key on one side (e.g., `-RightKey 'FullName'`) to be matched against a computed scriptblock key on the other side (e.g., `-LeftKey @{ FullName = { ... } }`). Has no effect when multiple key fields are specified.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: DisjunctJoin|Key, DisjunctJoin|LeftKey|RightKey, InnerJoin|Key, InnerJoin|LeftKey|RightKey, LeftJoin|Key, LeftJoin|LeftKey|RightKey, OuterJoin|Key, OuterJoin|LeftKey|RightKey, RightJoin|Key, RightJoin|LeftKey|RightKey
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -703,7 +752,7 @@ Neither `-Left` nor `-Right` accepts pipeline input. Both collections must be pa
 
 ### System.Management.Automation.PSObject[]
 
-Each output object contains the merged properties of a matched left and right item. For unmatched items (in LeftJoin, RightJoin, OuterJoin, and DisjunctJoin), the missing side's properties are present but null.
+Each output object has `Left`, `Right`, and (for keyed joins) `Key` properties. `Left` and `Right` hold the original objects from each collection. `Key` holds the key value used for matching (a hashtable by default, or the raw value when `-ExpandKey` is used). For unmatched items (in LeftJoin, RightJoin, OuterJoin, and DisjunctJoin), the missing side's property is null.
 
 ## NOTES
 

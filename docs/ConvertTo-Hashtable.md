@@ -16,7 +16,7 @@ Converts a collection of PSObjects into a Hashtable indexed by one or more key p
 ```
 ConvertTo-Hashtable [-InputObject] <PSObject[]> [-Key] <KeyParameter[]> [[-Comparer] <KeyComparerParameter>]
  [[-DefaultStringComparer] <System.Collections.Generic.IEqualityComparer`1[System.String]>]
- [-KeyCollisionPreference <ConvertToHashtableKeyCollisionPreference>] [-ProgressAction <ActionPreference>]
+ [-KeyCollisionPreference <ConvertToHashtableKeyCollisionPreference>] [-ExpandKey] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
