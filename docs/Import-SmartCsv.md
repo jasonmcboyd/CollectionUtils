@@ -24,9 +24,13 @@ Import-SmartCsv reads a CSV file from disk and returns PSObjects with property v
 Unlike the built-in Import-Csv, which returns every value as a string, Import-SmartCsv inspects all values in each column and infers the best type for that column. Type inference evaluates columns in this order:
 
 1. **Boolean** — All non-null values are "true" or "false" (case-insensitive), or all integer values are only "0" and "1".
+
 2. **Int32** — All non-null values are whole numbers (at least one value outside the 0/1 range).
+
 3. **Decimal** — All non-null values are numbers and at least one has a fractional part.
+
 4. **DateTime** — All non-null values parse as dates using the invariant culture.
+
 5. **String** — Any column that does not satisfy the above conditions.
 
 Paths are resolved against PowerShell's current working directory ($PWD), not the .NET process working directory. This means relative paths like .\data.csv work as expected when used interactively or from scripts. The file is opened with shared read access, so Import-SmartCsv can read files that are currently open by other processes (such as Excel).
@@ -43,6 +47,7 @@ Import-SmartCsv -Path .\employees.csv
 
 Imports all rows from employees.csv in the current directory. Each row is returned as a PSObject with column names as property names and values converted to their inferred types.
 
+
 ### Example 2: Pipeline of file paths
 
 ```powershell
@@ -51,6 +56,7 @@ Imports all rows from employees.csv in the current directory. Each row is return
 
 Pipes multiple file paths to Import-SmartCsv. Each file is processed in order and its rows are emitted to the pipeline. All rows from all files are returned as a flat stream of PSObjects.
 
+
 ### Example 3: Absolute path
 
 ```powershell
@@ -58,6 +64,7 @@ Import-SmartCsv -Path C:\Data\sales_report.csv
 ```
 
 Imports a CSV file using an absolute path. Useful in scheduled tasks or scripts where the working directory may not be predictable.
+
 
 ### Example 4: Numeric comparison after import
 

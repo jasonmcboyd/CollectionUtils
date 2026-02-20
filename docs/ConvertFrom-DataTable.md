@@ -46,6 +46,7 @@ $dataTable | ConvertFrom-DataTable
 
 Pipes a DataTable returned by a SqlDataAdapter into ConvertFrom-DataTable. Each row in the table is emitted as a PSObject with properties matching the column names.
 
+
 ### Example 2: Convert individual DataRows from DataTable.Rows
 
 ```powershell
@@ -53,6 +54,7 @@ $dataTable.Rows | ConvertFrom-DataTable
 ```
 
 Pipes the DataRowCollection from a DataTable's Rows property directly into ConvertFrom-DataTable. Each DataRow is converted to a PSObject independently.
+
 
 ### Example 3: Create a DataTable in PowerShell and convert it
 

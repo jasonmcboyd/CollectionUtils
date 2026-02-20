@@ -98,6 +98,7 @@ User-facing `Get-Help` documentation lives in `docs/` as markdown files, one per
 - Document default values in prose (e.g., "Defaults to `[StringComparer]::OrdinalIgnoreCase`") even though the YAML block may show `None`.
 - Cross-link related cmdlets in the RELATED LINKS section.
 - Do not modify the YAML parameter metadata blocks — those are auto-generated from the compiled cmdlet attributes.
+- Every example must end with a blank line before the next `### Example` heading. Without this, PlatyPS renders consecutive examples with no visual separation in `Get-Help` output.
 
 ## Key Source Files
 

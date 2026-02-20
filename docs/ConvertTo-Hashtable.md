@@ -50,6 +50,7 @@ $lookup[2].Name  # Returns 'Bob'
 
 Using `-ExpandKey` with a single key field lets you index directly by the value (`2`) rather than by `@{Id = 2}`.
 
+
 ### Example 2: Key by a string property using pipeline input
 
 ```powershell
@@ -59,6 +60,7 @@ $lookup['explorer'].Id
 ```
 
 Pipes process objects into the cmdlet and builds a hashtable keyed by process name. Because process names are strings and the default comparer is `OrdinalIgnoreCase`, lookups are case-insensitive.
+
 
 ### Example 3: Use a composite key across multiple properties
 
@@ -76,6 +78,7 @@ $lookup[@{FirstName = 'Jane'; LastName = 'Smith'}].Dept  # Returns 'Engineering'
 
 When multiple key fields are provided, the hashtable key is a composite hashtable containing all key field values.
 
+
 ### Example 4: Group objects that share the same key
 
 ```powershell
@@ -92,6 +95,7 @@ $grouped[10][0].OrderId  # Returns 'A'
 ```
 
 `-KeyCollisionPreference Group` collects all objects sharing a key into an array rather than treating duplicate keys as an error.
+
 
 ### Example 5: Use a computed key with a script block expression
 

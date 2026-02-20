@@ -120,11 +120,17 @@ Join-Collection [-Left] <IEnumerable> [-Right] <IEnumerable> [-RightJoin] [-Left
 `Join-Collection` merges two collections using SQL-style join semantics. It supports seven join types that cover the full range of relational join operations:
 
 - **InnerJoin** — Returns only items whose keys match in both collections. Use this when you only care about records that exist on both sides.
+
 - **LeftJoin** — Returns all items from the left collection. Where a matching right item exists the properties are merged; where no match exists the right-side properties are null. Use this when the left collection is your primary dataset and the right collection provides supplemental data.
+
 - **RightJoin** — The mirror of LeftJoin. All right items are returned; left-side properties are null for unmatched right items.
+
 - **OuterJoin** — Returns everything from both collections. Matched items are merged; unmatched items from either side appear with null properties for the missing side. Use this to see the complete picture across two datasets.
+
 - **DisjunctJoin** — Returns only items that do not have a match in the other collection. This is the complement of InnerJoin and is useful for finding orphaned or mismatched records across two datasets.
+
 - **CrossJoin** — Produces the Cartesian product: every item in Left is paired with every item in Right. No key is required. The output count equals Left.Count multiplied by Right.Count.
+
 - **ZipJoin** — Pairs items by position: first with first, second with second, and so on. Stops when the shorter collection is exhausted. No key is required.
 
 For the five key-based join types (Inner, Left, Right, Outer, Disjunct), keys can be a simple property name shared by both collections (`-Key 'Id'`) or separate property names for each side (`-LeftKey 'EmployeeId' -RightKey 'EmpId'`). Keys can also be computed on the fly using a hashtable with a script block expression, for example `@{ FullName = { "$($_.FirstName) $($_.LastName)" } }`.
@@ -162,6 +168,7 @@ Bob              2 Marketing
 
 An InnerJoin returns only the rows where a key exists in both collections. Charlie (DepartmentId 99) has no matching department and is excluded. The Finance department (DepartmentId 3) has no matching employee and is excluded. This mirrors `SELECT * FROM employees INNER JOIN departments ON employees.DepartmentId = departments.DepartmentId` in SQL.
 
+
 ### Example 2: Left join — all employees, with department info where available
 
 ```powershell
@@ -178,6 +185,7 @@ Charlie           99
 
 A LeftJoin returns every item from the left collection regardless of whether a match exists on the right. Charlie appears with a null `DepartmentName` because DepartmentId 99 does not exist in the departments collection. The Finance department is still excluded because it has no match on the left. Use LeftJoin when the left collection is your authoritative list and the right collection provides optional supplemental data.
 
+
 ### Example 3: Right join — all departments, with employee info where available
 
 ```powershell
@@ -193,6 +201,7 @@ Bob              2 Marketing
 ```
 
 A RightJoin is the mirror of LeftJoin. Every item from the right collection is returned. Finance appears with a null `Name` because no employee belongs to DepartmentId 3. Charlie is excluded because DepartmentId 99 has no match on the right. Use RightJoin when the right collection is your authoritative list.
+
 
 ### Example 4: Outer join — the complete picture across both collections
 
@@ -211,6 +220,7 @@ Charlie           99
 
 An OuterJoin returns everything from both collections. Matched records are merged normally. Charlie appears with no department name (his DepartmentId has no match on the right), and Finance appears with no employee name (its DepartmentId has no match on the left). This is the union of LeftJoin and RightJoin and corresponds to `FULL OUTER JOIN` in SQL.
 
+
 ### Example 5: Disjunct join — find the mismatches for data quality auditing
 
 ```powershell
@@ -225,6 +235,7 @@ Charlie           99
 ```
 
 A DisjunctJoin is the complement of InnerJoin — it returns only the records that did not find a match. Charlie has no department, and Finance has no employees. This is invaluable for data quality checks: finding orphaned foreign keys, records that failed to migrate, or items that exist in one system but not another. It corresponds to `FULL OUTER JOIN WHERE left.key IS NULL OR right.key IS NULL` in SQL.
+
 
 ### Example 6: Cross join — generate all size/color combinations for a product catalog
 
@@ -260,6 +271,7 @@ Large  Green
 
 A CrossJoin produces the Cartesian product of the two collections. Every item in Left is paired with every item in Right, producing 3 x 3 = 9 output rows. No key is needed. Use CrossJoin to generate combination matrices, test data sets, or scheduling grids.
 
+
 ### Example 7: Zip join — pair items positionally
 
 ```powershell
@@ -287,6 +299,7 @@ Number Question                        Answer
 ```
 
 A ZipJoin pairs items by position rather than by key value. The first left item is paired with the first right item, the second with the second, and so on. If the collections have different lengths, output stops when the shorter collection is exhausted. Use ZipJoin to merge two parallel arrays where positional order is the relationship.
+
 
 ### Example 8: Different key names — use LeftKey and RightKey
 
@@ -316,6 +329,7 @@ Carol E003       E003        110000
 
 When the two collections use different property names for the same logical key, use `-LeftKey` and `-RightKey` instead of `-Key`. Both parameters must have the same number of elements. In this example the left collection identifies employees by `EmployeeId` while the right collection uses `EmpId`. The output includes both properties since they are technically different column names; you can use `Select-Object` afterwards to drop the redundant column.
 
+
 ### Example 9: Script block keys — compute join keys on the fly
 
 ```powershell
@@ -330,7 +344,7 @@ $badgeData = @(
 )
 
 $leftKey  = @{ FullName = { "$($_.FirstName) $($_.LastName)" } }
-$rightKey = 'FullName'
+$rightKey = @{ FullName = { $_.FullName } }
 
 Join-Collection -Left $nameIndex -Right $badgeData -InnerJoin -LeftKey $leftKey -RightKey $rightKey
 ```
@@ -342,7 +356,8 @@ Alice     Smith       95 Alice Smith B-4421
 Bob       Jones       88 Bob Jones   B-1192
 ```
 
-A key parameter can be a hashtable whose value is a script block. The hashtable key (`FullName` here) becomes the logical name of the computed field, and the script block is evaluated against each item to produce the match value. This lets you join on a derived value without modifying the source objects. Both `-LeftKey` and `-RightKey` can independently use script blocks, simple property names, or a mix of both.
+A key parameter can be a hashtable whose value is a script block. The hashtable key (`FullName` here) becomes the logical name of the computed field, and the script block is evaluated against each item to produce the match value. This lets you join on a derived value without modifying the source objects. Here, the left side concatenates `FirstName` and `LastName` to compute `FullName`, while the right side simply extracts the existing `FullName` property.
+
 
 ### Example 10: KeyCollisionPreference Group — one employee, multiple projects
 
@@ -372,6 +387,7 @@ Bob   E002       E002  Alpha
 ```
 
 By default, duplicate keys in the right collection cause an error. Setting `-KeyCollisionPreference Group` instead collects all matching right items into an array, so a single left item is joined to all of its right matches at once. The `Project` property for Alice becomes an array containing all three project names. Use `GroupThenFlatten` instead if you want a separate output row for each left/right pair rather than an array.
+
 
 ### Example 11: Custom comparer — case-sensitive matching on one field
 

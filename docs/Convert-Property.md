@@ -27,8 +27,11 @@ This is particularly useful after `Import-Csv` or `ConvertFrom-Csv`, which alway
 Conversion behavior:
 
 - String property values are parsed using invariant culture (period as decimal separator, ISO 8601 date formats).
+
 - The string `"null"` is treated as a null value.
+
 - The strings `"1"` and `"0"` are converted to `$true` and `$false` respectively for Boolean targets.
+
 - Non-string values use `System.Convert.ChangeType` with invariant culture.
 
 If the named property does not exist on an object, that object passes through unchanged with no error. If conversion fails (invalid format, overflow, or invalid cast), a non-terminating error is written and the original object passes through unchanged, allowing the pipeline to continue processing remaining objects.
@@ -48,6 +51,7 @@ $data | Where-Object { $_.Age -gt 30 }
 
 `Import-Csv` produces string-typed properties. Convert `Age` to `Int32` so that numeric comparisons work correctly.
 
+
 ### Example 2: Convert a string property to DateTime
 
 ```powershell
@@ -60,6 +64,7 @@ $events | Where-Object { $_.Timestamp -gt (Get-Date).AddDays(-7) }
 
 Date strings in the CSV are parsed using invariant culture. After conversion, standard PowerShell date comparisons work as expected.
 
+
 ### Example 3: Chain multiple conversions in a pipeline
 
 ```powershell
@@ -71,6 +76,7 @@ Import-Csv -Path .\orders.csv |
 ```
 
 Pipe through `Convert-Property` once per property that requires type correction. Each step produces new PSObjects with that property converted; all other properties are passed through unchanged.
+
 
 ### Example 4: Observe error handling when a value cannot be converted
 

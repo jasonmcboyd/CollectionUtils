@@ -24,9 +24,13 @@ ConvertFrom-SmartCsv parses a CSV-formatted string and returns PSObjects with pr
 Type inference evaluates columns in this order:
 
 1. **Boolean** — All non-null values are "true" or "false" (case-insensitive), or all integer values are only "0" and "1".
+
 2. **Int32** — All non-null values are whole numbers (at least one value outside the 0/1 range).
+
 3. **Decimal** — All non-null values are numbers and at least one has a fractional part.
+
 4. **DateTime** — All non-null values parse as dates using the invariant culture.
+
 5. **String** — Any column that does not satisfy the above conditions.
 
 Inference is column-wide. Every non-null value in a column must be compatible with the inferred type. If any value in a column is incompatible, the column falls through to the next type in the hierarchy, eventually landing on String.
@@ -52,6 +56,7 @@ Id Name  Age
 
 The Id and Age columns are returned as Int32, not String, because all values in those columns are whole numbers. Name is returned as String.
 
+
 ### Example 2: Type inference across multiple types
 
 ```powershell
@@ -73,6 +78,7 @@ Joined: DateTime = 1/15/2023 12:00:00 AM
 
 Each column is inferred independently. Active becomes Boolean, Count becomes Int32, Price becomes Decimal, and Joined becomes DateTime.
 
+
 ### Example 3: Here-string input
 
 ```powershell
@@ -93,6 +99,7 @@ ProductId Name      InStock Price
 ```
 
 A PowerShell here-string is a convenient way to embed multi-line CSV data directly in a script. Because InStock is Boolean and Price is Decimal, the Where-Object filter performs typed comparisons rather than string comparisons.
+
 
 ### Example 4: Null handling
 

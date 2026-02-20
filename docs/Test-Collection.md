@@ -30,6 +30,7 @@ Test-Collection [-PredicateScript] <ScriptBlock> [-InputObject] <PSObject[]> [-A
 `Test-Collection` applies a predicate script block to each item in a collection and returns a single boolean result. You must specify exactly one of `-Any` or `-All` to choose the quantifier.
 
 - `-Any`: Returns `$true` as soon as any item satisfies the predicate. Returns `$false` if no items match. Short-circuits — stops processing after the first match.
+
 - `-All`: Returns `$false` as soon as any item fails the predicate. Returns `$true` if all items match. Short-circuits — stops processing after the first non-match.
 
 Both quantifiers handle empty collections consistently with LINQ semantics: `-Any` returns `$false` and `-All` returns `$true` for an empty input.
@@ -50,6 +51,7 @@ if ($result) {
 
 Processing stops as soon as the first matching process is found, making this efficient for large collections.
 
+
 ### Example 2: Test whether all files in a directory are under 1 MB
 
 ```powershell
@@ -62,6 +64,7 @@ if (-not $allSmall) {
 
 Returns `$false` immediately on the first file that is 1 MB or larger; does not continue reading the remaining files.
 
+
 ### Example 3: Test a list of numbers for any negative values
 
 ```powershell
@@ -71,6 +74,7 @@ $hasNegative = $numbers | Test-Collection { $_ -lt 0 } -Any  # Returns $true
 ```
 
 Works on any collection that can be piped, including plain arrays of primitive values.
+
 
 ### Example 4: Verify all services in a group are running
 
@@ -85,6 +89,7 @@ if (-not $allRunning) {
 ```
 
 Use `-All` to enforce a condition across every member of a set before proceeding.
+
 
 ### Example 5: Observe empty collection behavior
 
