@@ -385,7 +385,7 @@ Left                                         Right                              
 @{FirstName=Alice; LastName=Smith; Score=95} @{FullName=Alice Smith; BadgeNumber=B-4421} Alice Smith
 ```
 
-Without `-ExpandKey`, the left key would be wrapped in a hashtable `@{FullName = 'Alice Smith'}` while the right key — a plain string property — would also be wrapped as `@{FullName = 'Alice Smith'}`, but because one key is a computed scriptblock and the other is a simple property name, the internal key structures would differ, producing zero matches. `-ExpandKey` causes both sides to compare the raw values directly (`'Alice Smith'` vs `'Alice Smith'`), enabling a computed left key to match a simple right key seamlessly. Notice the `Key` column now shows the unwrapped string value instead of a hashtable.
+Without `-ExpandKey`, the left key (a computed scriptblock) would be wrapped in a hashtable `@{FullName = 'Alice Smith'}`, while the right key (a plain string property name) would produce the raw string `'Alice Smith'`. These two forms don't match, producing zero results. `-ExpandKey` causes both sides to compare the raw values directly (`'Alice Smith'` vs `'Alice Smith'`), enabling a computed left key to match a simple right key seamlessly. Notice the `Key` column shows the unwrapped string value instead of a hashtable.
 
 
 ### Example 11: KeyCollisionPreference Group — one employee, multiple projects
